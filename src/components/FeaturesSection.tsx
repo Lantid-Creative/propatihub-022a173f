@@ -28,7 +28,7 @@ const FeaturesSection = () => {
     <section className="py-20 px-6">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center mb-3">
-          Why Choose NaijaHomes?
+          Why Choose PropatiHub?
         </h2>
         <p className="text-muted-foreground font-body text-center mb-14 max-w-lg mx-auto">
           The most trusted property platform built specifically for the Nigerian market

@@ -15,19 +15,19 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-lg">N</span>
+                <span className="text-accent-foreground font-display font-bold text-lg">P</span>
               </div>
-              <span className="font-display text-xl font-bold">NaijaHomes</span>
+              <span className="font-display text-xl font-bold">PropatiHub</span>
             </div>
             <p className="text-background/60 font-body text-sm leading-relaxed mb-6">
               Nigeria's most trusted property platform. Find verified homes, land, and commercial properties across all 36 states.
             </p>
             <div className="space-y-2">
               <a href="#" className="flex items-center gap-2 text-background/60 hover:text-background font-body text-sm transition-colors">
-                <Phone className="w-4 h-4" /> +234 (0) 800 NAIJA HOMES
+                <Phone className="w-4 h-4" /> +234 (0) 800 PROPATI
               </a>
               <a href="#" className="flex items-center gap-2 text-background/60 hover:text-background font-body text-sm transition-colors">
-                <Mail className="w-4 h-4" /> hello@naijahomes.ng
+                <Mail className="w-4 h-4" /> hello@propatihub.ng
               </a>
               <a href="#" className="flex items-center gap-2 text-background/60 hover:text-background font-body text-sm transition-colors">
                 <MapPin className="w-4 h-4" /> Victoria Island, Lagos
@@ -56,7 +56,7 @@ const Footer = () => {
 
         <div className="border-t border-background/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-background/40 font-body text-xs">
-            © 2026 NaijaHomes. All rights reserved.
+            © 2026 PropatiHub. All rights reserved.
           </p>
           <p className="text-background/40 font-body text-xs">
             Built with 🇳🇬 for Nigerians
