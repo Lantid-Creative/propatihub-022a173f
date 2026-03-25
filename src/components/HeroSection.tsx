@@ -30,7 +30,7 @@ const HeroSection = () => {
 
         <div className="mt-8 flex items-center gap-2 text-primary-foreground/50 font-body text-sm">
           <Building2 className="w-4 h-4" />
-          <span>Over 25,000 verified properties listed</span>
+          <span>Over 25,000 verified properties listed on PropatiHub</span>
         </div>
       </div>
     </section>
