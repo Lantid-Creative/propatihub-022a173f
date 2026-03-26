@@ -360,10 +360,11 @@ const PropertyManagement = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-6 w-full">
+          <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="tenancies" className="text-xs">Tenancies</TabsTrigger>
             <TabsTrigger value="invitations" className="text-xs">Invitations</TabsTrigger>
             <TabsTrigger value="records" className="text-xs">Records</TabsTrigger>
+            <TabsTrigger value="contracts" className="text-xs">Contracts</TabsTrigger>
             <TabsTrigger value="escrow" className="text-xs">Escrow</TabsTrigger>
             <TabsTrigger value="rent" className="text-xs">Rent</TabsTrigger>
             <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
