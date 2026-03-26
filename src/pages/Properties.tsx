@@ -128,10 +128,8 @@ const Properties = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-primary">
-        <div className="relative z-50">
-          <Navbar />
-        </div>
+      <div className="bg-primary relative">
+        <Navbar />
 
         <div className="px-6 pb-8 pt-4">
           <div className="max-w-7xl mx-auto">
