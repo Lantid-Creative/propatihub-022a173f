@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     ]);
     if (rolesRes.data) setRoles(rolesRes.data.map((r) => r.role as AppRole));
     if (profileRes.data) setProfile(profileRes.data);
+    setRolesLoading(false);
   };
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setRoles([]);
           setProfile(null);
+          setRolesLoading(false);
         }
         setLoading(false);
       }
@@ -67,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hasRole = (role: AppRole) => roles.includes(role);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, roles, profile, signOut, hasRole }}>
+    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, profile, signOut, hasRole }}>
       {children}
     </AuthContext.Provider>
   );
