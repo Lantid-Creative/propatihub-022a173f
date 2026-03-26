@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import logoDark from "@/assets/logo-dark.png";
+import logoLight from "@/assets/logo-light.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -47,11 +49,8 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex">
       <div className="hidden lg:flex lg:w-1/2 bg-primary relative items-center justify-center">
         <div className="p-12 text-primary-foreground max-w-lg">
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-display font-bold text-xl">P</span>
-            </div>
-            <span className="font-display text-2xl font-bold">PropatiHub</span>
+          <div className="mb-8">
+            <img src={logoDark} alt="PropatiHub" className="h-10 w-auto" />
           </div>
           <h1 className="text-4xl font-display font-bold mb-4">
             Nigeria's Premier Property Marketplace
@@ -64,11 +63,10 @@ const Auth = () => {
 
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">
-            <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-display font-bold text-xl">P</span>
-            </div>
-            <span className="font-display text-2xl font-bold text-foreground">PropatiHub</span>
+          <div className="lg:hidden mb-8 flex justify-center">
+            <Link to="/">
+              <img src={logoLight} alt="PropatiHub" className="h-9 w-auto" />
+            </Link>
           </div>
 
           <h2 className="text-2xl font-display font-bold text-foreground mb-2">

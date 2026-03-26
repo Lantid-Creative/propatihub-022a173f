@@ -15,6 +15,12 @@ const Navbar = () => {
     return "/dashboard";
   };
 
+  const navLinks = [
+    { label: "Properties", href: "/properties" },
+    { label: "Find Agent", href: "/properties?type=sale" },
+    { label: "Commercial", href: "/properties?property=commercial" },
+  ];
+
   return (
     <nav className="absolute top-0 left-0 right-0 z-50 px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -23,14 +29,14 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {["Find Agent", "New Developments", "Commercial", "Blog"].map((item) => (
-            <a
-              key={item}
-              href="#"
+          {navLinks.map((item) => (
+            <Link
+              key={item.label}
+              to={item.href}
               className="text-primary-foreground/80 hover:text-primary-foreground font-body text-sm font-medium transition-colors"
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
           {user ? (
             <Link
@@ -59,18 +65,20 @@ const Navbar = () => {
 
       {open && (
         <div className="md:hidden mt-4 bg-card rounded-xl p-4 shadow-xl">
-          {["Find Agent", "New Developments", "Commercial", "Blog"].map((item) => (
-            <a
-              key={item}
-              href="#"
+          {navLinks.map((item) => (
+            <Link
+              key={item.label}
+              to={item.href}
+              onClick={() => setOpen(false)}
               className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
           {user ? (
             <Link
               to={getDashboardLink()}
+              onClick={() => setOpen(false)}
               className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
             >
               Dashboard
@@ -78,6 +86,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/auth"
+              onClick={() => setOpen(false)}
               className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
             >
               Sign in

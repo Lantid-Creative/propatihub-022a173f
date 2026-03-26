@@ -7,6 +7,7 @@ import {
   Building, Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoLight from "@/assets/logo-light.png";
 
 interface NavItem {
   label: string;
@@ -78,10 +79,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-border">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-lg">P</span>
-              </div>
-              <span className="font-display text-lg font-bold text-foreground">PropatiHub</span>
+              <img src={logoLight} alt="PropatiHub" className="h-7 w-auto" />
             </Link>
             <span className="text-xs font-body text-muted-foreground mt-1 block">{portalLabel} Portal</span>
           </div>
