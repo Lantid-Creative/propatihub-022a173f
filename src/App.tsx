@@ -27,6 +27,7 @@ import Privacy from "./pages/Privacy";
 import Blog from "./pages/Blog";
 import Press from "./pages/Press";
 import Sitemap from "./pages/Sitemap";
+import BlogPost from "./pages/BlogPost";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
