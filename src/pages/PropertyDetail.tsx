@@ -13,6 +13,7 @@ import {
   CheckCircle, Phone, Mail, ChevronLeft, ChevronRight, Eye
 } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
+import MortgageCalculator from "@/components/MortgageCalculator";
 
 const listingTypeLabels: Record<string, string> = {
   sale: "For Sale",
@@ -329,6 +330,11 @@ const PropertyDetail = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Mortgage Calculator */}
+            {property.listing_type === "sale" && (
+              <MortgageCalculator propertyPrice={property.price} />
+            )}
           </div>
         </div>
       </div>
