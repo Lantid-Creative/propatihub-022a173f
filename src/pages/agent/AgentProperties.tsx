@@ -29,11 +29,15 @@ const statusColors: Record<string, string> = {
 };
 
 const emptyForm = {
-  title: "", description: "", property_type: "house" as const, listing_type: "sale" as const,
+  title: "", description: "", property_type: "house" as const, listing_type: "sale" as string,
   price: "", bedrooms: "", bathrooms: "", area_sqm: "", address: "", city: "", state: "Lagos",
   features: "", images: [] as string[], floor_plan_url: "", virtual_tour_url: "",
   virtual_tour_video_url: "", year_built: "", parking_spaces: "", furnishing: "",
   condition: "", service_charge: "", caution_fee: "",
+  // Auction fields
+  reserve_price: "", auction_start_at: "", auction_end_at: "",
+  deposit_percentage: "5", winner_payment_deadline_days: "7",
+  auction_auto_extend: true, auction_extend_minutes: "5",
 };
 
 type FormData = typeof emptyForm;
@@ -125,6 +129,17 @@ const AgentProperties = () => {
       caution_fee: parseFloat(form.caution_fee) || null,
       completion_percentage: percentage,
       status: "pending" as const,
+      // Auction fields (only meaningful for bid listings)
+      ...(form.listing_type === "bid" ? {
+        reserve_price: parseInt(form.reserve_price) || null,
+        auction_start_at: form.auction_start_at ? new Date(form.auction_start_at).toISOString() : null,
+        auction_end_at: form.auction_end_at ? new Date(form.auction_end_at).toISOString() : null,
+        deposit_percentage: parseFloat(form.deposit_percentage) || 5,
+        winner_payment_deadline_days: parseInt(form.winner_payment_deadline_days) || 7,
+        auction_auto_extend: form.auction_auto_extend,
+        auction_extend_minutes: parseInt(form.auction_extend_minutes) || 5,
+        auction_status: "upcoming",
+      } : {}),
     };
 
     let error;
@@ -172,6 +187,13 @@ const AgentProperties = () => {
       condition: p.condition || "",
       service_charge: String(p.service_charge || ""),
       caution_fee: String(p.caution_fee || ""),
+      reserve_price: String(p.reserve_price || ""),
+      auction_start_at: p.auction_start_at ? p.auction_start_at.slice(0, 16) : "",
+      auction_end_at: p.auction_end_at ? p.auction_end_at.slice(0, 16) : "",
+      deposit_percentage: String(p.deposit_percentage ?? "5"),
+      winner_payment_deadline_days: String(p.winner_payment_deadline_days ?? "7"),
+      auction_auto_extend: p.auction_auto_extend ?? true,
+      auction_extend_minutes: String(p.auction_extend_minutes ?? "5"),
     });
     setFormStep(0);
     setEditOpen(true);
@@ -297,6 +319,7 @@ const AgentProperties = () => {
                     <SelectItem value="rent">For Rent</SelectItem>
                     <SelectItem value="short_let">Short Let</SelectItem>
                     <SelectItem value="land">Land</SelectItem>
+                    <SelectItem value="bid">Auction / Bid</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -305,6 +328,50 @@ const AgentProperties = () => {
               <label className="text-sm font-body font-medium block mb-1">Price (₦) *</label>
               <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="50000000" />
             </div>
+            {/* Auction Settings - shown when listing_type is "bid" */}
+            {form.listing_type === "bid" && (
+              <Card className="border-accent/30 bg-accent/5">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-display flex items-center gap-2">⚡ Auction Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <label className="text-sm font-body font-medium block mb-1">Reserve Price (₦) — minimum accepted bid</label>
+                    <Input type="number" value={form.reserve_price} onChange={(e) => setForm({ ...form, reserve_price: e.target.value })} placeholder="40000000" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm font-body font-medium block mb-1">Auction Start</label>
+                      <Input type="datetime-local" value={form.auction_start_at} onChange={(e) => setForm({ ...form, auction_start_at: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-body font-medium block mb-1">Auction End</label>
+                      <Input type="datetime-local" value={form.auction_end_at} onChange={(e) => setForm({ ...form, auction_end_at: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm font-body font-medium block mb-1">Deposit (%)</label>
+                      <Input type="number" value={form.deposit_percentage} onChange={(e) => setForm({ ...form, deposit_percentage: e.target.value })} placeholder="5" />
+                    </div>
+                    <div>
+                      <label className="text-sm font-body font-medium block mb-1">Winner Payment Deadline (days)</label>
+                      <Input type="number" value={form.winner_payment_deadline_days} onChange={(e) => setForm({ ...form, winner_payment_deadline_days: e.target.value })} placeholder="7" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" checked={form.auction_auto_extend} onChange={(e) => setForm({ ...form, auction_auto_extend: e.target.checked })} className="rounded border-border" />
+                      <label className="text-sm font-body">Auto-extend on late bids</label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-body font-medium block mb-1">Extend by (mins)</label>
+                      <Input type="number" value={form.auction_extend_minutes} onChange={(e) => setForm({ ...form, auction_extend_minutes: e.target.value })} placeholder="5" disabled={!form.auction_auto_extend} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             <div>
               <label className="text-sm font-body font-medium block mb-1">Address *</label>
               <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="123 Admiralty Way, Lekki Phase 1" />
