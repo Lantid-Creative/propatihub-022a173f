@@ -144,6 +144,7 @@ const App = () => (
             <Route path="/dashboard/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
             <Route path="/dashboard/tenancy" element={<ProtectedRoute><TenantPortal /></ProtectedRoute>} />
             <Route path="/dashboard/property-management" element={<ProtectedRoute><PropertyManagement /></ProtectedRoute>} />
+            <Route path="/tenant-portal" element={<ProtectedRoute><TenantPortal /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
