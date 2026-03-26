@@ -131,7 +131,7 @@ const ApiAccess = () => {
 
   if (!isEligible) {
     return (
-      <DashboardLayout role={hasRole("admin") ? "admin" : "user"} portalPrefix="/dashboard">
+      <DashboardLayout>
         <div className="text-center py-20">
           <Key className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-xl font-display font-bold text-foreground mb-2">API Access for Agents & Agencies</h2>
@@ -145,7 +145,7 @@ const ApiAccess = () => {
   }
 
   return (
-    <DashboardLayout role={hasRole("admin") ? "admin" : hasRole("agency") ? "agency" : "agent"} portalPrefix={portalPrefix}>
+    <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>

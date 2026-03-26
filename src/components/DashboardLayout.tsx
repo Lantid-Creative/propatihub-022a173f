@@ -44,6 +44,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         { label: "Messages", href: "/agency/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/agency/inquiries", icon: MessageSquare },
         { label: "Analytics", href: "/agency/analytics", icon: BarChart3 },
+        { label: "API Access", href: "/agency/api-access", icon: Shield },
         { label: "Billing", href: "/agency/billing", icon: CreditCard },
         { label: "Settings", href: "/agency/settings", icon: Settings },
       ];
@@ -56,6 +57,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         { label: "Messages", href: "/agent/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/agent/inquiries", icon: MessageSquare },
         { label: "Analytics", href: "/agent/analytics", icon: BarChart3 },
+        { label: "API Access", href: "/agent/api-access", icon: Shield },
         { label: "Billing", href: "/agent/billing", icon: CreditCard },
         { label: "Settings", href: "/agent/settings", icon: Settings },
       ];
