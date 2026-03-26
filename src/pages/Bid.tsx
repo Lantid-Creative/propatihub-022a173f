@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BidSubscriptionTiers from "@/components/BidSubscriptionTiers";
+import LiveBidProperties from "@/components/LiveBidProperties";
 import heroImg from "@/assets/hero-for-sale.jpg";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCazL5Cqw90gNr2Kn28q3iXIfdwmI4Coss";
@@ -147,6 +148,9 @@ const Bid = () => {
           </div>
         </div>
       </section>
+
+      {/* Live Bidding Properties */}
+      <LiveBidProperties />
 
       {/* How Bidding Works - Updated */}
       <section className="py-16 px-6">
