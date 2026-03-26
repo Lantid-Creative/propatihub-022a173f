@@ -156,6 +156,7 @@ export type Database = {
       caution_fee_escrow: {
         Row: {
           amount: number
+          auto_release_at: string | null
           created_at: string
           escrow_status: string
           id: string
@@ -166,13 +167,17 @@ export type Database = {
           property_id: string
           release_approved_at: string | null
           release_reason: string | null
+          release_rejected_at: string | null
+          release_rejected_reason: string | null
           release_requested_at: string | null
+          release_requested_by: string | null
           tenancy_id: string
           tenant_id: string
           updated_at: string
         }
         Insert: {
           amount: number
+          auto_release_at?: string | null
           created_at?: string
           escrow_status?: string
           id?: string
@@ -183,13 +188,17 @@ export type Database = {
           property_id: string
           release_approved_at?: string | null
           release_reason?: string | null
+          release_rejected_at?: string | null
+          release_rejected_reason?: string | null
           release_requested_at?: string | null
+          release_requested_by?: string | null
           tenancy_id: string
           tenant_id: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          auto_release_at?: string | null
           created_at?: string
           escrow_status?: string
           id?: string
@@ -200,7 +209,10 @@ export type Database = {
           property_id?: string
           release_approved_at?: string | null
           release_reason?: string | null
+          release_rejected_at?: string | null
+          release_rejected_reason?: string | null
           release_requested_at?: string | null
+          release_requested_by?: string | null
           tenancy_id?: string
           tenant_id?: string
           updated_at?: string
