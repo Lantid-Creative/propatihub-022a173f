@@ -1,6 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import FeaturedProperties from "@/components/FeaturedProperties";
 import ToolsSection from "@/components/ToolsSection";
+import OwnerCTASection from "@/components/OwnerCTASection";
 import PMShowcaseSection from "@/components/PMShowcaseSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import DigitalDocsSection from "@/components/DigitalDocsSection";
@@ -18,6 +19,7 @@ const Index = () => {
       <HeroSection />
       <FeaturedProperties />
       <ToolsSection />
+      <OwnerCTASection />
       <PMShowcaseSection />
       <HowItWorksSection />
       <DigitalDocsSection />
