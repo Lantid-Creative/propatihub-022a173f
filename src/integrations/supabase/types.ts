@@ -153,6 +153,75 @@ export type Database = {
           },
         ]
       }
+      caution_fee_escrow: {
+        Row: {
+          amount: number
+          created_at: string
+          escrow_status: string
+          id: string
+          landlord_id: string
+          payment_status: string
+          paystack_authorization_code: string | null
+          paystack_reference: string | null
+          property_id: string
+          release_approved_at: string | null
+          release_reason: string | null
+          release_requested_at: string | null
+          tenancy_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          escrow_status?: string
+          id?: string
+          landlord_id: string
+          payment_status?: string
+          paystack_authorization_code?: string | null
+          paystack_reference?: string | null
+          property_id: string
+          release_approved_at?: string | null
+          release_reason?: string | null
+          release_requested_at?: string | null
+          tenancy_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          escrow_status?: string
+          id?: string
+          landlord_id?: string
+          payment_status?: string
+          paystack_authorization_code?: string | null
+          paystack_reference?: string | null
+          property_id?: string
+          release_approved_at?: string | null
+          release_reason?: string | null
+          release_requested_at?: string | null
+          tenancy_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caution_fee_escrow_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caution_fee_escrow_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_participants: {
         Row: {
           conversation_id: string
@@ -286,6 +355,104 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lease_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          file_url: string
+          id: string
+          name: string
+          tenancy_id: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          document_type?: string
+          file_url: string
+          id?: string
+          name: string
+          tenancy_id: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          file_url?: string
+          id?: string
+          name?: string
+          tenancy_id?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lease_documents_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_requests: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          priority: string
+          property_id: string
+          resolved_at: string | null
+          status: string
+          tenancy_id: string
+          tenant_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          priority?: string
+          property_id: string
+          resolved_at?: string | null
+          status?: string
+          tenancy_id: string
+          tenant_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          priority?: string
+          property_id?: string
+          resolved_at?: string | null
+          status?: string
+          tenancy_id?: string
+          tenant_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_requests_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
             referencedColumns: ["id"]
           },
         ]
@@ -486,6 +653,53 @@ export type Database = {
           },
         ]
       }
+      rent_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string
+          id: string
+          paid_date: string | null
+          paystack_reference: string | null
+          status: string
+          tenancy_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          due_date: string
+          id?: string
+          paid_date?: string | null
+          paystack_reference?: string | null
+          status?: string
+          tenancy_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string
+          id?: string
+          paid_date?: string | null
+          paystack_reference?: string | null
+          status?: string
+          tenancy_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rent_payments_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_searches: {
         Row: {
           alert_enabled: boolean | null
@@ -512,6 +726,122 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      tenancies: {
+        Row: {
+          created_at: string
+          id: string
+          invitation_id: string | null
+          landlord_id: string
+          lease_end: string | null
+          lease_start: string
+          monthly_rent: number
+          property_id: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invitation_id?: string | null
+          landlord_id: string
+          lease_end?: string | null
+          lease_start: string
+          monthly_rent?: number
+          property_id: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invitation_id?: string | null
+          landlord_id?: string
+          lease_end?: string | null
+          lease_start?: string
+          monthly_rent?: number
+          property_id?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenancies_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "tenant_invitations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenancies_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_invitations: {
+        Row: {
+          accepted_by: string | null
+          caution_fee: number
+          created_at: string
+          id: string
+          invited_by: string
+          lease_end: string | null
+          lease_start: string | null
+          message: string | null
+          monthly_rent: number
+          property_id: string
+          status: string
+          tenant_email: string
+          tenant_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          accepted_by?: string | null
+          caution_fee?: number
+          created_at?: string
+          id?: string
+          invited_by: string
+          lease_end?: string | null
+          lease_start?: string | null
+          message?: string | null
+          monthly_rent?: number
+          property_id: string
+          status?: string
+          tenant_email: string
+          tenant_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accepted_by?: string | null
+          caution_fee?: number
+          created_at?: string
+          id?: string
+          invited_by?: string
+          lease_end?: string | null
+          lease_start?: string | null
+          message?: string | null
+          monthly_rent?: number
+          property_id?: string
+          status?: string
+          tenant_email?: string
+          tenant_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_invitations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
