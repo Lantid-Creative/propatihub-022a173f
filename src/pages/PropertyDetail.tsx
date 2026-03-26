@@ -21,6 +21,7 @@ const listingTypeLabels: Record<string, string> = {
   rent: "For Rent",
   short_let: "Short Let",
   land: "Land",
+  bid: "For Bidding",
 };
 
 const PropertyDetail = () => {
