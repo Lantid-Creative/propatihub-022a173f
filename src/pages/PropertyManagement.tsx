@@ -172,15 +172,80 @@ const PropertyManagement = () => {
       .update({
         escrow_status: "release_requested",
         release_requested_at: new Date().toISOString(),
+        release_requested_by: "landlord",
       } as any)
       .eq("id", escrowId);
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Release requested", description: "Admin will review and process the caution fee release." });
+      toast({ title: "Release initiated", description: "The caution fee will be released to the tenant." });
       fetchAll();
     }
+  };
+
+  const handleApproveRelease = async (escrowId: string) => {
+    const { error } = await supabase
+      .from("caution_fee_escrow")
+      .update({
+        escrow_status: "released",
+        release_approved_at: new Date().toISOString(),
+      } as any)
+      .eq("id", escrowId);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Payout approved!", description: "The caution fee will be released to the tenant." });
+      fetchAll();
+    }
+  };
+
+  const [rejectingEscrowId, setRejectingEscrowId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+
+  const handleRejectRelease = async (escrowId: string) => {
+    if (!rejectReason.trim()) {
+      toast({ title: "Please provide a reason for rejection", variant: "destructive" });
+      return;
+    }
+
+    // 1. Reject the escrow
+    const { error } = await supabase
+      .from("caution_fee_escrow")
+      .update({
+        escrow_status: "release_rejected",
+        release_rejected_at: new Date().toISOString(),
+        release_rejected_reason: rejectReason,
+      } as any)
+      .eq("id", escrowId);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    // 2. Find the escrow details for auto-dispute
+    const escrow = escrows.find((e: any) => e.id === escrowId);
+    if (escrow) {
+      // Auto-create a dispute
+      await supabase.from("disputes").insert({
+        property_id: escrow.property_id,
+        tenancy_id: escrow.tenancy_id,
+        filed_by: escrow.tenant_id,
+        filed_against: escrow.landlord_id,
+        category: "caution_fee",
+        subject: "Caution Fee Payout Rejected",
+        description: `The landlord/property manager rejected the tenant's caution fee payout request.\n\nRejection reason: ${rejectReason}\n\nAmount: ₦${escrow.amount.toLocaleString()}\n\nThis dispute was automatically created by the system for resolution by our litigator experts.`,
+        priority: "high",
+        status: "escalated",
+      } as any);
+    }
+
+    toast({ title: "Payout rejected", description: "A dispute has been automatically logged for our litigator team to resolve." });
+    setRejectingEscrowId(null);
+    setRejectReason("");
+    fetchAll();
   };
 
   const handleUpdateMaintenance = async (id: string, status: string) => {
