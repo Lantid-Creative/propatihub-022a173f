@@ -1,19 +1,34 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Building2, Users, MessageSquare, TrendingUp, Eye, CheckCircle } from "lucide-react";
+import { Building2, Users, MessageSquare, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+
+const statusColors: Record<string, string> = {
+  active: "bg-primary/10 text-primary",
+  pending: "bg-accent/10 text-accent",
+  draft: "bg-muted text-muted-foreground",
+  sold: "bg-destructive/10 text-destructive",
+  rented: "bg-primary/10 text-primary",
+  inactive: "bg-muted text-muted-foreground",
+};
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ properties: 0, users: 0, agents: 0, inquiries: 0 });
+  const [recentProperties, setRecentProperties] = useState<any[]>([]);
+  const [recentInquiries, setRecentInquiries] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      const [props, users, agents, inquiries] = await Promise.all([
+    const fetchAll = async () => {
+      const [props, users, agents, inquiries, latestProps, latestInqs] = await Promise.all([
         supabase.from("properties").select("id", { count: "exact", head: true }),
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("agent_profiles").select("id", { count: "exact", head: true }),
         supabase.from("inquiries").select("id", { count: "exact", head: true }),
+        supabase.from("properties").select("id, title, city, state, price, status, created_at").order("created_at", { ascending: false }).limit(5),
+        supabase.from("inquiries").select("id, message, status, created_at, properties(title)").order("created_at", { ascending: false }).limit(5),
       ]);
       setStats({
         properties: props.count || 0,
@@ -21,16 +36,20 @@ const AdminDashboard = () => {
         agents: agents.count || 0,
         inquiries: inquiries.count || 0,
       });
+      setRecentProperties(latestProps.data || []);
+      setRecentInquiries(latestInqs.data || []);
     };
-    fetchStats();
+    fetchAll();
   }, []);
 
   const statCards = [
     { label: "Total Properties", value: stats.properties, icon: Building2, color: "text-accent" },
     { label: "Total Users", value: stats.users, icon: Users, color: "text-primary" },
-    { label: "Agents", value: stats.agents, icon: CheckCircle, color: "text-green-light" },
+    { label: "Agents", value: stats.agents, icon: CheckCircle, color: "text-primary" },
     { label: "Inquiries", value: stats.inquiries, icon: MessageSquare, color: "text-destructive" },
   ];
+
+  const fmt = (p: number) => `₦${p.toLocaleString()}`;
 
   return (
     <DashboardLayout>
@@ -59,15 +78,52 @@ const AdminDashboard = () => {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
-          <CardHeader><CardTitle className="text-lg">Recent Properties</CardTitle></CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg">Recent Properties</CardTitle>
+            <Link to="/admin/properties" className="text-xs text-accent font-body hover:underline">View all</Link>
+          </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground font-body text-sm">Properties will appear here as they are listed on the platform.</p>
+            {recentProperties.length === 0 ? (
+              <p className="text-muted-foreground font-body text-sm">No properties yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {recentProperties.map((p) => (
+                  <div key={p.id} className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-body text-sm font-medium text-foreground truncate">{p.title}</p>
+                      <p className="text-xs text-muted-foreground font-body">{p.city}, {p.state} · {fmt(p.price)}</p>
+                    </div>
+                    <Badge className={statusColors[p.status] || ""}>{p.status}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
+
         <Card>
-          <CardHeader><CardTitle className="text-lg">Recent Inquiries</CardTitle></CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg">Recent Inquiries</CardTitle>
+            <Link to="/admin/inquiries" className="text-xs text-accent font-body hover:underline">View all</Link>
+          </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground font-body text-sm">Buyer and renter inquiries will appear here.</p>
+            {recentInquiries.length === 0 ? (
+              <p className="text-muted-foreground font-body text-sm">No inquiries yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {recentInquiries.map((inq) => (
+                  <div key={inq.id} className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-body text-sm font-medium text-foreground truncate">
+                        {(inq.properties as any)?.title || "Property"}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-body line-clamp-1">{inq.message}</p>
+                    </div>
+                    <Badge variant={inq.status === "pending" ? "secondary" : "default"}>{inq.status}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

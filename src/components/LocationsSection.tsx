@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import lagosImg from "@/assets/lagos.jpg";
 import abujaImg from "@/assets/abuja.jpg";
 import phImg from "@/assets/port-harcourt.jpg";
@@ -5,7 +6,7 @@ import ibadanImg from "@/assets/ibadan.jpg";
 
 const locations = [
   { name: "Lagos", count: "8,500+", image: lagosImg },
-  { name: "Abuja", count: "4,200+", image: abujaImg },
+  { name: "Abuja FCT", count: "4,200+", image: abujaImg },
   { name: "Port Harcourt", count: "1,800+", image: phImg },
   { name: "Ibadan", count: "950+", image: ibadanImg },
 ];
@@ -23,17 +24,21 @@ const LocationsSection = () => {
               Explore properties in Nigeria's most sought-after cities
             </p>
           </div>
-          <a
-            href="#"
+          <Link
+            to="/properties"
             className="hidden md:block text-accent font-body font-medium hover:underline"
           >
             View all locations →
-          </a>
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {locations.map((loc) => (
-            <div key={loc.name} className="location-card group aspect-[3/4]">
+            <Link
+              key={loc.name}
+              to={`/properties?q=${encodeURIComponent(loc.name)}`}
+              className="location-card group aspect-[3/4]"
+            >
               <img
                 src={loc.image}
                 alt={`Properties in ${loc.name}`}
@@ -50,7 +55,7 @@ const LocationsSection = () => {
                   {loc.count} properties
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
