@@ -843,6 +843,155 @@ export type Database = {
           },
         ]
       }
+      tenant_records: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          employer_address: string | null
+          employer_name: string | null
+          employer_phone: string | null
+          full_name: string
+          gender: string | null
+          guarantor_address: string | null
+          guarantor_email: string | null
+          guarantor_full_name: string | null
+          guarantor_id_url: string | null
+          guarantor_occupation: string | null
+          guarantor_phone: string | null
+          id: string
+          id_document_url: string | null
+          id_expiry_date: string | null
+          id_number: string | null
+          id_type: string | null
+          landlord_id: string
+          marital_status: string | null
+          monthly_income: number | null
+          nationality: string | null
+          nok_address: string | null
+          nok_email: string | null
+          nok_full_name: string | null
+          nok_phone: string | null
+          nok_relationship: string | null
+          notes: string | null
+          occupation: string | null
+          passport_photo_url: string | null
+          phone: string | null
+          previous_address: string | null
+          previous_landlord_name: string | null
+          previous_landlord_phone: string | null
+          reason_for_leaving: string | null
+          state_of_origin: string | null
+          status: string
+          tenancy_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          employer_address?: string | null
+          employer_name?: string | null
+          employer_phone?: string | null
+          full_name: string
+          gender?: string | null
+          guarantor_address?: string | null
+          guarantor_email?: string | null
+          guarantor_full_name?: string | null
+          guarantor_id_url?: string | null
+          guarantor_occupation?: string | null
+          guarantor_phone?: string | null
+          id?: string
+          id_document_url?: string | null
+          id_expiry_date?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          landlord_id: string
+          marital_status?: string | null
+          monthly_income?: number | null
+          nationality?: string | null
+          nok_address?: string | null
+          nok_email?: string | null
+          nok_full_name?: string | null
+          nok_phone?: string | null
+          nok_relationship?: string | null
+          notes?: string | null
+          occupation?: string | null
+          passport_photo_url?: string | null
+          phone?: string | null
+          previous_address?: string | null
+          previous_landlord_name?: string | null
+          previous_landlord_phone?: string | null
+          reason_for_leaving?: string | null
+          state_of_origin?: string | null
+          status?: string
+          tenancy_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          employer_address?: string | null
+          employer_name?: string | null
+          employer_phone?: string | null
+          full_name?: string
+          gender?: string | null
+          guarantor_address?: string | null
+          guarantor_email?: string | null
+          guarantor_full_name?: string | null
+          guarantor_id_url?: string | null
+          guarantor_occupation?: string | null
+          guarantor_phone?: string | null
+          id?: string
+          id_document_url?: string | null
+          id_expiry_date?: string | null
+          id_number?: string | null
+          id_type?: string | null
+          landlord_id?: string
+          marital_status?: string | null
+          monthly_income?: number | null
+          nationality?: string | null
+          nok_address?: string | null
+          nok_email?: string | null
+          nok_full_name?: string | null
+          nok_phone?: string | null
+          nok_relationship?: string | null
+          notes?: string | null
+          occupation?: string | null
+          passport_photo_url?: string | null
+          phone?: string | null
+          previous_address?: string | null
+          previous_landlord_name?: string | null
+          previous_landlord_phone?: string | null
+          reason_for_leaving?: string | null
+          state_of_origin?: string | null
+          status?: string
+          tenancy_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_records_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
