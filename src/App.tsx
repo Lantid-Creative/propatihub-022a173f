@@ -120,6 +120,7 @@ const App = () => (
             <Route path="/agent/billing" element={<ProtectedRoute requiredRole="agent"><AgentBilling /></ProtectedRoute>} />
             <Route path="/agent/settings" element={<ProtectedRoute requiredRole="agent"><AgentSettings /></ProtectedRoute>} />
             <Route path="/agent/messages" element={<ProtectedRoute requiredRole="agent"><MessagesPage /></ProtectedRoute>} />
+            <Route path="/agent/property-management" element={<ProtectedRoute requiredRole="agent"><PropertyManagement /></ProtectedRoute>} />
 
             {/* Agency Portal */}
             <Route path="/agency" element={<ProtectedRoute requiredRole="agency"><AgencyDashboard /></ProtectedRoute>} />
@@ -130,6 +131,7 @@ const App = () => (
             <Route path="/agency/billing" element={<ProtectedRoute requiredRole="agency"><AgencyBilling /></ProtectedRoute>} />
             <Route path="/agency/settings" element={<ProtectedRoute requiredRole="agency"><AgencySettings /></ProtectedRoute>} />
             <Route path="/agency/messages" element={<ProtectedRoute requiredRole="agency"><MessagesPage /></ProtectedRoute>} />
+            <Route path="/agency/property-management" element={<ProtectedRoute requiredRole="agency"><PropertyManagement /></ProtectedRoute>} />
 
             {/* User Portal */}
             <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
@@ -138,6 +140,8 @@ const App = () => (
             <Route path="/dashboard/searches" element={<ProtectedRoute><UserSearches /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
             <Route path="/dashboard/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+            <Route path="/dashboard/tenancy" element={<ProtectedRoute><TenantPortal /></ProtectedRoute>} />
+            <Route path="/dashboard/property-management" element={<ProtectedRoute><PropertyManagement /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
