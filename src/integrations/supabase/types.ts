@@ -115,6 +115,44 @@ export type Database = {
           },
         ]
       }
+      bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string
+          id: string
+          property_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string
+          id?: string
+          property_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string
+          id?: string
+          property_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_participants: {
         Row: {
           conversation_id: string
@@ -512,7 +550,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "agent" | "agency" | "user"
-      listing_type: "sale" | "rent" | "short_let" | "land"
+      listing_type: "sale" | "rent" | "short_let" | "land" | "bid"
       property_status:
         | "draft"
         | "pending"
@@ -649,7 +687,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "agent", "agency", "user"],
-      listing_type: ["sale", "rent", "short_let", "land"],
+      listing_type: ["sale", "rent", "short_let", "land", "bid"],
       property_status: [
         "draft",
         "pending",
