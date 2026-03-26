@@ -85,6 +85,8 @@ const BidSubscriptionTiers = () => {
     fetch();
   }, [user]);
 
+  const [subscribing, setSubscribing] = useState<string | null>(null);
+
   const handleSubscribe = async (tierId: string) => {
     if (!user) {
       toast({ title: "Sign in required", description: "Please sign in to subscribe.", variant: "destructive" });
@@ -96,21 +98,34 @@ const BidSubscriptionTiers = () => {
       return;
     }
 
-    // For paid tiers, integrate with Paystack — for now, create the subscription record
-    const { error } = await supabase.from("bid_subscriptions").insert({
-      user_id: user.id,
-      tier: tierId,
-      max_property_value: tier.maxValue,
-      max_active_bids: tier.maxBids,
-      early_access: tier.earlyAccess,
-      amount: tier.price,
-    } as any);
+    setSubscribing(tierId);
+    try {
+      const { data, error } = await supabase.functions.invoke("paystack-payment/initialize", {
+        body: {
+          email: user.email,
+          amount: tier.price,
+          payment_type: "bid_subscription",
+          metadata: {
+            user_id: user.id,
+            tier: tierId,
+            max_property_value: tier.maxValue,
+            max_active_bids: tier.maxBids,
+            early_access: tier.earlyAccess,
+          },
+        },
+      });
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      setCurrentTier(tierId);
-      toast({ title: "Subscribed!", description: `You're now on the ${tier.name} plan.` });
+      if (error || !data?.authorization_url) {
+        toast({ title: "Payment Error", description: "Could not initialize payment. Please try again.", variant: "destructive" });
+        return;
+      }
+
+      // Redirect to Paystack checkout
+      window.location.href = data.authorization_url;
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Something went wrong.", variant: "destructive" });
+    } finally {
+      setSubscribing(null);
     }
   };
 

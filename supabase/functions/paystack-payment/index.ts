@@ -137,6 +137,24 @@ serve(async (req) => {
           })
           .eq("id", meta.rent_payment_id)
           .eq("tenant_id", meta.tenant_id);
+      } else if (meta.payment_type === "bid_subscription") {
+        // Create or update bid subscription
+        const now = new Date();
+        const expiresAt = new Date(now);
+        expiresAt.setDate(expiresAt.getDate() + 30);
+
+        await supabase.from("bid_subscriptions").insert({
+          user_id: meta.user_id,
+          tier: meta.tier,
+          max_property_value: meta.max_property_value,
+          max_active_bids: meta.max_active_bids,
+          early_access: meta.early_access,
+          amount: amountPaid,
+          starts_at: now.toISOString(),
+          expires_at: expiresAt.toISOString(),
+          paystack_reference: reference,
+          status: "active",
+        });
       }
 
       return new Response(JSON.stringify({ success: true, amount: amountPaid }), {
