@@ -124,6 +124,14 @@ const PropertyManagement = () => {
       .order("due_date", { ascending: false });
     setRentPayments(rents || []);
 
+    // Fetch contracts
+    const { data: cons } = await supabase
+      .from("legal_contracts")
+      .select("*")
+      .eq("landlord_id", user!.id)
+      .order("created_at", { ascending: false });
+    setContracts(cons || []);
+
     setLoading(false);
   };
 
