@@ -29,6 +29,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         { label: "Users", href: "/admin/users", icon: Users },
         { label: "Agents", href: "/admin/agents", icon: UserPlus },
         { label: "Agencies", href: "/admin/agencies", icon: Building },
+        { label: "Messages", href: "/admin/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
         { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
         { label: "Settings", href: "/admin/settings", icon: Settings },
@@ -39,6 +40,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         { label: "Overview", href: "/agency", icon: LayoutDashboard },
         { label: "Properties", href: "/agency/properties", icon: Building2 },
         { label: "Agents", href: "/agency/agents", icon: Users },
+        { label: "Messages", href: "/agency/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/agency/inquiries", icon: MessageSquare },
         { label: "Analytics", href: "/agency/analytics", icon: BarChart3 },
         { label: "Billing", href: "/agency/billing", icon: CreditCard },
@@ -49,6 +51,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       return [
         { label: "Overview", href: "/agent", icon: LayoutDashboard },
         { label: "My Listings", href: "/agent/properties", icon: Building2 },
+        { label: "Messages", href: "/agent/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/agent/inquiries", icon: MessageSquare },
         { label: "Analytics", href: "/agent/analytics", icon: BarChart3 },
         { label: "Billing", href: "/agent/billing", icon: CreditCard },
@@ -57,6 +60,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
     return [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
       { label: "Favourites", href: "/dashboard/favourites", icon: Heart },
       { label: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
       { label: "Saved Searches", href: "/dashboard/searches", icon: Search },
