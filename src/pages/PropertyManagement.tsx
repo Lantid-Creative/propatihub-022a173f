@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import TenantRecordForm from "@/components/TenantRecordForm";
+import DisputeManager from "@/components/DisputeManager";
 
 const PropertyManagement = () => {
   const { user } = useAuth();
