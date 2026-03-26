@@ -176,6 +176,13 @@ const AgentProperties = () => {
       condition: p.condition || "",
       service_charge: String(p.service_charge || ""),
       caution_fee: String(p.caution_fee || ""),
+      reserve_price: String(p.reserve_price || ""),
+      auction_start_at: p.auction_start_at ? p.auction_start_at.slice(0, 16) : "",
+      auction_end_at: p.auction_end_at ? p.auction_end_at.slice(0, 16) : "",
+      deposit_percentage: String(p.deposit_percentage ?? "5"),
+      winner_payment_deadline_days: String(p.winner_payment_deadline_days ?? "7"),
+      auction_auto_extend: p.auction_auto_extend ?? true,
+      auction_extend_minutes: String(p.auction_extend_minutes ?? "5"),
     });
     setFormStep(0);
     setEditOpen(true);
