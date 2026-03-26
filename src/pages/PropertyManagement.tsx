@@ -14,8 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Building2, Users, Plus, Mail, Calendar, Banknote, Shield,
   Wrench, FileText, Clock, CheckCircle, AlertTriangle, XCircle,
-  Home, ArrowUpRight, ArrowDownLeft, Eye
+  Home, ArrowUpRight, ArrowDownLeft, Eye, ClipboardList
 } from "lucide-react";
+import TenantRecordForm from "@/components/TenantRecordForm";
 
 const PropertyManagement = () => {
   const { user } = useAuth();
@@ -325,9 +326,10 @@ const PropertyManagement = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-6 w-full">
             <TabsTrigger value="tenancies" className="text-xs">Tenancies</TabsTrigger>
             <TabsTrigger value="invitations" className="text-xs">Invitations</TabsTrigger>
+            <TabsTrigger value="records" className="text-xs">Records</TabsTrigger>
             <TabsTrigger value="escrow" className="text-xs">Escrow</TabsTrigger>
             <TabsTrigger value="rent" className="text-xs">Rent</TabsTrigger>
             <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
@@ -362,6 +364,38 @@ const PropertyManagement = () => {
                         </div>
                         {statusBadge(t.status)}
                       </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Digital Records */}
+          <TabsContent value="records">
+            {tenancies.length === 0 ? (
+              <Card><CardContent className="py-12 text-center">
+                <ClipboardList className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="font-body text-sm text-muted-foreground">No tenancies yet. Invite a tenant to start capturing their records digitally.</p>
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground font-body">Select a tenancy to view or manage the tenant's digital record.</p>
+                {tenancies.map((t) => (
+                  <Card key={t.id}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-body flex items-center gap-2">
+                        <Home className="w-4 h-4 text-accent" />
+                        {t.property?.title || "Property"} — {t.tenant?.full_name || "Tenant"}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <TenantRecordForm
+                        tenancyId={t.id}
+                        tenantId={t.tenant_id}
+                        landlordId={t.landlord_id}
+                        readOnly={false}
+                      />
                     </CardContent>
                   </Card>
                 ))}
