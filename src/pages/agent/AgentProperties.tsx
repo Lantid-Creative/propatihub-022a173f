@@ -29,7 +29,7 @@ const statusColors: Record<string, string> = {
 };
 
 const emptyForm = {
-  title: "", description: "", property_type: "house" as const, listing_type: "sale" as const,
+  title: "", description: "", property_type: "house" as const, listing_type: "sale" as string,
   price: "", bedrooms: "", bathrooms: "", area_sqm: "", address: "", city: "", state: "Lagos",
   features: "", images: [] as string[], floor_plan_url: "", virtual_tour_url: "",
   virtual_tour_video_url: "", year_built: "", parking_spaces: "", furnishing: "",
