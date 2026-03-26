@@ -308,6 +308,7 @@ const AgentProperties = () => {
                     <SelectItem value="rent">For Rent</SelectItem>
                     <SelectItem value="short_let">Short Let</SelectItem>
                     <SelectItem value="land">Land</SelectItem>
+                    <SelectItem value="bid">Auction / Bid</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
