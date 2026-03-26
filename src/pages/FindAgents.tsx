@@ -56,6 +56,7 @@ const FindAgents = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO title="Find Estate Agents in Nigeria" description="Compare top local estate agents across Nigeria. Find verified agents for buying, selling, or renting property." canonical="/find-agents" />
       <section className="relative min-h-[560px]">
         <img src={heroImg} alt="Find estate agents" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />

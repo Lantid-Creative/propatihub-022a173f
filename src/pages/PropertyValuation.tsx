@@ -59,6 +59,7 @@ const PropertyValuation = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO title="Free Property Valuation in Nigeria" description="Get an instant estimate of your property's value. Free online valuations for houses, apartments, and land across Nigeria." canonical="/property-valuation" />
       <section className="relative min-h-[420px]">
         <img src={heroImg} alt="Property valuation" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />
