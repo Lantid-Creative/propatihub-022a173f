@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, MapPin, Gavel, TrendingUp, Shield, Users } from "lucide-react";
@@ -67,6 +68,7 @@ const Bid = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO title="Bid on Properties in Nigeria" description="Place bids on verified properties across Nigeria. Transparent, real-time bidding with fair competition for buyers, agents, and agencies." canonical="/bid" />
       {/* Hero */}
       <section className="relative min-h-[500px]">
         <img src={heroImg} alt="Properties for bidding in Nigeria" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
