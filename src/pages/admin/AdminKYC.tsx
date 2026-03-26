@@ -147,7 +147,7 @@ const AdminKYC = () => {
   };
 
   return (
-    <DashboardLayout role="admin">
+    <DashboardLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">KYC Verification</h1>
