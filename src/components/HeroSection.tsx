@@ -44,7 +44,7 @@ const HeroSection = () => {
               </div>
             </div>
             <Link to="/property-valuation">
-              <Button variant="outline" size="sm" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 whitespace-nowrap">
+              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold whitespace-nowrap">
                 Get an instant valuation
               </Button>
             </Link>
