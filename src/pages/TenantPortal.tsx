@@ -503,6 +503,53 @@ const TenantPortal = () => {
             )}
           </div>
         )}
+
+        {/* My Contracts */}
+        <div className="mt-10">
+          <h2 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
+            <Scale className="w-5 h-5 text-accent" /> My Legal Contracts
+          </h2>
+
+          {viewingContract && (
+            <Dialog open={!!viewingContract} onOpenChange={() => setViewingContract(null)}>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="font-display">{viewingContract.title}</DialogTitle>
+                </DialogHeader>
+                <div className="prose prose-sm max-w-none font-body text-foreground">
+                  <ReactMarkdown>{viewingContract.content}</ReactMarkdown>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {contracts.length === 0 ? (
+            <Card><CardContent className="py-8 text-center">
+              <Scale className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground font-body">No contracts yet. Your landlord can generate contracts for your tenancy.</p>
+            </CardContent></Card>
+          ) : (
+            <div className="space-y-3">
+              {contracts.map((c) => (
+                <Card key={c.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-body font-semibold text-foreground text-sm">{c.title}</p>
+                        <p className="text-xs text-muted-foreground font-body mt-1">
+                          {c.contract_type.replace("_", " ")} · {new Date(c.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline" onClick={() => setViewingContract(c)}>
+                        <Eye className="w-3 h-3 mr-1" /> View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </DashboardLayout>
   );
