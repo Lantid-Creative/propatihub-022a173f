@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +24,7 @@ const tips = [
 
 const RentingGuide = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <PageSEO title="Renting Guide — How to Rent Property in Nigeria" description="Complete guide to renting in Nigeria. Tips on budgeting, viewing properties, tenancy agreements, and knowing your rights." canonical="/renting-guide" />
     <Navbar />
     <section className="bg-primary pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">

@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -40,6 +41,7 @@ const MortgageCalculatorPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <PageSEO title="Mortgage Calculator Nigeria" description="Calculate your monthly mortgage repayments for Nigerian property. Free tool to estimate payments, interest, and loan affordability." canonical="/mortgage-calculator" />
       <Navbar />
       {/* Hero */}
       <section className="bg-primary pt-28 pb-16">

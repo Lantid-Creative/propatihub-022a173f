@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -16,6 +17,7 @@ const sections = [
 
 const Terms = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <PageSEO title="Terms of Service" description="Read the PropatiHub Terms of Service. Understand the rules and guidelines for using Nigeria's trusted property platform." canonical="/terms" />
     <Navbar />
     <section className="bg-primary pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">
