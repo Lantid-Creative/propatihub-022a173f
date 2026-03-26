@@ -63,6 +63,11 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/properties" element={<Properties />} />
             <Route path="/property/:id" element={<PropertyDetail />} />
+            <Route path="/for-sale" element={<ForSale />} />
+            <Route path="/to-rent" element={<ToRent />} />
+            <Route path="/find-agents" element={<FindAgents />} />
+            <Route path="/house-prices" element={<HousePrices />} />
+            <Route path="/property-valuation" element={<PropertyValuation />} />
 
             {/* Admin Portal */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
