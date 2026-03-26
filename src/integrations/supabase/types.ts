@@ -232,23 +232,34 @@ export type Database = {
           area_sqm: number | null
           bathrooms: number | null
           bedrooms: number | null
+          caution_fee: number | null
           city: string
+          completion_percentage: number | null
+          condition: string | null
           created_at: string
           description: string | null
           featured: boolean | null
           features: string[] | null
+          floor_plan_url: string | null
+          furnishing: string | null
           id: string
           images: string[] | null
           latitude: number | null
           listing_type: Database["public"]["Enums"]["listing_type"]
           longitude: number | null
+          parking_spaces: number | null
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
+          service_charge: number | null
           state: string
           status: Database["public"]["Enums"]["property_status"]
           title: string
           updated_at: string
+          verified: boolean | null
           views_count: number | null
+          virtual_tour_url: string | null
+          virtual_tour_video_url: string | null
+          year_built: number | null
         }
         Insert: {
           address?: string | null
@@ -257,23 +268,34 @@ export type Database = {
           area_sqm?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
+          caution_fee?: number | null
           city: string
+          completion_percentage?: number | null
+          condition?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
           features?: string[] | null
+          floor_plan_url?: string | null
+          furnishing?: string | null
           id?: string
           images?: string[] | null
           latitude?: number | null
           listing_type: Database["public"]["Enums"]["listing_type"]
           longitude?: number | null
+          parking_spaces?: number | null
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
+          service_charge?: number | null
           state: string
           status?: Database["public"]["Enums"]["property_status"]
           title: string
           updated_at?: string
+          verified?: boolean | null
           views_count?: number | null
+          virtual_tour_url?: string | null
+          virtual_tour_video_url?: string | null
+          year_built?: number | null
         }
         Update: {
           address?: string | null
@@ -282,23 +304,34 @@ export type Database = {
           area_sqm?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
+          caution_fee?: number | null
           city?: string
+          completion_percentage?: number | null
+          condition?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
           features?: string[] | null
+          floor_plan_url?: string | null
+          furnishing?: string | null
           id?: string
           images?: string[] | null
           latitude?: number | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
           longitude?: number | null
+          parking_spaces?: number | null
           price?: number
           property_type?: Database["public"]["Enums"]["property_type"]
+          service_charge?: number | null
           state?: string
           status?: Database["public"]["Enums"]["property_status"]
           title?: string
           updated_at?: string
+          verified?: boolean | null
           views_count?: number | null
+          virtual_tour_url?: string | null
+          virtual_tour_video_url?: string | null
+          year_built?: number | null
         }
         Relationships: [
           {
