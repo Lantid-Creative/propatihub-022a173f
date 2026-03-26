@@ -13,7 +13,7 @@ interface PropertyMapProps {
 
 const PropertyMap = ({ latitude, longitude, address, title }: PropertyMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     const loadScript = () => {
@@ -30,12 +30,12 @@ const PropertyMap = ({ latitude, longitude, address, title }: PropertyMapProps) 
     };
 
     const initMap = () => {
-      if (!mapRef.current || !window.google) return;
+      if (!mapRef.current || !(window as any).google) return;
 
       if (latitude && longitude) {
         renderMap(latitude, longitude);
       } else if (address) {
-        const geocoder = new google.maps.Geocoder();
+        const geocoder = new (window as any).google.maps.Geocoder();
         geocoder.geocode({ address }, (results, status) => {
           if (status === "OK" && results?.[0]) {
             const loc = results[0].geometry.location;
@@ -48,7 +48,7 @@ const PropertyMap = ({ latitude, longitude, address, title }: PropertyMapProps) 
     const renderMap = (lat: number, lng: number) => {
       if (!mapRef.current) return;
       const pos = { lat, lng };
-      const map = new google.maps.Map(mapRef.current, {
+      const map = new (window as any).google.maps.Map(mapRef.current, {
         center: pos,
         zoom: 15,
         disableDefaultUI: true,
@@ -57,7 +57,7 @@ const PropertyMap = ({ latitude, longitude, address, title }: PropertyMapProps) 
           { featureType: "poi", stylers: [{ visibility: "off" }] },
         ],
       });
-      new google.maps.Marker({ position: pos, map, title: title || "Property" });
+      new (window as any).google.maps.Marker({ position: pos, map, title: title || "Property" });
       mapInstanceRef.current = map;
     };
 

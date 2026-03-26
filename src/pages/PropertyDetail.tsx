@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import MortgageCalculator from "@/components/MortgageCalculator";
+import PropertyMap from "@/components/PropertyMap";
 
 const listingTypeLabels: Record<string, string> = {
   sale: "For Sale",
@@ -330,6 +331,14 @@ const PropertyDetail = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Map */}
+            <PropertyMap
+              latitude={property.latitude}
+              longitude={property.longitude}
+              address={`${property.address ? property.address + ", " : ""}${property.city}, ${property.state}, Nigeria`}
+              title={property.title}
+            />
 
             {/* Mortgage Calculator */}
             {property.listing_type === "sale" && (
