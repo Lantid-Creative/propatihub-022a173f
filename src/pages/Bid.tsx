@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BidSubscriptionTiers from "@/components/BidSubscriptionTiers";
+import LiveBidProperties from "@/components/LiveBidProperties";
 import heroImg from "@/assets/hero-for-sale.jpg";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCazL5Cqw90gNr2Kn28q3iXIfdwmI4Coss";
