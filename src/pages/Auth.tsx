@@ -117,9 +117,17 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary relative items-center justify-center">
+        <Link
+          to="/"
+          className="absolute top-6 left-6 flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground font-body text-sm transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to home
+        </Link>
         <div className="p-12 text-primary-foreground max-w-lg">
           <div className="mb-8">
-            <img src={logoDark} alt="PropatiHub" className="h-10 w-auto" />
+            <Link to="/">
+              <img src={logoDark} alt="PropatiHub" className="h-10 w-auto" />
+            </Link>
           </div>
           <h1 className="text-4xl font-display font-bold mb-4">
             Nigeria's Premier Property Marketplace
@@ -130,14 +138,20 @@ const Auth = () => {
         </div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden mb-8 flex justify-center">
+      <div className="flex-1 flex flex-col p-6">
+          <div className="lg:hidden flex items-center justify-between mb-8">
             <Link to="/">
               <img src={logoLight} alt="PropatiHub" className="h-9 w-auto" />
             </Link>
+            <Link
+              to="/"
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground font-body text-sm transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" /> Home
+            </Link>
           </div>
+        <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-md">
 
           {isLogin ? (
             /* ─── LOGIN ─── */
@@ -291,8 +305,9 @@ const Auth = () => {
             </>
           )}
         </div>
+        </div>
+        </div>
       </div>
-    </div>
   );
 };
 
