@@ -28,6 +28,16 @@ const footerColumns = [
     ],
   },
   {
+    title: "Property Management",
+    links: [
+      { label: "Manage properties", href: "/property-management" },
+      { label: "Tenant portal", href: "/tenant-portal" },
+      { label: "Caution fee escrow", href: "/property-management" },
+      { label: "Maintenance requests", href: "/tenant-portal" },
+      { label: "Rent payments", href: "/tenant-portal" },
+    ],
+  },
+  {
     title: "PropatiHub for Business",
     links: [
       { label: "Estate agents", href: "/auth" },
