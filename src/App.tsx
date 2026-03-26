@@ -67,6 +67,8 @@ import CookieConsent from "./components/CookieConsent";
 import MessagesPage from "./pages/MessagesPage";
 import PropertyManagement from "./pages/PropertyManagement";
 import TenantPortal from "./pages/TenantPortal";
+import ApiDocs from "./pages/ApiDocs";
+import ApiAccess from "./pages/ApiAccess";
 
 const queryClient = new QueryClient();
 
@@ -101,6 +103,7 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/press" element={<Press />} />
             <Route path="/sitemap" element={<Sitemap />} />
+            <Route path="/api-docs" element={<ApiDocs />} />
 
             {/* Admin Portal */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
@@ -123,6 +126,7 @@ const App = () => (
             <Route path="/agent/settings" element={<ProtectedRoute requiredRole="agent"><AgentSettings /></ProtectedRoute>} />
             <Route path="/agent/messages" element={<ProtectedRoute requiredRole="agent"><MessagesPage /></ProtectedRoute>} />
             <Route path="/agent/property-management" element={<ProtectedRoute requiredRole="agent"><PropertyManagement /></ProtectedRoute>} />
+            <Route path="/agent/api-access" element={<ProtectedRoute requiredRole="agent"><ApiAccess /></ProtectedRoute>} />
 
             {/* Agency Portal */}
             <Route path="/agency" element={<ProtectedRoute requiredRole="agency"><AgencyDashboard /></ProtectedRoute>} />
@@ -134,6 +138,7 @@ const App = () => (
             <Route path="/agency/settings" element={<ProtectedRoute requiredRole="agency"><AgencySettings /></ProtectedRoute>} />
             <Route path="/agency/messages" element={<ProtectedRoute requiredRole="agency"><MessagesPage /></ProtectedRoute>} />
             <Route path="/agency/property-management" element={<ProtectedRoute requiredRole="agency"><PropertyManagement /></ProtectedRoute>} />
+            <Route path="/agency/api-access" element={<ProtectedRoute requiredRole="agency"><ApiAccess /></ProtectedRoute>} />
 
             {/* User Portal */}
             <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
