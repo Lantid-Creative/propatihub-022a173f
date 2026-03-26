@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Eye, Edit, Search, MapPin, ExternalLink, Building2, ShieldCheck, Image as ImageIcon, Video, FileImage, Loader2 } from "lucide-react";
+import { Plus, Trash2, Eye, Edit, Search, MapPin, ExternalLink, Building2, ShieldCheck, Image as ImageIcon, Video, FileImage, Loader2, Play, Pause, Square, Gavel } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ImageUploader from "@/components/ImageUploader";
 import CompletionBadge from "@/components/CompletionBadge";
@@ -207,10 +207,40 @@ const AgentProperties = () => {
   };
 
   const requestVerification = async (id: string) => {
-    // Set status to pending which will flag it for admin review
     await supabase.from("properties").update({ status: "pending" }).eq("id", id);
     toast({ title: "Verification requested", description: "Admin will review your listing." });
     fetchProperties();
+  };
+
+  const updateAuctionStatus = async (id: string, newStatus: string) => {
+    const updates: Record<string, any> = { auction_status: newStatus };
+    if (newStatus === "active") {
+      // If no start time set, use now
+      const prop = properties.find((p) => p.id === id);
+      if (!prop?.auction_start_at) updates.auction_start_at = new Date().toISOString();
+    }
+    if (newStatus === "ended") {
+      updates.auction_end_at = new Date().toISOString();
+    }
+    const { error } = await supabase.from("properties").update(updates).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      const labels: Record<string, string> = { active: "started", paused: "paused", ended: "ended", upcoming: "reset to upcoming" };
+      toast({ title: "Auction Updated", description: `Auction has been ${labels[newStatus] || newStatus}.` });
+      fetchProperties();
+    }
+  };
+
+  const getAuctionStatusBadge = (status: string | null) => {
+    const config: Record<string, { label: string; className: string }> = {
+      upcoming: { label: "Upcoming", className: "bg-muted text-muted-foreground" },
+      active: { label: "Live", className: "bg-primary/10 text-primary" },
+      paused: { label: "Paused", className: "bg-accent/10 text-accent" },
+      ended: { label: "Ended", className: "bg-destructive/10 text-destructive" },
+    };
+    const c = config[status || "upcoming"] || config.upcoming;
+    return <Badge className={`text-[9px] gap-0.5 ${c.className}`}><Gavel className="w-2.5 h-2.5" /> {c.label}</Badge>;
   };
 
   const fmt = (price: number) => `₦${price.toLocaleString()}`;
@@ -688,6 +718,47 @@ const AgentProperties = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Auction controls for bid properties */}
+                  {p.listing_type === "bid" && (
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+                      <div className="flex items-center gap-2">
+                        {getAuctionStatusBadge(p.auction_status)}
+                        {p.reserve_price && (
+                          <span className="text-[10px] text-muted-foreground">Reserve: {fmt(p.reserve_price)}</span>
+                        )}
+                        {p.auction_end_at && p.auction_status === "active" && (
+                          <span className="text-[10px] text-muted-foreground">
+                            Ends: {new Date(p.auction_end_at).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-1">
+                        {(p.auction_status === "upcoming" || p.auction_status === "paused") && (
+                          <Button size="sm" variant="outline" className="text-[10px] h-7 gap-1 text-primary" onClick={() => updateAuctionStatus(p.id, "active")}>
+                            <Play className="w-3 h-3" /> Start
+                          </Button>
+                        )}
+                        {p.auction_status === "active" && (
+                          <Button size="sm" variant="outline" className="text-[10px] h-7 gap-1 text-accent" onClick={() => updateAuctionStatus(p.id, "paused")}>
+                            <Pause className="w-3 h-3" /> Pause
+                          </Button>
+                        )}
+                        {(p.auction_status === "active" || p.auction_status === "paused") && (
+                          <Button size="sm" variant="outline" className="text-[10px] h-7 gap-1 text-destructive" onClick={() => {
+                            if (confirm("End this auction? This will finalize the bidding.")) updateAuctionStatus(p.id, "ended");
+                          }}>
+                            <Square className="w-3 h-3" /> End
+                          </Button>
+                        )}
+                        {p.auction_status === "ended" && (
+                          <Button size="sm" variant="outline" className="text-[10px] h-7 gap-1" onClick={() => updateAuctionStatus(p.id, "upcoming")}>
+                            Reset
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                     <div className="flex gap-2">
