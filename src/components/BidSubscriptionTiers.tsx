@@ -111,6 +111,7 @@ const BidSubscriptionTiers = () => {
             max_property_value: tier.maxValue,
             max_active_bids: tier.maxBids,
             early_access: tier.earlyAccess,
+            callback_url: `${window.location.origin}/payment/callback`,
           },
         },
       });
