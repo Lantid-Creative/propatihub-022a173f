@@ -14,8 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Building2, Users, Plus, Mail, Calendar, Banknote, Shield,
   Wrench, FileText, Clock, CheckCircle, AlertTriangle, XCircle,
-  Home, ArrowUpRight, ArrowDownLeft, Eye, ClipboardList
+  Home, ArrowUpRight, ArrowDownLeft, Eye, ClipboardList, Scale, Sparkles, Loader2
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import TenantRecordForm from "@/components/TenantRecordForm";
 
 const PropertyManagement = () => {
@@ -29,6 +30,10 @@ const PropertyManagement = () => {
   const [maintenance, setMaintenance] = useState<any[]>([]);
   const [rentPayments, setRentPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [generatingContract, setGeneratingContract] = useState(false);
+  const [contractForm, setContractForm] = useState({ tenancy_id: "", contract_type: "tenancy_agreement" });
+  const [viewingContract, setViewingContract] = useState<any | null>(null);
 
   // Invite form
   const [inviteOpen, setInviteOpen] = useState(false);
