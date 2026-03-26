@@ -2,6 +2,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import logoDark from "@/assets/logo-dark.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -17,13 +18,8 @@ const Navbar = () => {
   return (
     <nav className="absolute top-0 left-0 right-0 z-50 px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-            <span className="text-accent-foreground font-display font-bold text-lg">P</span>
-          </div>
-          <span className="font-display text-xl font-bold text-primary-foreground">
-            PropatiHub
-          </span>
+        <Link to="/">
+          <img src={logoDark} alt="PropatiHub" className="h-8 w-auto" />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
