@@ -62,6 +62,7 @@ import UserInquiries from "./pages/user/UserInquiries";
 import UserSearches from "./pages/user/UserSearches";
 import UserSettings from "./pages/user/UserSettings";
 import CookieConsent from "./components/CookieConsent";
+import MessagesPage from "./pages/MessagesPage";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,7 @@ const App = () => (
             <Route path="/admin/inquiries" element={<ProtectedRoute requiredRole="admin"><AdminInquiries /></ProtectedRoute>} />
             <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><MessagesPage /></ProtectedRoute>} />
 
             {/* Agent Portal */}
             <Route path="/agent" element={<ProtectedRoute requiredRole="agent"><AgentDashboard /></ProtectedRoute>} />
@@ -113,6 +115,7 @@ const App = () => (
             <Route path="/agent/analytics" element={<ProtectedRoute requiredRole="agent"><AgentAnalytics /></ProtectedRoute>} />
             <Route path="/agent/billing" element={<ProtectedRoute requiredRole="agent"><AgentBilling /></ProtectedRoute>} />
             <Route path="/agent/settings" element={<ProtectedRoute requiredRole="agent"><AgentSettings /></ProtectedRoute>} />
+            <Route path="/agent/messages" element={<ProtectedRoute requiredRole="agent"><MessagesPage /></ProtectedRoute>} />
 
             {/* Agency Portal */}
             <Route path="/agency" element={<ProtectedRoute requiredRole="agency"><AgencyDashboard /></ProtectedRoute>} />
@@ -122,6 +125,7 @@ const App = () => (
             <Route path="/agency/analytics" element={<ProtectedRoute requiredRole="agency"><AgencyAnalytics /></ProtectedRoute>} />
             <Route path="/agency/billing" element={<ProtectedRoute requiredRole="agency"><AgencyBilling /></ProtectedRoute>} />
             <Route path="/agency/settings" element={<ProtectedRoute requiredRole="agency"><AgencySettings /></ProtectedRoute>} />
+            <Route path="/agency/messages" element={<ProtectedRoute requiredRole="agency"><MessagesPage /></ProtectedRoute>} />
 
             {/* User Portal */}
             <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
@@ -129,6 +133,7 @@ const App = () => (
             <Route path="/dashboard/inquiries" element={<ProtectedRoute><UserInquiries /></ProtectedRoute>} />
             <Route path="/dashboard/searches" element={<ProtectedRoute><UserSearches /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+            <Route path="/dashboard/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
