@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, MapPin, Home, Shield, BookOpen } from "lucide-react";

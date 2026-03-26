@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
