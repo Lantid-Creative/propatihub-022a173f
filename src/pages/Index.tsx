@@ -6,6 +6,7 @@ import HowItWorksSection from "@/components/HowItWorksSection";
 import LocationsSection from "@/components/LocationsSection";
 import ExploreSection from "@/components/ExploreSection";
 import AlertSection from "@/components/AlertSection";
+import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -16,6 +17,7 @@ const Index = () => {
       <ToolsSection />
       <PMShowcaseSection />
       <HowItWorksSection />
+      <TrustSection />
       <LocationsSection />
       <ExploreSection />
       <AlertSection />
