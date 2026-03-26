@@ -56,7 +56,7 @@ serve(async (req) => {
           email,
           amount: amount * 100, // Paystack uses kobo
           reference,
-          callback_url: `${url.origin}/paystack-payment?action=verify`,
+          callback_url: metadata?.callback_url || `${url.origin}/payment/callback`,
           metadata: {
             tenancy_id,
             property_id,
