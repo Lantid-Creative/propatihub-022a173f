@@ -356,6 +356,34 @@ const TenantPortal = () => {
           )}
         </div>
 
+        {/* Digital Records */}
+        {tenancies.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="font-display font-bold text-foreground text-lg flex items-center gap-2">
+              <ClipboardList className="w-5 h-5 text-primary" /> My Digital Records
+            </h2>
+            <p className="text-sm text-muted-foreground font-body">Fill in your details digitally — no paperwork needed.</p>
+            {tenancies.map((t: any) => (
+              <Card key={`record-${t.id}`}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-body flex items-center gap-2">
+                    <Home className="w-4 h-4 text-accent" />
+                    {t.property?.title || "Property"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TenantRecordForm
+                    tenancyId={t.id}
+                    tenantId={t.tenant_id}
+                    landlordId={t.landlord_id}
+                    readOnly={false}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
         {/* Escrow Status */}
         {escrows.filter(e => e.payment_status === "paid").length > 0 && (
           <div className="space-y-3">
