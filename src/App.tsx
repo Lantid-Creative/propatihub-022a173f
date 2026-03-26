@@ -67,6 +67,7 @@ import CookieConsent from "./components/CookieConsent";
 import MessagesPage from "./pages/MessagesPage";
 import PropertyManagement from "./pages/PropertyManagement";
 import TenantPortal from "./pages/TenantPortal";
+import ApiDocs from "./pages/ApiDocs";
 import ApiAccess from "./pages/ApiAccess";
 import PaymentCallback from "./pages/PaymentCallback";
 
