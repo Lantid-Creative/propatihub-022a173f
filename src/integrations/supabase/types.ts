@@ -397,6 +397,66 @@ export type Database = {
           },
         ]
       }
+      legal_contracts: {
+        Row: {
+          content: string
+          contract_type: string
+          created_at: string
+          id: string
+          landlord_id: string
+          property_id: string
+          sent_via: string[] | null
+          status: string
+          tenancy_id: string
+          tenant_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          contract_type?: string
+          created_at?: string
+          id?: string
+          landlord_id: string
+          property_id: string
+          sent_via?: string[] | null
+          status?: string
+          tenancy_id: string
+          tenant_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          contract_type?: string
+          created_at?: string
+          id?: string
+          landlord_id?: string
+          property_id?: string
+          sent_via?: string[] | null
+          status?: string
+          tenancy_id?: string
+          tenant_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_contracts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "legal_contracts_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maintenance_requests: {
         Row: {
           created_at: string
