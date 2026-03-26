@@ -203,8 +203,6 @@ const PropertyManagement = () => {
     }
   };
 
-  const [rejectingEscrowId, setRejectingEscrowId] = useState<string | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
 
   const handleRejectRelease = async (escrowId: string) => {
     if (!rejectReason.trim()) {
