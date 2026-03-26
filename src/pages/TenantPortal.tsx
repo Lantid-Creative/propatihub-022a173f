@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2
+  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList
 } from "lucide-react";
+import TenantRecordForm from "@/components/TenantRecordForm";
 
 const TenantPortal = () => {
   const { user } = useAuth();
