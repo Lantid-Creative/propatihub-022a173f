@@ -60,6 +60,7 @@ import UserFavourites from "./pages/user/UserFavourites";
 import UserInquiries from "./pages/user/UserInquiries";
 import UserSearches from "./pages/user/UserSearches";
 import UserSettings from "./pages/user/UserSettings";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -129,6 +130,7 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CookieConsent />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
