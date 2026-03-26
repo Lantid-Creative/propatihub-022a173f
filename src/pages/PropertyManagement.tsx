@@ -543,29 +543,86 @@ const PropertyManagement = () => {
               </CardContent></Card>
             ) : (
               <div className="space-y-3">
-                {escrows.map((esc) => (
-                  <Card key={esc.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-body font-semibold text-foreground text-sm">
-                            {formatPrice(esc.amount)} Caution Fee
-                          </p>
-                          <p className="text-xs text-muted-foreground font-body">
-                            Payment: {statusBadge(esc.payment_status)} · Escrow: {statusBadge(esc.escrow_status)}
-                          </p>
+                {escrows.map((esc) => {
+                  const isTenantRequest = esc.escrow_status === "release_requested" && (esc as any).release_requested_by === "tenant";
+                  const isRejected = esc.escrow_status === "release_rejected";
+                  const isReleased = esc.escrow_status === "released";
+                  const autoReleaseAt = (esc as any).auto_release_at;
+
+                  return (
+                    <Card key={esc.id} className={isTenantRequest ? "border-yellow-300 bg-yellow-50/30" : isRejected ? "border-red-200" : ""}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="space-y-1">
+                            <p className="font-body font-semibold text-foreground text-sm">
+                              {formatPrice(esc.amount)} Caution Fee
+                            </p>
+                            <p className="text-xs text-muted-foreground font-body">
+                              Payment: {statusBadge(esc.payment_status)} · Escrow: {statusBadge(esc.escrow_status.replace(/_/g, " "))}
+                            </p>
+                            {isTenantRequest && (
+                              <div className="mt-2 p-2 rounded-lg bg-yellow-100/60 border border-yellow-200">
+                                <p className="text-xs font-semibold text-yellow-800 flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3" /> Tenant has requested payout
+                                </p>
+                                {autoReleaseAt && (
+                                  <p className="text-xs text-yellow-700 mt-1 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" /> Auto-releases by {new Date(autoReleaseAt).toLocaleDateString()} at {new Date(autoReleaseAt).toLocaleTimeString()} if not actioned
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                            {isRejected && (esc as any).release_rejected_reason && (
+                              <p className="text-xs text-red-600 font-body mt-1">
+                                Rejected: {(esc as any).release_rejected_reason}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-2 shrink-0">
+                            {esc.escrow_status === "held" && esc.payment_status === "paid" && (
+                              <Button size="sm" variant="outline" onClick={() => handleReleaseEscrow(esc.id)}>
+                                <ArrowUpRight className="w-3 h-3 mr-1" /> Initiate Release
+                              </Button>
+                            )}
+                            {isTenantRequest && (
+                              <>
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApproveRelease(esc.id)}>
+                                  <CheckCircle className="w-3 h-3 mr-1" /> Approve Payout
+                                </Button>
+                                {rejectingEscrowId === esc.id ? (
+                                  <div className="space-y-2 w-56">
+                                    <Textarea
+                                      placeholder="Reason for rejection *"
+                                      value={rejectReason}
+                                      onChange={(e) => setRejectReason(e.target.value)}
+                                      className="text-xs"
+                                      rows={2}
+                                    />
+                                    <div className="flex gap-1">
+                                      <Button size="sm" variant="destructive" className="flex-1" onClick={() => handleRejectRelease(esc.id)}>
+                                        Confirm Reject
+                                      </Button>
+                                      <Button size="sm" variant="outline" onClick={() => { setRejectingEscrowId(null); setRejectReason(""); }}>
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <Button size="sm" variant="destructive" onClick={() => setRejectingEscrowId(esc.id)}>
+                                    <XCircle className="w-3 h-3 mr-1" /> Reject
+                                  </Button>
+                                )}
+                              </>
+                            )}
+                            {isReleased && (
+                              <Badge className="bg-green-100 text-green-700">Released</Badge>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {esc.escrow_status === "held" && esc.payment_status === "paid" && (
-                            <Button size="sm" variant="outline" onClick={() => handleReleaseEscrow(esc.id)}>
-                              <ArrowUpRight className="w-3 h-3 mr-1" /> Request Release
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>
