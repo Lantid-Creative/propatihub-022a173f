@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TenantRecordForm from "@/components/TenantRecordForm";
+import DisputeManager from "@/components/DisputeManager";
 import ReactMarkdown from "react-markdown";
 
 const TenantPortal = () => {
@@ -549,6 +550,11 @@ const TenantPortal = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Disputes */}
+        <div className="mt-10">
+          <DisputeManager tenancies={tenancies} role="tenant" />
         </div>
       </div>
     </DashboardLayout>

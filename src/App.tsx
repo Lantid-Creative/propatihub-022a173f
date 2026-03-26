@@ -39,6 +39,7 @@ import AdminAgencies from "./pages/admin/AdminAgencies";
 import AdminInquiries from "./pages/admin/AdminInquiries";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminDisputes from "./pages/admin/AdminDisputes";
 
 // Agent
 import AgentDashboard from "./pages/agent/AgentDashboard";
@@ -111,6 +112,7 @@ const App = () => (
             <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><MessagesPage /></ProtectedRoute>} />
+            <Route path="/admin/disputes" element={<ProtectedRoute requiredRole="admin"><AdminDisputes /></ProtectedRoute>} />
 
             {/* Agent Portal */}
             <Route path="/agent" element={<ProtectedRoute requiredRole="agent"><AgentDashboard /></ProtectedRoute>} />

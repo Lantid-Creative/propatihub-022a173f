@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import TenantRecordForm from "@/components/TenantRecordForm";
+import DisputeManager from "@/components/DisputeManager";
 
 const PropertyManagement = () => {
   const { user } = useAuth();
@@ -360,7 +361,7 @@ const PropertyManagement = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-7 w-full">
+          <TabsList className="grid grid-cols-8 w-full">
             <TabsTrigger value="tenancies" className="text-xs">Tenancies</TabsTrigger>
             <TabsTrigger value="invitations" className="text-xs">Invitations</TabsTrigger>
             <TabsTrigger value="records" className="text-xs">Records</TabsTrigger>
@@ -368,6 +369,7 @@ const PropertyManagement = () => {
             <TabsTrigger value="escrow" className="text-xs">Escrow</TabsTrigger>
             <TabsTrigger value="rent" className="text-xs">Rent</TabsTrigger>
             <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
+            <TabsTrigger value="disputes" className="text-xs">Disputes</TabsTrigger>
           </TabsList>
 
           {/* Tenancies */}
@@ -664,6 +666,11 @@ const PropertyManagement = () => {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          {/* Disputes */}
+          <TabsContent value="disputes">
+            <DisputeManager tenancies={tenancies} role="landlord" />
           </TabsContent>
         </Tabs>
       </div>
