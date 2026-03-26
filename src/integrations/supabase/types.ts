@@ -231,12 +231,121 @@ export type Database = {
         }
         Relationships: []
       }
+      bid_deposits: {
+        Row: {
+          amount: number
+          bid_id: string | null
+          created_at: string
+          forfeited_at: string | null
+          id: string
+          paystack_reference: string | null
+          property_id: string
+          refunded_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bid_id?: string | null
+          created_at?: string
+          forfeited_at?: string | null
+          id?: string
+          paystack_reference?: string | null
+          property_id: string
+          refunded_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bid_id?: string | null
+          created_at?: string
+          forfeited_at?: string | null
+          id?: string
+          paystack_reference?: string | null
+          property_id?: string
+          refunded_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_deposits_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: false
+            referencedRelation: "bids"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_deposits_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bid_subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          early_access: boolean
+          expires_at: string
+          id: string
+          max_active_bids: number
+          max_property_value: number | null
+          paystack_reference: string | null
+          starts_at: string
+          status: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          early_access?: boolean
+          expires_at?: string
+          id?: string
+          max_active_bids?: number
+          max_property_value?: number | null
+          paystack_reference?: string | null
+          starts_at?: string
+          status?: string
+          tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          early_access?: boolean
+          expires_at?: string
+          id?: string
+          max_active_bids?: number
+          max_property_value?: number | null
+          paystack_reference?: string | null
+          starts_at?: string
+          status?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bids: {
         Row: {
           amount: number
           bidder_id: string
           created_at: string
+          deposit_id: string | null
           id: string
+          is_winner: boolean | null
+          payment_completed: boolean | null
+          payment_deadline: string | null
           property_id: string
           status: string
           updated_at: string
@@ -245,7 +354,11 @@ export type Database = {
           amount: number
           bidder_id: string
           created_at?: string
+          deposit_id?: string | null
           id?: string
+          is_winner?: boolean | null
+          payment_completed?: boolean | null
+          payment_deadline?: string | null
           property_id: string
           status?: string
           updated_at?: string
@@ -254,12 +367,23 @@ export type Database = {
           amount?: number
           bidder_id?: string
           created_at?: string
+          deposit_id?: string | null
           id?: string
+          is_winner?: boolean | null
+          payment_completed?: boolean | null
+          payment_deadline?: string | null
           property_id?: string
           status?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bids_deposit_id_fkey"
+            columns: ["deposit_id"]
+            isOneToOne: false
+            referencedRelation: "bid_deposits"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bids_property_id_fkey"
             columns: ["property_id"]
@@ -559,6 +683,57 @@ export type Database = {
           },
         ]
       }
+      kyc_verifications: {
+        Row: {
+          bvn_hash: string | null
+          bvn_verified: boolean
+          created_at: string
+          date_of_birth: string | null
+          full_name: string | null
+          id: string
+          nin_hash: string | null
+          nin_verified: boolean
+          proof_of_funds_url: string | null
+          rejected_reason: string | null
+          updated_at: string
+          user_id: string
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          bvn_hash?: string | null
+          bvn_verified?: boolean
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          id?: string
+          nin_hash?: string | null
+          nin_verified?: boolean
+          proof_of_funds_url?: string | null
+          rejected_reason?: string | null
+          updated_at?: string
+          user_id: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          bvn_hash?: string | null
+          bvn_verified?: boolean
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          id?: string
+          nin_hash?: string | null
+          nin_verified?: boolean
+          proof_of_funds_url?: string | null
+          rejected_reason?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       lease_documents: {
         Row: {
           created_at: string
@@ -800,6 +975,11 @@ export type Database = {
           agency_id: string | null
           agent_id: string
           area_sqm: number | null
+          auction_auto_extend: boolean | null
+          auction_end_at: string | null
+          auction_extend_minutes: number | null
+          auction_start_at: string | null
+          auction_status: string | null
           bathrooms: number | null
           bedrooms: number | null
           caution_fee: number | null
@@ -807,6 +987,7 @@ export type Database = {
           completion_percentage: number | null
           condition: string | null
           created_at: string
+          deposit_percentage: number | null
           description: string | null
           featured: boolean | null
           features: string[] | null
@@ -820,6 +1001,7 @@ export type Database = {
           parking_spaces: number | null
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
+          reserve_price: number | null
           service_charge: number | null
           state: string
           status: Database["public"]["Enums"]["property_status"]
@@ -829,6 +1011,7 @@ export type Database = {
           views_count: number | null
           virtual_tour_url: string | null
           virtual_tour_video_url: string | null
+          winner_payment_deadline_days: number | null
           year_built: number | null
         }
         Insert: {
@@ -836,6 +1019,11 @@ export type Database = {
           agency_id?: string | null
           agent_id: string
           area_sqm?: number | null
+          auction_auto_extend?: boolean | null
+          auction_end_at?: string | null
+          auction_extend_minutes?: number | null
+          auction_start_at?: string | null
+          auction_status?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
           caution_fee?: number | null
@@ -843,6 +1031,7 @@ export type Database = {
           completion_percentage?: number | null
           condition?: string | null
           created_at?: string
+          deposit_percentage?: number | null
           description?: string | null
           featured?: boolean | null
           features?: string[] | null
@@ -856,6 +1045,7 @@ export type Database = {
           parking_spaces?: number | null
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
+          reserve_price?: number | null
           service_charge?: number | null
           state: string
           status?: Database["public"]["Enums"]["property_status"]
@@ -865,6 +1055,7 @@ export type Database = {
           views_count?: number | null
           virtual_tour_url?: string | null
           virtual_tour_video_url?: string | null
+          winner_payment_deadline_days?: number | null
           year_built?: number | null
         }
         Update: {
@@ -872,6 +1063,11 @@ export type Database = {
           agency_id?: string | null
           agent_id?: string
           area_sqm?: number | null
+          auction_auto_extend?: boolean | null
+          auction_end_at?: string | null
+          auction_extend_minutes?: number | null
+          auction_start_at?: string | null
+          auction_status?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
           caution_fee?: number | null
@@ -879,6 +1075,7 @@ export type Database = {
           completion_percentage?: number | null
           condition?: string | null
           created_at?: string
+          deposit_percentage?: number | null
           description?: string | null
           featured?: boolean | null
           features?: string[] | null
@@ -892,6 +1089,7 @@ export type Database = {
           parking_spaces?: number | null
           price?: number
           property_type?: Database["public"]["Enums"]["property_type"]
+          reserve_price?: number | null
           service_charge?: number | null
           state?: string
           status?: Database["public"]["Enums"]["property_status"]
@@ -901,6 +1099,7 @@ export type Database = {
           views_count?: number | null
           virtual_tour_url?: string | null
           virtual_tour_video_url?: string | null
+          winner_payment_deadline_days?: number | null
           year_built?: number | null
         }
         Relationships: [
