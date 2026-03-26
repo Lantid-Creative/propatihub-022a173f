@@ -265,6 +265,17 @@ const ChatView = ({ onBack }: ChatViewProps) => {
           </div>
         </div>
 
+        {/* Platform Disclaimer */}
+        <div className="px-4 py-2.5 bg-accent/5 border-b border-accent/10">
+          <p className="text-[10px] text-accent font-body font-medium flex items-center gap-1.5">
+            <AlertTriangle className="w-3 h-3 shrink-0" />
+            All chats &amp; transactions must happen on PropatiHub only.
+          </p>
+          <p className="text-[10px] text-muted-foreground font-body ml-[18px] mt-0.5">
+            Off-platform dealings are not protected. Never share personal details.
+          </p>
+        </div>
+
         <ScrollArea className="flex-1">
           {loadingConvos ? (
             <div className="flex justify-center py-12">
@@ -355,10 +366,14 @@ const ChatView = ({ onBack }: ChatViewProps) => {
             </div>
 
             {/* Security Banner */}
-            <div className="px-4 py-2 bg-primary/5 border-b border-primary/10">
-              <p className="text-[10px] text-primary font-body flex items-center gap-1.5">
+            <div className="px-4 py-2.5 bg-primary/5 border-b border-primary/10">
+              <p className="text-[10px] text-primary font-body flex items-center gap-1.5 font-medium">
                 <ShieldCheck className="w-3 h-3 shrink-0" />
-                All conversations are monitored. Sharing personal contact info or bank details is not allowed. Keep transactions on PropatiHub.
+                All conversations are monitored. Sharing personal contact info or bank details is not allowed.
+              </p>
+              <p className="text-[10px] text-muted-foreground font-body ml-[18px] mt-0.5">
+                All chats and transactions must be conducted exclusively on PropatiHub. Off-platform dealings are prohibited and not protected.
+              </p>
               </p>
             </div>
 
