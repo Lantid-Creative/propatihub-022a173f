@@ -10,6 +10,11 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
+import ForSale from "./pages/ForSale";
+import ToRent from "./pages/ToRent";
+import FindAgents from "./pages/FindAgents";
+import HousePrices from "./pages/HousePrices";
+import PropertyValuation from "./pages/PropertyValuation";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
