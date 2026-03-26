@@ -39,7 +39,7 @@ const AdminProperties = () => {
 
   useEffect(() => { fetchProperties(); }, []);
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: "active" | "draft" | "inactive" | "pending" | "rented" | "sold") => {
     await supabase.from("properties").update({ status }).eq("id", id);
     toast({ title: `Property marked as ${status}` });
     fetchProperties();
