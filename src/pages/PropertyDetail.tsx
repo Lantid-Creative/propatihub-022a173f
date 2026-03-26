@@ -16,6 +16,7 @@ import logoDark from "@/assets/logo-dark.png";
 import MortgageCalculator from "@/components/MortgageCalculator";
 import PropertyMap from "@/components/PropertyMap";
 import BidSection from "@/components/BidSection";
+import StartChatButton from "@/components/StartChatButton";
 
 const listingTypeLabels: Record<string, string> = {
   sale: "For Sale",
@@ -306,10 +307,18 @@ const PropertyDetail = () => {
                   </div>
                 </div>
                 {agent?.phone && (
-                  <a href={`tel:${agent.phone}`} className="flex items-center gap-2 text-sm font-body text-foreground hover:text-accent transition-colors mb-2">
+                  <a href={`tel:${agent.phone}`} className="flex items-center gap-2 text-sm font-body text-foreground hover:text-accent transition-colors mb-3">
                     <Phone className="w-4 h-4" /> {agent.phone}
                   </a>
                 )}
+                <StartChatButton
+                  recipientId={property.agent_id}
+                  propertyId={property.id}
+                  variant="default"
+                  size="default"
+                  label="Chat with Agent"
+                  className="w-full"
+                />
               </CardContent>
             </Card>
 
