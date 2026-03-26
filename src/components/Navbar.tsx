@@ -16,9 +16,11 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { label: "Properties", href: "/properties" },
-    { label: "Find Agent", href: "/properties?type=sale" },
-    { label: "Commercial", href: "/properties?property=commercial" },
+    { label: "Buy", href: "/for-sale" },
+    { label: "Rent", href: "/to-rent" },
+    { label: "House Prices", href: "/house-prices" },
+    { label: "Find Agents", href: "/find-agents" },
+    { label: "Valuation", href: "/property-valuation" },
   ];
 
   return (
