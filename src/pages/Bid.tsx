@@ -149,6 +149,9 @@ const Bid = () => {
         </div>
       </section>
 
+      {/* Live Bidding Properties */}
+      <LiveBidProperties />
+
       {/* How Bidding Works - Updated */}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
