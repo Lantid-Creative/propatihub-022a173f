@@ -1,54 +1,270 @@
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { User, Shield, Lock, CheckCircle } from "lucide-react";
+
+const specializations = [
+  "Residential",
+  "Commercial",
+  "Land",
+  "Short-Let",
+  "Luxury",
+  "Off-Plan",
+  "Industrial",
+  "Mixed-Use",
+];
 
 const AgentSettings = () => {
   const { profile, user } = useAuth();
   const { toast } = useToast();
-  const [fullName, setFullName] = useState(profile?.full_name || "");
-  const [phone, setPhone] = useState(profile?.phone || "");
-  const [bio, setBio] = useState(profile?.bio || "");
-  const [saving, setSaving] = useState(false);
 
-  const handleSave = async () => {
+  // Profile form
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Agent profile form
+  const [agentProfile, setAgentProfile] = useState<any>(null);
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [experienceYears, setExperienceYears] = useState("");
+  const [savingAgent, setSavingAgent] = useState(false);
+
+  // Password
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setFullName(profile.full_name || "");
+      setPhone(profile.phone || "");
+      setBio(profile.bio || "");
+      setCity(profile.city || "");
+      setState(profile.state || "");
+    }
+  }, [profile]);
+
+  useEffect(() => {
     if (!user) return;
-    setSaving(true);
-    await supabase.from("profiles").update({ full_name: fullName, phone, bio }).eq("user_id", user.id);
-    toast({ title: "Profile updated" });
-    setSaving(false);
+    supabase.from("agent_profiles").select("*").eq("user_id", user.id).single().then(({ data }) => {
+      if (data) {
+        setAgentProfile(data);
+        setLicenseNumber(data.license_number || "");
+        setSpecialization(data.specialization || "");
+        setExperienceYears(String(data.experience_years || ""));
+      }
+    });
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setSavingProfile(true);
+    const { error } = await supabase.from("profiles").update({
+      full_name: fullName,
+      phone,
+      bio,
+      city,
+      state,
+    }).eq("user_id", user.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated!" });
+    }
+    setSavingProfile(false);
+  };
+
+  const handleSaveAgentProfile = async () => {
+    if (!user) return;
+    setSavingAgent(true);
+    const payload = {
+      license_number: licenseNumber || null,
+      specialization: specialization || null,
+      experience_years: parseInt(experienceYears) || 0,
+    };
+    if (agentProfile) {
+      const { error } = await supabase.from("agent_profiles").update(payload).eq("user_id", user.id);
+      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+      else toast({ title: "Agent profile updated!" });
+    } else {
+      const { error } = await supabase.from("agent_profiles").insert({ ...payload, user_id: user.id });
+      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+      else toast({ title: "Agent profile created!" });
+    }
+    setSavingAgent(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Passwords don't match", variant: "destructive" });
+      return;
+    }
+    setSavingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Password changed!" });
+      setNewPassword("");
+      setConfirmPassword("");
+    }
+    setSavingPassword(false);
   };
 
   return (
     <DashboardLayout>
-      <div className="mb-6">
+      <div className="mb-8">
         <h1 className="text-2xl font-display font-bold text-foreground">Settings</h1>
-        <p className="text-muted-foreground font-body text-sm">Update your profile information</p>
+        <p className="text-muted-foreground font-body text-sm">Manage your profile and account settings</p>
       </div>
 
-      <div className="max-w-xl space-y-6">
+      <div className="max-w-2xl space-y-6">
+        {/* Personal Info */}
         <Card>
-          <CardHeader><CardTitle className="text-lg">Profile Information</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-body font-medium block mb-1.5">Full Name</label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-accent" />
+              <div>
+                <CardTitle className="text-lg">Personal Information</CardTitle>
+                <CardDescription className="text-xs">Your public-facing profile details</CardDescription>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-body font-medium block mb-1.5">Phone</label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+234 800 000 0000" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1.5">Full Name</label>
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1.5">Phone</label>
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+234 800 000 0000" />
+              </div>
             </div>
             <div>
               <label className="text-sm font-body font-medium block mb-1.5">Bio</label>
-              <Textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell buyers about yourself..." rows={4} />
+              <Textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell buyers about yourself, your experience, and areas you specialise in..." rows={4} />
             </div>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1.5">City</label>
+                <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lagos" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1.5">State</label>
+                <Input value={state} onChange={(e) => setState(e.target.value)} placeholder="Lagos" />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1.5">Email</label>
+              <Input value={user?.email || ""} disabled />
+              <p className="text-[10px] text-muted-foreground font-body mt-1">Email cannot be changed</p>
+            </div>
+            <Button onClick={handleSaveProfile} disabled={savingProfile}>
+              {savingProfile ? "Saving..." : "Save Profile"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Agent Profile */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-accent" />
+                <div>
+                  <CardTitle className="text-lg">Agent Profile</CardTitle>
+                  <CardDescription className="text-xs">Professional details for verification</CardDescription>
+                </div>
+              </div>
+              {agentProfile?.verified ? (
+                <Badge className="bg-primary/10 text-primary gap-1">
+                  <CheckCircle className="w-3 h-3" /> Verified
+                </Badge>
+              ) : (
+                <Badge variant="secondary">Pending Verification</Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-body font-medium block mb-1.5">License Number</label>
+              <Input value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} placeholder="e.g. NIS/REG/2024/12345" />
+              <p className="text-[10px] text-muted-foreground font-body mt-1">Your real estate license or registration number</p>
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1.5">Specialization</label>
+              <Select value={specialization} onValueChange={setSpecialization}>
+                <SelectTrigger><SelectValue placeholder="Select your specialization" /></SelectTrigger>
+                <SelectContent>
+                  {specializations.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1.5">Years of Experience</label>
+              <Input type="number" value={experienceYears} onChange={(e) => setExperienceYears(e.target.value)} placeholder="5" min="0" max="50" />
+            </div>
+            <Button onClick={handleSaveAgentProfile} disabled={savingAgent}>
+              {savingAgent ? "Saving..." : agentProfile ? "Update Agent Profile" : "Create Agent Profile"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Change Password */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Lock className="w-5 h-5 text-accent" />
+              <div>
+                <CardTitle className="text-lg">Change Password</CardTitle>
+                <CardDescription className="text-xs">Update your account password</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-body font-medium block mb-1.5">New Password</label>
+              <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" minLength={6} />
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1.5">Confirm Password</label>
+              <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            <Button variant="outline" onClick={handleChangePassword} disabled={savingPassword}>
+              {savingPassword ? "Updating..." : "Change Password"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Danger Zone */}
+        <Card className="border-destructive/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-destructive">Danger Zone</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm font-body text-muted-foreground mb-3">
+              Deleting your account will remove all your listings, inquiries, and data permanently.
+            </p>
+            <Button variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => toast({ title: "Contact support", description: "Please email support@propatihub.ng to delete your account." })}>
+              Delete Account
             </Button>
           </CardContent>
         </Card>
