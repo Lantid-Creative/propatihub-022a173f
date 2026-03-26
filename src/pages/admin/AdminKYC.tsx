@@ -158,7 +158,7 @@ const AdminKYC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <CardContent className="py-4 flex items-center gap-3">
-              <Clock className="w-8 h-8 text-yellow-500" />
+              <Clock className="w-8 h-8 text-accent" />
               <div>
                 <p className="text-2xl font-bold">{counts.pending}</p>
                 <p className="text-xs text-muted-foreground">Pending Review</p>
@@ -167,7 +167,7 @@ const AdminKYC = () => {
           </Card>
           <Card>
             <CardContent className="py-4 flex items-center gap-3">
-              <CheckCircle className="w-8 h-8 text-green-500" />
+              <CheckCircle className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-2xl font-bold">{counts.verified}</p>
                 <p className="text-xs text-muted-foreground">Verified</p>
