@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Eye, Edit, Search, MapPin, ExternalLink, Building2 } from "lucide-react";
+import { Plus, Trash2, Eye, Edit, Search, MapPin, ExternalLink, Building2, ShieldCheck, Image as ImageIcon, Video, FileImage, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ImageUploader from "@/components/ImageUploader";
+import CompletionBadge from "@/components/CompletionBadge";
+import { calculateCompletion, type PropertyData } from "@/lib/propertyUtils";
 
 const nigerianStates = ["Lagos", "Abuja FCT", "Rivers", "Oyo", "Kano", "Enugu", "Anambra", "Delta", "Kaduna", "Ogun", "Edo", "Ondo", "Kwara", "Osun", "Ekiti", "Imo", "Abia", "Cross River", "Akwa Ibom", "Bayelsa", "Benue", "Borno", "Gombe", "Jigawa", "Kebbi", "Kogi", "Nassarawa", "Niger", "Plateau", "Sokoto", "Taraba", "Yobe", "Zamfara", "Adamawa", "Bauchi", "Ebonyi"];
 
@@ -28,8 +31,12 @@ const statusColors: Record<string, string> = {
 const emptyForm = {
   title: "", description: "", property_type: "house" as const, listing_type: "sale" as const,
   price: "", bedrooms: "", bathrooms: "", area_sqm: "", address: "", city: "", state: "Lagos",
-  features: "", images: "",
+  features: "", images: [] as string[], floor_plan_url: "", virtual_tour_url: "",
+  virtual_tour_video_url: "", year_built: "", parking_spaces: "", furnishing: "",
+  condition: "", service_charge: "", caution_fee: "",
 };
+
+type FormData = typeof emptyForm;
 
 const AgentProperties = () => {
   const { user } = useAuth();
@@ -38,9 +45,11 @@ const AgentProperties = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ ...emptyForm });
+  const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [submitting, setSubmitting] = useState(false);
+  const [formStep, setFormStep] = useState(0);
   const { toast } = useToast();
 
   const fetchProperties = async () => {
@@ -56,17 +65,46 @@ const AgentProperties = () => {
 
   useEffect(() => { fetchProperties(); }, [user]);
 
-  const handleCreate = async () => {
+  const formToPropertyData = (f: FormData): PropertyData => ({
+    title: f.title,
+    description: f.description,
+    price: parseInt(f.price) || 0,
+    property_type: f.property_type,
+    listing_type: f.listing_type,
+    city: f.city,
+    state: f.state,
+    address: f.address,
+    bedrooms: parseInt(f.bedrooms) || null,
+    bathrooms: parseInt(f.bathrooms) || null,
+    area_sqm: parseInt(f.area_sqm) || null,
+    images: f.images.length > 0 ? f.images : null,
+    features: f.features ? f.features.split(",").map(s => s.trim()).filter(Boolean) : null,
+    floor_plan_url: f.floor_plan_url || null,
+    virtual_tour_url: f.virtual_tour_url || null,
+    virtual_tour_video_url: f.virtual_tour_video_url || null,
+    year_built: parseInt(f.year_built) || null,
+    parking_spaces: parseInt(f.parking_spaces) || null,
+    furnishing: f.furnishing || null,
+    condition: f.condition || null,
+    service_charge: parseFloat(f.service_charge) || null,
+  });
+
+  const handleSave = async (isEdit: boolean) => {
     if (!user || !form.title || !form.city || !form.price) {
-      toast({ title: "Missing fields", description: "Title, city, and price are required.", variant: "destructive" });
+      toast({ title: "Missing required fields", description: "Title, city, and price are required.", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("properties").insert({
+    setSubmitting(true);
+
+    const propData = formToPropertyData(form);
+    const { percentage } = calculateCompletion(propData);
+
+    const payload = {
       agent_id: user.id,
       title: form.title,
       description: form.description || null,
-      property_type: form.property_type,
-      listing_type: form.listing_type,
+      property_type: form.property_type as any,
+      listing_type: form.listing_type as any,
       price: parseInt(form.price) || 0,
       bedrooms: parseInt(form.bedrooms) || null,
       bathrooms: parseInt(form.bathrooms) || null,
@@ -74,45 +112,39 @@ const AgentProperties = () => {
       address: form.address || null,
       city: form.city,
       state: form.state,
-      features: form.features ? form.features.split(",").map((f) => f.trim()).filter(Boolean) : null,
-      images: form.images ? form.images.split(",").map((f) => f.trim()).filter(Boolean) : null,
-      status: "pending",
-    });
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Property created!", description: "Submitted for review." });
-      setCreateOpen(false);
-      setForm({ ...emptyForm });
-      fetchProperties();
-    }
-  };
+      features: form.features ? form.features.split(",").map(s => s.trim()).filter(Boolean) : null,
+      images: form.images.length > 0 ? form.images : null,
+      floor_plan_url: form.floor_plan_url || null,
+      virtual_tour_url: form.virtual_tour_url || null,
+      virtual_tour_video_url: form.virtual_tour_video_url || null,
+      year_built: parseInt(form.year_built) || null,
+      parking_spaces: parseInt(form.parking_spaces) || null,
+      furnishing: form.furnishing || null,
+      condition: form.condition || null,
+      service_charge: parseFloat(form.service_charge) || null,
+      caution_fee: parseFloat(form.caution_fee) || null,
+      completion_percentage: percentage,
+      status: "pending" as const,
+    };
 
-  const handleEdit = async () => {
-    if (!editId) return;
-    const { error } = await supabase.from("properties").update({
-      title: form.title,
-      description: form.description || null,
-      property_type: form.property_type,
-      listing_type: form.listing_type,
-      price: parseInt(form.price) || 0,
-      bedrooms: parseInt(form.bedrooms) || null,
-      bathrooms: parseInt(form.bathrooms) || null,
-      area_sqm: parseInt(form.area_sqm) || null,
-      address: form.address || null,
-      city: form.city,
-      state: form.state,
-      features: form.features ? form.features.split(",").map((f) => f.trim()).filter(Boolean) : null,
-      images: form.images ? form.images.split(",").map((f) => f.trim()).filter(Boolean) : null,
-    }).eq("id", editId);
+    let error;
+    if (isEdit && editId) {
+      const { agent_id, status, ...updatePayload } = payload;
+      ({ error } = await supabase.from("properties").update(updatePayload).eq("id", editId));
+    } else {
+      ({ error } = await supabase.from("properties").insert(payload));
+    }
+
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Property updated!" });
-      setEditOpen(false);
-      setEditId(null);
+      toast({ title: isEdit ? "Property updated!" : "Property created!", description: isEdit ? "Changes saved." : "Submitted for review." });
+      if (isEdit) { setEditOpen(false); setEditId(null); } else { setCreateOpen(false); }
+      setForm({ ...emptyForm });
+      setFormStep(0);
       fetchProperties();
     }
+    setSubmitting(false);
   };
 
   const openEdit = (p: any) => {
@@ -130,8 +162,18 @@ const AgentProperties = () => {
       city: p.city || "",
       state: p.state || "Lagos",
       features: (p.features || []).join(", "),
-      images: (p.images || []).join(", "),
+      images: p.images || [],
+      floor_plan_url: p.floor_plan_url || "",
+      virtual_tour_url: p.virtual_tour_url || "",
+      virtual_tour_video_url: p.virtual_tour_video_url || "",
+      year_built: String(p.year_built || ""),
+      parking_spaces: String(p.parking_spaces || ""),
+      furnishing: p.furnishing || "",
+      condition: p.condition || "",
+      service_charge: String(p.service_charge || ""),
+      caution_fee: String(p.caution_fee || ""),
     });
+    setFormStep(0);
     setEditOpen(true);
   };
 
@@ -142,10 +184,10 @@ const AgentProperties = () => {
     fetchProperties();
   };
 
-  const toggleStatus = async (id: string, current: string) => {
-    const next = current === "active" ? "inactive" : current === "draft" ? "pending" : "active";
-    await supabase.from("properties").update({ status: next }).eq("id", id);
-    toast({ title: `Property ${next}` });
+  const requestVerification = async (id: string) => {
+    // Set status to pending which will flag it for admin review
+    await supabase.from("properties").update({ status: "pending" }).eq("id", id);
+    toast({ title: "Verification requested", description: "Admin will review your listing." });
     fetchProperties();
   };
 
@@ -162,95 +204,301 @@ const AgentProperties = () => {
     active: properties.filter((p) => p.status === "active").length,
     pending: properties.filter((p) => p.status === "pending").length,
     draft: properties.filter((p) => p.status === "draft").length,
-    inactive: properties.filter((p) => p.status === "inactive" || p.status === "sold" || p.status === "rented").length,
   };
 
-  const PropertyForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
-    <div className="space-y-4">
-      <div>
-        <label className="text-sm font-body font-medium block mb-1">Title *</label>
-        <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="5-Bedroom Detached Duplex in Lekki" />
-      </div>
-      <div>
-        <label className="text-sm font-body font-medium block mb-1">Description</label>
-        <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the property in detail..." rows={4} />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">Property Type *</label>
-          <Select value={form.property_type} onValueChange={(v: any) => setForm({ ...form, property_type: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="house">House</SelectItem>
-              <SelectItem value="apartment">Apartment</SelectItem>
-              <SelectItem value="land">Land</SelectItem>
-              <SelectItem value="commercial">Commercial</SelectItem>
-              <SelectItem value="short_let">Short Let</SelectItem>
-            </SelectContent>
-          </Select>
+  const handleFloorPlanUpload = async (files: string[]) => {
+    if (files.length > 0) setForm({ ...form, floor_plan_url: files[0] });
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0] || !user) return;
+    const file = e.target.files[0];
+    if (file.size > 100 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Maximum video size is 100MB", variant: "destructive" });
+      return;
+    }
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("virtual-tours").upload(path, file);
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("virtual-tours").getPublicUrl(path);
+    setForm({ ...form, virtual_tour_video_url: urlData.publicUrl });
+    toast({ title: "Video uploaded!" });
+  };
+
+  // Multi-step form
+  const PropertyForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => {
+    const propData = formToPropertyData(form);
+    const steps = [
+      { label: "Basic Info", icon: "📋" },
+      { label: "Details", icon: "🏠" },
+      { label: "Photos", icon: "📸" },
+      { label: "Media & Extras", icon: "🎥" },
+    ];
+
+    return (
+      <div className="space-y-4">
+        {/* Completion Badge */}
+        <CompletionBadge data={propData} />
+
+        {/* Step Indicators */}
+        <div className="flex gap-1">
+          {steps.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => setFormStep(i)}
+              className={`flex-1 py-2 px-2 rounded-lg text-center transition-all ${
+                formStep === i
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              <span className="text-sm">{s.icon}</span>
+              <p className="text-[10px] font-body mt-0.5">{s.label}</p>
+            </button>
+          ))}
         </div>
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">Listing Type *</label>
-          <Select value={form.listing_type} onValueChange={(v: any) => setForm({ ...form, listing_type: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="sale">For Sale</SelectItem>
-              <SelectItem value="rent">For Rent</SelectItem>
-              <SelectItem value="short_let">Short Let</SelectItem>
-              <SelectItem value="land">Land</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+
+        {/* Step 0: Basic Info */}
+        {formStep === 0 && (
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-body font-medium block mb-1">Title *</label>
+              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="5-Bedroom Detached Duplex in Lekki" />
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1">Description *</label>
+              <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Provide a detailed description of the property. Include features, surroundings, and any unique selling points..." rows={5} />
+              <p className="text-[10px] text-muted-foreground font-body mt-1">{form.description.length} chars (min 30 for completion)</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Property Type *</label>
+                <Select value={form.property_type} onValueChange={(v: any) => setForm({ ...form, property_type: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="house">House</SelectItem>
+                    <SelectItem value="apartment">Apartment</SelectItem>
+                    <SelectItem value="land">Land</SelectItem>
+                    <SelectItem value="commercial">Commercial</SelectItem>
+                    <SelectItem value="short_let">Short Let</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Listing Type *</label>
+                <Select value={form.listing_type} onValueChange={(v: any) => setForm({ ...form, listing_type: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sale">For Sale</SelectItem>
+                    <SelectItem value="rent">For Rent</SelectItem>
+                    <SelectItem value="short_let">Short Let</SelectItem>
+                    <SelectItem value="land">Land</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1">Price (₦) *</label>
+              <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="50000000" />
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1">Address *</label>
+              <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="123 Admiralty Way, Lekki Phase 1" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">City *</label>
+                <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Lekki" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">State *</label>
+                <Select value={form.state} onValueChange={(v) => setForm({ ...form, state: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {nigerianStates.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Button onClick={() => setFormStep(1)} className="w-full">Next: Property Details →</Button>
+          </div>
+        )}
+
+        {/* Step 1: Property Details */}
+        {formStep === 1 && (
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Bedrooms</label>
+                <Input type="number" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} placeholder="4" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Bathrooms</label>
+                <Input type="number" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} placeholder="3" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Area (m²)</label>
+                <Input type="number" value={form.area_sqm} onChange={(e) => setForm({ ...form, area_sqm: e.target.value })} placeholder="350" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Year Built</label>
+                <Input type="number" value={form.year_built} onChange={(e) => setForm({ ...form, year_built: e.target.value })} placeholder="2022" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Parking Spaces</label>
+                <Input type="number" value={form.parking_spaces} onChange={(e) => setForm({ ...form, parking_spaces: e.target.value })} placeholder="2" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Furnishing</label>
+                <Select value={form.furnishing} onValueChange={(v) => setForm({ ...form, furnishing: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="furnished">Fully Furnished</SelectItem>
+                    <SelectItem value="semi-furnished">Semi-Furnished</SelectItem>
+                    <SelectItem value="unfurnished">Unfurnished</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Condition</label>
+                <Select value={form.condition} onValueChange={(v) => setForm({ ...form, condition: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">Brand New</SelectItem>
+                    <SelectItem value="excellent">Excellent</SelectItem>
+                    <SelectItem value="good">Good</SelectItem>
+                    <SelectItem value="fair">Fair</SelectItem>
+                    <SelectItem value="needs-renovation">Needs Renovation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Service Charge (₦/yr)</label>
+                <Input type="number" value={form.service_charge} onChange={(e) => setForm({ ...form, service_charge: e.target.value })} placeholder="500000" />
+              </div>
+              <div>
+                <label className="text-sm font-body font-medium block mb-1">Caution Fee (₦)</label>
+                <Input type="number" value={form.caution_fee} onChange={(e) => setForm({ ...form, caution_fee: e.target.value })} placeholder="1000000" />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-body font-medium block mb-1">Features (comma-separated)</label>
+              <Textarea value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Swimming Pool, Generator, BQ, CCTV, Gym, Smart Home, Solar Panel, Water Treatment" rows={3} />
+              <p className="text-[10px] text-muted-foreground font-body mt-1">Add at least 2 features for better completion</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setFormStep(0)} className="flex-1">← Back</Button>
+              <Button onClick={() => setFormStep(2)} className="flex-1">Next: Photos →</Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Photos */}
+        {formStep === 2 && (
+          <div className="space-y-4">
+            <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
+              <p className="text-sm font-body text-foreground font-medium">📸 Photo Requirements</p>
+              <ul className="text-xs text-muted-foreground font-body mt-1 space-y-0.5">
+                <li>• Minimum resolution: 1200×800 pixels</li>
+                <li>• Upload at least 3 photos for a good listing</li>
+                <li>• First image will be the cover photo</li>
+                <li>• Blurry or low-quality images will be rejected</li>
+              </ul>
+            </div>
+
+            <ImageUploader
+              images={form.images}
+              onChange={(imgs) => setForm({ ...form, images: imgs })}
+              bucket="property-images"
+              maxFiles={15}
+              label="Property Photos *"
+            />
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setFormStep(1)} className="flex-1">← Back</Button>
+              <Button onClick={() => setFormStep(3)} className="flex-1">Next: Media & Extras →</Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Media & Extras */}
+        {formStep === 3 && (
+          <div className="space-y-4">
+            {/* Floor Plan */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><FileImage className="w-4 h-4 text-accent" /> Floor Plan</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {form.floor_plan_url ? (
+                  <div className="space-y-2">
+                    <img src={form.floor_plan_url} alt="Floor plan" className="w-full rounded-lg border border-border max-h-48 object-contain" />
+                    <Button variant="outline" size="sm" onClick={() => setForm({ ...form, floor_plan_url: "" })}>Remove Floor Plan</Button>
+                  </div>
+                ) : (
+                  <ImageUploader
+                    images={[]}
+                    onChange={(urls) => { if (urls.length > 0) setForm({ ...form, floor_plan_url: urls[0] }); }}
+                    bucket="floor-plans"
+                    maxFiles={1}
+                    minResolution={false}
+                    label="Upload Floor Plan"
+                  />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Virtual Tour */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><Video className="w-4 h-4 text-accent" /> 360° Virtual Tour</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <label className="text-xs font-body font-medium block mb-1">Tour URL (YouTube, Matterport, etc.)</label>
+                  <Input
+                    value={form.virtual_tour_url}
+                    onChange={(e) => setForm({ ...form, virtual_tour_url: e.target.value })}
+                    placeholder="https://www.youtube.com/watch?v=... or https://my.matterport.com/..."
+                  />
+                </div>
+                <div className="text-center text-xs text-muted-foreground font-body">— or —</div>
+                <div>
+                  <label className="text-xs font-body font-medium block mb-1">Upload Video (max 100MB)</label>
+                  {form.virtual_tour_video_url ? (
+                    <div className="space-y-2">
+                      <video src={form.virtual_tour_video_url} controls className="w-full rounded-lg max-h-48" />
+                      <Button variant="outline" size="sm" onClick={() => setForm({ ...form, virtual_tour_video_url: "" })}>Remove Video</Button>
+                    </div>
+                  ) : (
+                    <Input type="file" accept="video/*" onChange={handleVideoUpload} />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setFormStep(2)} className="flex-1">← Back</Button>
+              <Button onClick={onSubmit} disabled={submitting} className="flex-1 gap-2">
+                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {submitLabel}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-      <div>
-        <label className="text-sm font-body font-medium block mb-1">Price (₦) *</label>
-        <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="50000000" />
-      </div>
-      <div className="grid grid-cols-3 gap-3">
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">Bedrooms</label>
-          <Input type="number" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} placeholder="4" />
-        </div>
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">Bathrooms</label>
-          <Input type="number" value={form.bathrooms} onChange={(e) => setForm({ ...form, bathrooms: e.target.value })} placeholder="3" />
-        </div>
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">Area (m²)</label>
-          <Input type="number" value={form.area_sqm} onChange={(e) => setForm({ ...form, area_sqm: e.target.value })} placeholder="350" />
-        </div>
-      </div>
-      <div>
-        <label className="text-sm font-body font-medium block mb-1">Address</label>
-        <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="123 Admiralty Way" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">City *</label>
-          <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Lekki" />
-        </div>
-        <div>
-          <label className="text-sm font-body font-medium block mb-1">State *</label>
-          <Select value={form.state} onValueChange={(v) => setForm({ ...form, state: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {nigerianStates.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div>
-        <label className="text-sm font-body font-medium block mb-1">Features (comma-separated)</label>
-        <Input value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Swimming Pool, Generator, BQ, CCTV" />
-      </div>
-      <div>
-        <label className="text-sm font-body font-medium block mb-1">Image URLs (comma-separated)</label>
-        <Textarea value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg" rows={2} />
-        <p className="text-[10px] text-muted-foreground font-body mt-1">Paste direct image URLs separated by commas</p>
-      </div>
-      <Button onClick={onSubmit} className="w-full">{submitLabel}</Button>
-    </div>
-  );
+    );
+  };
 
   return (
     <DashboardLayout>
@@ -260,7 +508,7 @@ const AgentProperties = () => {
           <h1 className="text-2xl font-display font-bold text-foreground">My Listings</h1>
           <p className="text-muted-foreground font-body text-sm">{properties.length} properties · {counts.active} active</p>
         </div>
-        <Dialog open={createOpen} onOpenChange={(o) => { setCreateOpen(o); if (o) setForm({ ...emptyForm }); }}>
+        <Dialog open={createOpen} onOpenChange={(o) => { setCreateOpen(o); if (o) { setForm({ ...emptyForm }); setFormStep(0); } }}>
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus className="w-4 h-4" /> Add Property</Button>
           </DialogTrigger>
@@ -268,12 +516,12 @@ const AgentProperties = () => {
             <DialogHeader>
               <DialogTitle className="font-display">Add New Property</DialogTitle>
             </DialogHeader>
-            <PropertyForm onSubmit={handleCreate} submitLabel="Create Listing" />
+            <PropertyForm onSubmit={() => handleSave(false)} submitLabel="Create Listing" />
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Search & Filters */}
+      {/* Search */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -297,7 +545,7 @@ const AgentProperties = () => {
           <DialogHeader>
             <DialogTitle className="font-display">Edit Property</DialogTitle>
           </DialogHeader>
-          <PropertyForm onSubmit={handleEdit} submitLabel="Save Changes" />
+          <PropertyForm onSubmit={() => handleSave(true)} submitLabel="Save Changes" />
         </DialogContent>
       </Dialog>
 
@@ -320,68 +568,84 @@ const AgentProperties = () => {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filtered.map((p) => (
-            <Card key={p.id} className="card-hover">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  {/* Thumbnail */}
-                  <div className="w-24 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
-                    {p.images?.[0] ? (
-                      <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Building2 className="w-6 h-6 text-muted-foreground" />
+          {filtered.map((p) => {
+            const propData: PropertyData = {
+              title: p.title, description: p.description, price: p.price,
+              property_type: p.property_type, listing_type: p.listing_type,
+              city: p.city, state: p.state, address: p.address,
+              bedrooms: p.bedrooms, bathrooms: p.bathrooms, area_sqm: p.area_sqm,
+              images: p.images, features: p.features,
+              floor_plan_url: p.floor_plan_url, virtual_tour_url: p.virtual_tour_url,
+              virtual_tour_video_url: p.virtual_tour_video_url,
+              year_built: p.year_built, parking_spaces: p.parking_spaces,
+              furnishing: p.furnishing, condition: p.condition, service_charge: p.service_charge,
+            };
+            const { percentage } = calculateCompletion(propData);
+
+            return (
+              <Card key={p.id} className="card-hover">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-24 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                      {p.images?.[0] ? (
+                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Building2 className="w-6 h-6 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-body font-semibold text-foreground text-sm truncate">{p.title}</h3>
+                            {p.verified && (
+                              <Badge className="bg-primary/10 text-primary text-[9px] gap-0.5 shrink-0">
+                                <ShieldCheck className="w-2.5 h-2.5" /> Verified
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground font-body flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3" /> {p.city}, {p.state}
+                          </p>
+                        </div>
+                        <Badge className={`text-xs shrink-0 ${statusColors[p.status] || ""}`}>{p.status}</Badge>
                       </div>
-                    )}
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="text-base font-display font-bold text-accent">{fmt(p.price)}</p>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground font-body">
+                          <CompletionBadge data={propData} verified={p.verified} compact />
+                          <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {p.views_count || 0}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <h3 className="font-body font-semibold text-foreground text-sm truncate">{p.title}</h3>
-                        <p className="text-xs text-muted-foreground font-body flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3" /> {p.city}, {p.state}
-                        </p>
-                      </div>
-                      <Badge className={`text-xs shrink-0 ${statusColors[p.status] || ""}`}>{p.status}</Badge>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="ghost" className="text-xs gap-1" onClick={() => openEdit(p)}>
+                        <Edit className="w-3 h-3" /> Edit
+                      </Button>
+                      <Link to={`/property/${p.id}`}>
+                        <Button size="sm" variant="ghost" className="text-xs gap-1">
+                          <ExternalLink className="w-3 h-3" /> View
+                        </Button>
+                      </Link>
+                      {percentage >= 95 && !p.verified && (
+                        <Button size="sm" variant="ghost" className="text-xs gap-1 text-primary" onClick={() => requestVerification(p.id)}>
+                          <ShieldCheck className="w-3 h-3" /> Request Verification
+                        </Button>
+                      )}
                     </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <p className="text-base font-display font-bold text-accent">{fmt(p.price)}</p>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground font-body">
-                        <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {p.views_count || 0}</span>
-                        {p.bedrooms && <span>{p.bedrooms} bed</span>}
-                        {p.bathrooms && <span>{p.bathrooms} bath</span>}
-                        {p.area_sqm && <span>{p.area_sqm}m²</span>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="ghost" className="text-xs gap-1" onClick={() => openEdit(p)}>
-                      <Edit className="w-3 h-3" /> Edit
+                    <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => deleteProperty(p.id)}>
+                      <Trash2 className="w-3 h-3" />
                     </Button>
-                    <Link to={`/property/${p.id}`}>
-                      <Button size="sm" variant="ghost" className="text-xs gap-1">
-                        <ExternalLink className="w-3 h-3" /> View
-                      </Button>
-                    </Link>
-                    {(p.status === "active" || p.status === "inactive" || p.status === "draft") && (
-                      <Button size="sm" variant="ghost" className="text-xs" onClick={() => toggleStatus(p.id, p.status)}>
-                        {p.status === "active" ? "Deactivate" : "Activate"}
-                      </Button>
-                    )}
                   </div>
-                  <Button size="sm" variant="ghost" className="text-xs text-destructive hover:text-destructive" onClick={() => deleteProperty(p.id)}>
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </DashboardLayout>
