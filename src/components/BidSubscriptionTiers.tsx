@@ -180,11 +180,11 @@ const BidSubscriptionTiers = () => {
                   </ul>
                   <Button
                     onClick={() => handleSubscribe(tier.id)}
-                    disabled={isCurrent || loading}
+                    disabled={isCurrent || loading || subscribing === tier.id}
                     variant={tier.popular ? "default" : "outline"}
                     className={`w-full ${tier.popular ? "bg-accent hover:bg-accent/90 text-accent-foreground" : ""}`}
                   >
-                    {isCurrent ? "Current Plan" : tier.price === 0 ? "Get Started" : "Subscribe"}
+                    {isCurrent ? "Current Plan" : subscribing === tier.id ? "Processing..." : tier.price === 0 ? "Get Started" : "Subscribe"}
                   </Button>
                 </CardContent>
               </Card>
