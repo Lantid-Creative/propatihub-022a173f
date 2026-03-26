@@ -27,6 +27,7 @@ import Privacy from "./pages/Privacy";
 import Blog from "./pages/Blog";
 import Press from "./pages/Press";
 import Sitemap from "./pages/Sitemap";
+import BlogPost from "./pages/BlogPost";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -91,6 +92,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/press" element={<Press />} />
             <Route path="/sitemap" element={<Sitemap />} />
 
