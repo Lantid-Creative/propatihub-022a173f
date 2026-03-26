@@ -131,7 +131,7 @@ const Properties = () => {
       <div className="bg-primary relative">
         <Navbar />
 
-        <div className="px-6 pb-8 pt-4">
+        <div className="px-6 pb-8 pt-20">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-display font-bold text-primary-foreground mb-6">
               Find Properties
