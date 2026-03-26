@@ -9,7 +9,7 @@ import { blogPosts } from "@/data/blogPosts";
 
 const Blog = () => (
   <div className="min-h-screen flex flex-col bg-background">
-    <PageSEO title="Blog — Property Tips & Market Insights" description="Property insights, market trends, and expert tips for buyers, renters, and investors in the Nigerian property market." canonical="/blog" />
+    <PageSEO title="Blog — Property Tips & Market Insights" description="Property insights, market trends, and expert tips for buyers, renters, and investors in the Nigerian property market." canonical="/blog" ogImage="https://propatihub.lovable.app/og-blog.png" />
     <Navbar />
     <section className="bg-primary pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">
