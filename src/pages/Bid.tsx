@@ -1,10 +1,11 @@
 import PageSEO from "@/components/PageSEO";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, MapPin, Gavel, TrendingUp, Shield, Users } from "lucide-react";
+import { Search, MapPin, Gavel, TrendingUp, Shield, Users, Clock, Banknote, ShieldCheck, Crown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import BidSubscriptionTiers from "@/components/BidSubscriptionTiers";
 import heroImg from "@/assets/hero-for-sale.jpg";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCazL5Cqw90gNr2Kn28q3iXIfdwmI4Coss";
@@ -147,36 +148,45 @@ const Bid = () => {
         </div>
       </section>
 
-      {/* How Bidding Works */}
+      {/* How Bidding Works - Updated */}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground text-center mb-12">
             How bidding works on PropatiHub
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
                 step: "1",
-                icon: Search,
-                title: "Find a property",
-                desc: "Browse properties listed for bidding. All listings are verified and complete with full property details.",
+                icon: ShieldCheck,
+                title: "Verify your identity",
+                desc: "Complete KYC with your BVN or NIN. This ensures only verified, serious buyers participate.",
               },
               {
                 step: "2",
-                icon: Gavel,
-                title: "Place your bid",
-                desc: "Enter your best offer. All bids are visible in real-time so you can see where you stand against other bidders.",
+                icon: Crown,
+                title: "Choose a plan",
+                desc: "Select a subscription tier that matches your investment level for access to higher-value properties.",
               },
               {
                 step: "3",
-                icon: Shield,
-                title: "Secure the deal",
-                desc: "The property owner or agent reviews bids and can accept the best offer. All transactions happen within PropatiHub.",
+                icon: Banknote,
+                title: "Place deposit & bid",
+                desc: "Pay a refundable deposit (5% of property value) to bid. Deposits are returned if you don't win.",
+              },
+              {
+                step: "4",
+                icon: Gavel,
+                title: "Win & complete",
+                desc: "Highest bid wins when the auction timer ends. Winners have 7–14 days to complete payment.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
-                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 relative">
                   <item.icon className="w-6 h-6 text-accent" />
+                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center justify-center">
+                    {item.step}
+                  </span>
                 </div>
                 <h3 className="font-display text-lg font-bold text-foreground mb-2">{item.title}</h3>
                 <p className="font-body text-sm text-muted-foreground">{item.desc}</p>
@@ -186,33 +196,67 @@ const Bid = () => {
         </div>
       </section>
 
-      {/* Benefits */}
+      {/* Bidding Conditions */}
       <section className="py-16 px-6 bg-muted/50">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6">
-              Why bid on PropatiHub?
-            </h2>
-            <ul className="space-y-4">
-              {[
-                { icon: TrendingUp, title: "Transparent pricing", desc: "All bids are visible in real-time. No hidden offers or backroom deals." },
-                { icon: Shield, title: "Verified properties", desc: "Every bidding property has complete details and has been verified by our team." },
-                { icon: Users, title: "Open to everyone", desc: "Whether you're a buyer, agent, agency, or homeowner — everyone can bid." },
-                { icon: Gavel, title: "Fair competition", desc: "The highest bid wins. Simple, fair, and transparent for all parties." },
-              ].map((item) => (
-                <li key={item.title} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <item.icon className="w-4 h-4 text-accent" />
-                  </div>
-                  <div>
-                    <strong className="font-body text-sm font-semibold text-foreground">{item.title}:</strong>
-                    <span className="font-body text-sm text-muted-foreground ml-1">{item.desc}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+        <div className="max-w-7xl mx-auto">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground text-center mb-4">
+            Bidding Conditions & Rules
+          </h2>
+          <p className="font-body text-muted-foreground text-center max-w-2xl mx-auto mb-12">
+            Fair, transparent, and legally compliant property auctions.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "KYC & Financial Verification",
+                desc: "All bidders must verify identity with BVN or NIN. Proof of funds required for high-value bids above ₦50M.",
+              },
+              {
+                icon: Banknote,
+                title: "Refundable Bid Deposit",
+                desc: "5% deposit required before bidding. Fully refunded if you don't win. Forfeited if winner defaults on payment.",
+              },
+              {
+                icon: Clock,
+                title: "Time-Limited Auctions",
+                desc: "24–72 hour bidding windows. Auctions auto-extend by 5 minutes if bids come in the final minutes.",
+              },
+              {
+                icon: Shield,
+                title: "Reserve Price Protection",
+                desc: "Sellers set a minimum acceptable price. No property sells below the reserve — protecting both parties.",
+              },
+              {
+                icon: TrendingUp,
+                title: "Winner Payment Deadline",
+                desc: "Winners have 7–14 days to complete full payment. Failure forfeits the deposit and the next highest bidder wins.",
+              },
+              {
+                icon: Users,
+                title: "Premium Early Access",
+                desc: "Pro and Enterprise subscribers get listings before public users, plus an early bidding window advantage.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="bg-card rounded-xl p-6 border border-border">
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                  <item.icon className="w-5 h-5 text-accent" />
+                </div>
+                <h3 className="font-display text-base font-bold text-foreground mb-2">{item.title}</h3>
+                <p className="font-body text-sm text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
           </div>
-          <div className="bg-card rounded-2xl p-8 text-center shadow-lg">
+        </div>
+      </section>
+
+      {/* Subscription Tiers */}
+      <BidSubscriptionTiers />
+
+      {/* CTA */}
+      <section className="py-16 px-6 bg-muted/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-card rounded-2xl p-8 text-center shadow-lg max-w-xl mx-auto">
             <Gavel className="w-12 h-12 text-accent mx-auto mb-4" />
             <h3 className="font-display text-xl font-bold text-foreground mb-2">Ready to start bidding?</h3>
             <p className="font-body text-sm text-muted-foreground mb-6">

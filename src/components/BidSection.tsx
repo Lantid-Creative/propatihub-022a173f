@@ -6,12 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Gavel, TrendingUp, Users, Clock } from "lucide-react";
+import { Gavel, TrendingUp, Users, Clock, ShieldCheck, Banknote } from "lucide-react";
 import { Link } from "react-router-dom";
+import AuctionCountdown from "./AuctionCountdown";
+import KYCVerificationCard from "./KYCVerificationCard";
 
 interface BidSectionProps {
   propertyId: string;
   askingPrice: number;
+  reservePrice?: number;
+  auctionEndAt?: string;
+  auctionStartAt?: string;
+  auctionStatus?: string;
+  depositPercentage?: number;
+  winnerPaymentDays?: number;
 }
 
 interface Bid {
@@ -20,16 +28,43 @@ interface Bid {
   amount: number;
   status: string;
   created_at: string;
+  is_winner?: boolean;
   profile?: { full_name: string | null };
 }
 
-const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
+const BidSection = ({
+  propertyId,
+  askingPrice,
+  reservePrice,
+  auctionEndAt,
+  auctionStartAt,
+  auctionStatus,
+  depositPercentage = 5,
+  winnerPaymentDays = 7,
+}: BidSectionProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [bids, setBids] = useState<Bid[]>([]);
   const [bidAmount, setBidAmount] = useState("");
   const [placing, setPlacing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [kycStatus, setKycStatus] = useState<string>("none");
+  const [kycLoading, setKycLoading] = useState(true);
+
+  // Check KYC status
+  useEffect(() => {
+    if (!user) { setKycLoading(false); return; }
+    const checkKyc = async () => {
+      const { data } = await supabase
+        .from("kyc_verifications")
+        .select("verification_status")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setKycStatus(data?.verification_status || "none");
+      setKycLoading(false);
+    };
+    checkKyc();
+  }, [user]);
 
   const fetchBids = async () => {
     const { data } = await supabase
@@ -40,7 +75,6 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
       .order("amount", { ascending: false });
 
     if (data) {
-      // Fetch bidder profiles
       const bidderIds = [...new Set(data.map((b: any) => b.bidder_id))];
       const { data: profiles } = await supabase
         .from("profiles")
@@ -60,35 +94,28 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
 
   useEffect(() => {
     fetchBids();
-
-    // Subscribe to realtime bid updates
     const channel = supabase
       .channel(`bids-${propertyId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "bids",
-          filter: `property_id=eq.${propertyId}`,
-        },
-        () => {
-          fetchBids();
-        }
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "bids", filter: `property_id=eq.${propertyId}` }, () => fetchBids())
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [propertyId]);
 
   const highestBid = bids.length > 0 ? bids[0].amount : 0;
   const totalBids = bids.length;
+  const depositAmount = Math.round((highestBid > 0 ? highestBid : askingPrice) * (depositPercentage / 100));
+  const auctionEnded = auctionEndAt && new Date(auctionEndAt).getTime() <= Date.now();
+  const auctionNotStarted = auctionStartAt && new Date(auctionStartAt).getTime() > Date.now();
+  const canBid = !auctionEnded && !auctionNotStarted && kycStatus === "verified";
 
   const handlePlaceBid = async () => {
     if (!user) {
       toast({ title: "Sign in required", description: "Please sign in to place a bid.", variant: "destructive" });
+      return;
+    }
+
+    if (kycStatus !== "verified") {
+      toast({ title: "KYC Required", description: "Complete your identity verification before bidding.", variant: "destructive" });
       return;
     }
 
@@ -98,12 +125,13 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
       return;
     }
 
+    if (reservePrice && amount < reservePrice) {
+      toast({ title: "Below reserve", description: `Bid must be at least ₦${reservePrice.toLocaleString()} (reserve price).`, variant: "destructive" });
+      return;
+    }
+
     if (highestBid > 0 && amount <= highestBid) {
-      toast({
-        title: "Bid too low",
-        description: `Your bid must be higher than the current highest bid of ₦${highestBid.toLocaleString()}.`,
-        variant: "destructive",
-      });
+      toast({ title: "Bid too low", description: `Your bid must be higher than ₦${highestBid.toLocaleString()}.`, variant: "destructive" });
       return;
     }
 
@@ -117,7 +145,7 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Bid placed!", description: `Your bid of ₦${amount.toLocaleString()} has been placed successfully.` });
+      toast({ title: "Bid placed!", description: `Your bid of ₦${amount.toLocaleString()} has been placed.` });
       setBidAmount("");
       fetchBids();
     }
@@ -138,12 +166,18 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
 
   return (
     <div className="space-y-4">
+      {/* Auction Timer */}
+      {auctionEndAt && (
+        <AuctionCountdown endAt={auctionEndAt} startAt={auctionStartAt} status={auctionStatus} />
+      )}
+
       {/* Bid Summary */}
       <Card className="border-accent/30 bg-accent/5">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Gavel className="w-5 h-5 text-accent" />
             Bidding
+            {auctionEnded && <Badge variant="secondary">Ended</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -162,38 +196,88 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
             </div>
           </div>
 
-          <div className="bg-muted rounded-lg p-3">
-            <p className="text-xs font-body text-muted-foreground">Asking Price</p>
-            <p className="font-display text-lg font-bold text-foreground">{formatPrice(askingPrice)}</p>
-          </div>
-
-          {/* Place Bid */}
-          <div className="space-y-3">
-            <label className="font-body text-sm font-medium text-foreground block">Place your bid (₦)</label>
-            <Input
-              type="text"
-              value={bidAmount}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/[^0-9]/g, "");
-                setBidAmount(raw ? parseInt(raw).toLocaleString() : "");
-              }}
-              placeholder={highestBid > 0 ? `Min: ₦${(highestBid + 1).toLocaleString()}` : `e.g. ${formatPrice(askingPrice)}`}
-              className="text-lg font-display font-bold"
-            />
-            <Button
-              onClick={handlePlaceBid}
-              disabled={placing || !bidAmount}
-              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-            >
-              <Gavel className="w-4 h-4 mr-2" />
-              {placing ? "Placing bid..." : "Place Bid"}
-            </Button>
-            {!user && (
-              <p className="text-xs text-muted-foreground font-body text-center">
-                <Link to="/auth" className="text-accent hover:underline">Sign in</Link> to place a bid
-              </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-xs font-body text-muted-foreground">Asking Price</p>
+              <p className="font-display text-sm font-bold text-foreground">{formatPrice(askingPrice)}</p>
+            </div>
+            {reservePrice && (
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-xs font-body text-muted-foreground">Reserve Price</p>
+                <p className="font-display text-sm font-bold text-foreground">{formatPrice(reservePrice)}</p>
+              </div>
             )}
           </div>
+
+          {/* Deposit Info */}
+          <div className="bg-muted/50 border border-border rounded-lg p-3 flex items-start gap-2">
+            <Banknote className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+            <div>
+              <p className="font-body text-xs font-semibold text-foreground">Refundable Deposit Required</p>
+              <p className="font-body text-xs text-muted-foreground">
+                {depositPercentage}% deposit ({formatPrice(depositAmount)}) required. Refunded if you don't win. Forfeited if winner defaults.
+              </p>
+            </div>
+          </div>
+
+          {/* Winner Deadline */}
+          <div className="bg-muted/50 border border-border rounded-lg p-3 flex items-start gap-2">
+            <Clock className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+            <div>
+              <p className="font-body text-xs font-semibold text-foreground">Winner Payment Deadline</p>
+              <p className="font-body text-xs text-muted-foreground">
+                {winnerPaymentDays} days to complete payment after winning. Failure forfeits deposit.
+              </p>
+            </div>
+          </div>
+
+          {/* KYC Status */}
+          {user && !kycLoading && kycStatus !== "verified" && (
+            <KYCVerificationCard onVerified={() => setKycStatus("pending")} />
+          )}
+          {user && kycStatus === "verified" && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-green-500/5 rounded-lg border border-green-500/20">
+              <ShieldCheck className="w-4 h-4 text-green-600" />
+              <span className="font-body text-xs text-green-700">Identity Verified — You can bid</span>
+            </div>
+          )}
+
+          {/* Place Bid */}
+          {!auctionEnded && (
+            <div className="space-y-3">
+              <label className="font-body text-sm font-medium text-foreground block">Place your bid (₦)</label>
+              <Input
+                type="text"
+                value={bidAmount}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^0-9]/g, "");
+                  setBidAmount(raw ? parseInt(raw).toLocaleString() : "");
+                }}
+                placeholder={
+                  reservePrice && highestBid === 0
+                    ? `Min: ${formatPrice(reservePrice)}`
+                    : highestBid > 0
+                    ? `Min: ${formatPrice(highestBid + 1)}`
+                    : `e.g. ${formatPrice(askingPrice)}`
+                }
+                className="text-lg font-display font-bold"
+                disabled={!canBid}
+              />
+              <Button
+                onClick={handlePlaceBid}
+                disabled={placing || !bidAmount || !canBid}
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
+              >
+                <Gavel className="w-4 h-4 mr-2" />
+                {placing ? "Placing bid..." : auctionNotStarted ? "Auction not started" : !user ? "Sign in to bid" : kycStatus !== "verified" ? "Complete KYC first" : "Place Bid"}
+              </Button>
+              {!user && (
+                <p className="text-xs text-muted-foreground font-body text-center">
+                  <Link to="/auth" className="text-accent hover:underline">Sign in</Link> to place a bid
+                </p>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -201,7 +285,7 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
       {bids.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Bid History</CardTitle>
+            <CardTitle className="text-lg">Bid History ({totalBids})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -229,9 +313,8 @@ const BidSection = ({ propertyId, askingPrice }: BidSectionProps) => {
                   </div>
                   <div className="text-right">
                     <p className="font-display font-bold text-foreground">{formatPrice(bid.amount)}</p>
-                    {i === 0 && (
-                      <Badge className="bg-accent text-accent-foreground text-[10px]">Highest</Badge>
-                    )}
+                    {i === 0 && <Badge className="bg-accent text-accent-foreground text-[10px]">Highest</Badge>}
+                    {bid.is_winner && <Badge className="bg-green-600 text-white text-[10px]">Winner</Badge>}
                   </div>
                 </div>
               ))}
