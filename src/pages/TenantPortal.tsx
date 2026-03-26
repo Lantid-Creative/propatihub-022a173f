@@ -8,9 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList
+  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList, Scale, Eye
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TenantRecordForm from "@/components/TenantRecordForm";
+import ReactMarkdown from "react-markdown";
 
 const TenantPortal = () => {
   const { user } = useAuth();
@@ -23,6 +25,8 @@ const TenantPortal = () => {
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState<string | null>(null);
   const [paying, setPaying] = useState<string | null>(null);
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [viewingContract, setViewingContract] = useState<any | null>(null);
 
   // Maintenance form
   const [maintOpen, setMaintOpen] = useState(false);
@@ -91,6 +95,14 @@ const TenantPortal = () => {
         .order("created_at", { ascending: false });
       setMaintenance(maint || []);
     }
+
+    // Fetch contracts
+    const { data: cons } = await supabase
+      .from("legal_contracts")
+      .select("*")
+      .eq("tenant_id", user!.id)
+      .order("created_at", { ascending: false });
+    setContracts(cons || []);
 
     setLoading(false);
   };
@@ -491,6 +503,53 @@ const TenantPortal = () => {
             )}
           </div>
         )}
+
+        {/* My Contracts */}
+        <div className="mt-10">
+          <h2 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
+            <Scale className="w-5 h-5 text-accent" /> My Legal Contracts
+          </h2>
+
+          {viewingContract && (
+            <Dialog open={!!viewingContract} onOpenChange={() => setViewingContract(null)}>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="font-display">{viewingContract.title}</DialogTitle>
+                </DialogHeader>
+                <div className="prose prose-sm max-w-none font-body text-foreground">
+                  <ReactMarkdown>{viewingContract.content}</ReactMarkdown>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {contracts.length === 0 ? (
+            <Card><CardContent className="py-8 text-center">
+              <Scale className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground font-body">No contracts yet. Your landlord can generate contracts for your tenancy.</p>
+            </CardContent></Card>
+          ) : (
+            <div className="space-y-3">
+              {contracts.map((c) => (
+                <Card key={c.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-body font-semibold text-foreground text-sm">{c.title}</p>
+                        <p className="text-xs text-muted-foreground font-body mt-1">
+                          {c.contract_type.replace("_", " ")} · {new Date(c.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline" onClick={() => setViewingContract(c)}>
+                        <Eye className="w-3 h-3 mr-1" /> View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </DashboardLayout>
   );
