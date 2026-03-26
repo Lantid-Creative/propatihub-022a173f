@@ -96,6 +96,14 @@ const TenantPortal = () => {
       setMaintenance(maint || []);
     }
 
+    // Fetch contracts
+    const { data: cons } = await supabase
+      .from("legal_contracts")
+      .select("*")
+      .eq("tenant_id", user!.id)
+      .order("created_at", { ascending: false });
+    setContracts(cons || []);
+
     setLoading(false);
   };
 
