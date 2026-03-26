@@ -1,11 +1,38 @@
+import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, MessageSquare, Search, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const UserDashboard = () => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
+  const [stats, setStats] = useState({ favorites: 0, inquiries: 0, searches: 0 });
+
+  useEffect(() => {
+    if (!user) return;
+    const fetch = async () => {
+      const [favs, inqs, searches] = await Promise.all([
+        supabase.from("favorites").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("saved_searches").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      ]);
+      setStats({
+        favorites: favs.count || 0,
+        inquiries: inqs.count || 0,
+        searches: searches.count || 0,
+      });
+    };
+    fetch();
+  }, [user]);
+
+  const cards = [
+    { label: "Favourites", value: stats.favorites, icon: Heart, href: "/dashboard/favourites" },
+    { label: "Inquiries Sent", value: stats.inquiries, icon: MessageSquare, href: "/dashboard/inquiries" },
+    { label: "Saved Searches", value: stats.searches, icon: Search, href: "/dashboard/searches" },
+    { label: "Browse Properties", value: "→", icon: Building2, href: "/properties" },
+  ];
 
   return (
     <DashboardLayout>
@@ -17,12 +44,7 @@ const UserDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: "Favourites", value: "0", icon: Heart, href: "/dashboard/favourites" },
-          { label: "Inquiries Sent", value: "0", icon: MessageSquare, href: "/dashboard/inquiries" },
-          { label: "Saved Searches", value: "0", icon: Search, href: "/dashboard/searches" },
-          { label: "Properties Viewed", value: "0", icon: Building2, href: "/" },
-        ].map((s) => (
+        {cards.map((s) => (
           <Link key={s.label} to={s.href}>
             <Card className="hover:border-accent/50 transition-colors">
               <CardContent className="p-5">
@@ -38,7 +60,7 @@ const UserDashboard = () => {
       <Card>
         <CardHeader><CardTitle>Getting Started</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <Link to="/" className="block p-3 rounded-lg bg-muted hover:bg-accent/10 font-body text-sm text-foreground transition-colors">
+          <Link to="/properties" className="block p-3 rounded-lg bg-muted hover:bg-accent/10 font-body text-sm text-foreground transition-colors">
             🏠 Browse properties across Nigeria
           </Link>
           <Link to="/dashboard/searches" className="block p-3 rounded-lg bg-muted hover:bg-accent/10 font-body text-sm text-foreground transition-colors">
