@@ -34,6 +34,10 @@ const emptyForm = {
   features: "", images: [] as string[], floor_plan_url: "", virtual_tour_url: "",
   virtual_tour_video_url: "", year_built: "", parking_spaces: "", furnishing: "",
   condition: "", service_charge: "", caution_fee: "",
+  // Auction fields
+  reserve_price: "", auction_start_at: "", auction_end_at: "",
+  deposit_percentage: "5", winner_payment_deadline_days: "7",
+  auction_auto_extend: true, auction_extend_minutes: "5",
 };
 
 type FormData = typeof emptyForm;
