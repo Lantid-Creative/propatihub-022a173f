@@ -8,9 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList
+  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList, Scale, Eye
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TenantRecordForm from "@/components/TenantRecordForm";
+import ReactMarkdown from "react-markdown";
 
 const TenantPortal = () => {
   const { user } = useAuth();
