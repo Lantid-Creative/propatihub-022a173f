@@ -12,6 +12,7 @@ import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import ForSale from "./pages/ForSale";
 import ToRent from "./pages/ToRent";
+import Bid from "./pages/Bid";
 import FindAgents from "./pages/FindAgents";
 import HousePrices from "./pages/HousePrices";
 import PropertyValuation from "./pages/PropertyValuation";
@@ -80,6 +81,7 @@ const App = () => (
             <Route path="/property/:id" element={<PropertyDetail />} />
             <Route path="/for-sale" element={<ForSale />} />
             <Route path="/to-rent" element={<ToRent />} />
+            <Route path="/bid" element={<Bid />} />
             <Route path="/find-agents" element={<FindAgents />} />
             <Route path="/house-prices" element={<HousePrices />} />
             <Route path="/property-valuation" element={<PropertyValuation />} />

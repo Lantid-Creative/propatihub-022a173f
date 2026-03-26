@@ -19,6 +19,7 @@ const listingTypeLabels: Record<string, string> = {
   rent: "For Rent",
   short_let: "Short Let",
   land: "Land",
+  bid: "For Bidding",
 };
 
 const Properties = () => {
@@ -50,7 +51,7 @@ const Properties = () => {
       .order("created_at", { ascending: false });
 
     if (filters.listing_type !== "all") {
-      query = query.eq("listing_type", filters.listing_type as "sale" | "rent" | "short_let" | "land");
+      query = query.eq("listing_type", filters.listing_type as any);
     }
     if (filters.property_type !== "all") {
       query = query.eq("property_type", filters.property_type as "house" | "apartment" | "land" | "commercial" | "short_let");
@@ -186,6 +187,7 @@ const Properties = () => {
                     <SelectItem value="rent">For Rent</SelectItem>
                     <SelectItem value="short_let">Short Let</SelectItem>
                     <SelectItem value="land">Land</SelectItem>
+                    <SelectItem value="bid">For Bidding</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

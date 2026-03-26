@@ -15,12 +15,14 @@ import {
 import logoDark from "@/assets/logo-dark.png";
 import MortgageCalculator from "@/components/MortgageCalculator";
 import PropertyMap from "@/components/PropertyMap";
+import BidSection from "@/components/BidSection";
 
 const listingTypeLabels: Record<string, string> = {
   sale: "For Sale",
   rent: "For Rent",
   short_let: "Short Let",
   land: "Land",
+  bid: "For Bidding",
 };
 
 const PropertyDetail = () => {
@@ -331,6 +333,11 @@ const PropertyDetail = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Bid Section for bid listings */}
+            {property.listing_type === "bid" && (
+              <BidSection propertyId={property.id} askingPrice={property.price} />
+            )}
 
             {/* Map */}
             <PropertyMap

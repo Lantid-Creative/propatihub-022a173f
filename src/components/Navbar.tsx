@@ -18,6 +18,7 @@ const Navbar = () => {
   const navLinks = [
     { label: "Buy", href: "/for-sale" },
     { label: "Rent", href: "/to-rent" },
+    { label: "Bid", href: "/bid" },
     { label: "House Prices", href: "/house-prices" },
     { label: "Find Agents", href: "/find-agents" },
     { label: "Valuation", href: "/property-valuation" },

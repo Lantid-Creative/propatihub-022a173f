@@ -9,6 +9,7 @@ const tabs = [
   { label: "Rent", type: "rent" },
   { label: "Short Let", type: "short_let" },
   { label: "Land", type: "land" },
+  { label: "Bid", type: "bid" },
 ];
 
 const placeholders: Record<string, string> = {
@@ -16,6 +17,7 @@ const placeholders: Record<string, string> = {
   Rent: "e.g. Abuja, Wuse, Maitama...",
   "Short Let": "e.g. Ikeja GRA, Banana Island...",
   Land: "e.g. Epe, Ibeju-Lekki, Lugbe...",
+  Bid: "e.g. Lekki, Banana Island, Abuja...",
 };
 
 const loadGoogleMaps = (): Promise<void> => {
