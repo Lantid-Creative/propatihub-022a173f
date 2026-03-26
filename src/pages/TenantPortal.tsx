@@ -233,6 +233,26 @@ const TenantPortal = () => {
 
   const formatPrice = (p: number) => `₦${p.toLocaleString()}`;
 
+  const handleRequestPayout = async (escrowId: string) => {
+    const autoReleaseAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase
+      .from("caution_fee_escrow")
+      .update({
+        escrow_status: "release_requested",
+        release_requested_at: new Date().toISOString(),
+        release_requested_by: "tenant",
+        auto_release_at: autoReleaseAt,
+      } as any)
+      .eq("id", escrowId);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Payout requested", description: "The landlord has 72 hours to approve or reject. Auto-payout applies after that." });
+      fetchAll();
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
