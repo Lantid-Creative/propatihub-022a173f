@@ -195,6 +195,27 @@ const PropertyManagement = () => {
     }
   };
 
+  const handleGenerateContract = async () => {
+    if (!contractForm.tenancy_id) {
+      toast({ title: "Select a tenancy", variant: "destructive" });
+      return;
+    }
+    setGeneratingContract(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-contract", {
+        body: { tenancy_id: contractForm.tenancy_id, contract_type: contractForm.contract_type },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Contract generated!", description: "Your AI-drafted legal contract is ready." });
+      setViewingContract(data.contract);
+      fetchAll();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message || "Failed to generate contract", variant: "destructive" });
+    }
+    setGeneratingContract(false);
+  };
+
   const formatPrice = (p: number) => `₦${p.toLocaleString()}`;
 
   const statusBadge = (status: string) => {
