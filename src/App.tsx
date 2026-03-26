@@ -64,6 +64,8 @@ import UserSearches from "./pages/user/UserSearches";
 import UserSettings from "./pages/user/UserSettings";
 import CookieConsent from "./components/CookieConsent";
 import MessagesPage from "./pages/MessagesPage";
+import PropertyManagement from "./pages/PropertyManagement";
+import TenantPortal from "./pages/TenantPortal";
 
 const queryClient = new QueryClient();
 
