@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import logoDark from "@/assets/logo-dark.png";
+import badgeAppStore from "@/assets/badge-app-store.png";
+import badgeGooglePlay from "@/assets/badge-google-play.png";
 
 const footerColumns = [
   {
@@ -153,14 +155,22 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Second row of links + copyright */}
+      {/* App download + copyright */}
       <div className="border-t border-background/10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
               <Link to="/" className="shrink-0">
                 <img src={logoDark} alt="PropatiHub" className="h-6 w-auto opacity-60" />
               </Link>
+              <div className="flex items-center gap-3">
+                <a href="#" aria-label="Download on the App Store">
+                  <img src={badgeAppStore} alt="Download on the App Store" className="h-10 w-auto" loading="lazy" />
+                </a>
+                <a href="#" aria-label="Get it on Google Play">
+                  <img src={badgeGooglePlay} alt="Get it on Google Play" className="h-10 w-auto" loading="lazy" />
+                </a>
+              </div>
             </div>
             <p className="font-body text-xs text-background/40">
               © 2026 PropatiHub. All rights reserved.
