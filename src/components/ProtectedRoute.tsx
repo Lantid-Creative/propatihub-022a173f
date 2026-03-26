@@ -20,6 +20,9 @@ const ProtectedRoute = ({ children, requiredRole }: Props) => {
   if (!user) return <Navigate to="/auth" replace />;
 
   if (requiredRole && !hasRole(requiredRole) && !hasRole("admin")) {
+    // Redirect to the user's own portal
+    if (hasRole("agent")) return <Navigate to="/agent" replace />;
+    if (hasRole("agency")) return <Navigate to="/agency" replace />;
     return <Navigate to="/dashboard" replace />;
   }
 
