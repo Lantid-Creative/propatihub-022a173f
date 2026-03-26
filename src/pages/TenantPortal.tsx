@@ -25,6 +25,8 @@ const TenantPortal = () => {
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState<string | null>(null);
   const [paying, setPaying] = useState<string | null>(null);
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [viewingContract, setViewingContract] = useState<any | null>(null);
 
   // Maintenance form
   const [maintOpen, setMaintOpen] = useState(false);
