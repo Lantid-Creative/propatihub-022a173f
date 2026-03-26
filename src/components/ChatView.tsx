@@ -374,7 +374,6 @@ const ChatView = ({ onBack }: ChatViewProps) => {
               <p className="text-[10px] text-muted-foreground font-body ml-[18px] mt-0.5">
                 All chats and transactions must be conducted exclusively on PropatiHub. Off-platform dealings are prohibited and not protected.
               </p>
-              </p>
             </div>
 
             {/* Messages */}
