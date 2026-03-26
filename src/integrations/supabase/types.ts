@@ -289,6 +289,78 @@ export type Database = {
           },
         ]
       }
+      disputes: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string
+          description: string
+          evidence_urls: string[] | null
+          filed_against: string | null
+          filed_by: string
+          id: string
+          priority: string
+          property_id: string
+          resolution_summary: string | null
+          resolved_at: string | null
+          status: string
+          subject: string
+          tenancy_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          description: string
+          evidence_urls?: string[] | null
+          filed_against?: string | null
+          filed_by: string
+          id?: string
+          priority?: string
+          property_id: string
+          resolution_summary?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject: string
+          tenancy_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          evidence_urls?: string[] | null
+          filed_against?: string | null
+          filed_by?: string
+          id?: string
+          priority?: string
+          property_id?: string
+          resolution_summary?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject?: string
+          tenancy_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_tenancy_id_fkey"
+            columns: ["tenancy_id"]
+            isOneToOne: false
+            referencedRelation: "tenancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           created_at: string
