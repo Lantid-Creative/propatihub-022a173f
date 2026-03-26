@@ -16,6 +16,8 @@ const researchTools = [
   { label: "Find estate agents", href: "/find-agents" },
   { label: "Buying guide", href: "/buying-guide" },
   { label: "Renting guide", href: "/renting-guide" },
+  { label: "Property management", href: "/property-management" },
+  { label: "Tenant portal", href: "/tenant-portal" },
 ];
 
 const ExploreSection = () => {

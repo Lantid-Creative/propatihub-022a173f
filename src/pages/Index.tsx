@@ -1,6 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import FeaturedProperties from "@/components/FeaturedProperties";
 import ToolsSection from "@/components/ToolsSection";
+import PMShowcaseSection from "@/components/PMShowcaseSection";
 import LocationsSection from "@/components/LocationsSection";
 import ExploreSection from "@/components/ExploreSection";
 import AlertSection from "@/components/AlertSection";
@@ -12,6 +13,7 @@ const Index = () => {
       <HeroSection />
       <FeaturedProperties />
       <ToolsSection />
+      <PMShowcaseSection />
       <LocationsSection />
       <ExploreSection />
       <AlertSection />
