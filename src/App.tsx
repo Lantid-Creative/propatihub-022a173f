@@ -15,6 +15,18 @@ import ToRent from "./pages/ToRent";
 import FindAgents from "./pages/FindAgents";
 import HousePrices from "./pages/HousePrices";
 import PropertyValuation from "./pages/PropertyValuation";
+import MortgageCalculatorPage from "./pages/MortgageCalculatorPage";
+import BuyingGuide from "./pages/BuyingGuide";
+import RentingGuide from "./pages/RentingGuide";
+import About from "./pages/About";
+import Careers from "./pages/Careers";
+import Contact from "./pages/Contact";
+import Advertise from "./pages/Advertise";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Blog from "./pages/Blog";
+import Press from "./pages/Press";
+import Sitemap from "./pages/Sitemap";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -68,6 +80,18 @@ const App = () => (
             <Route path="/find-agents" element={<FindAgents />} />
             <Route path="/house-prices" element={<HousePrices />} />
             <Route path="/property-valuation" element={<PropertyValuation />} />
+            <Route path="/mortgage-calculator" element={<MortgageCalculatorPage />} />
+            <Route path="/buying-guide" element={<BuyingGuide />} />
+            <Route path="/renting-guide" element={<RentingGuide />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/advertise" element={<Advertise />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/press" element={<Press />} />
+            <Route path="/sitemap" element={<Sitemap />} />
 
             {/* Admin Portal */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
