@@ -50,10 +50,10 @@ const Properties = () => {
       .order("created_at", { ascending: false });
 
     if (filters.listing_type !== "all") {
-      query = query.eq("listing_type", filters.listing_type);
+      query = query.eq("listing_type", filters.listing_type as "sale" | "rent" | "short_let" | "land");
     }
     if (filters.property_type !== "all") {
-      query = query.eq("property_type", filters.property_type);
+      query = query.eq("property_type", filters.property_type as "house" | "apartment" | "land" | "commercial" | "short_let");
     }
     if (filters.state !== "All States") {
       query = query.eq("state", filters.state);
