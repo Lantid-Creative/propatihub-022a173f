@@ -35,6 +35,8 @@ const PropertyManagement = () => {
   const [generatingContract, setGeneratingContract] = useState(false);
   const [contractForm, setContractForm] = useState({ tenancy_id: "", contract_type: "tenancy_agreement" });
   const [viewingContract, setViewingContract] = useState<any | null>(null);
+  const [rejectingEscrowId, setRejectingEscrowId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   // Invite form
   const [inviteOpen, setInviteOpen] = useState(false);
