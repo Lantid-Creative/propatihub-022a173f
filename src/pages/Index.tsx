@@ -3,6 +3,7 @@ import FeaturedProperties from "@/components/FeaturedProperties";
 import ToolsSection from "@/components/ToolsSection";
 import PMShowcaseSection from "@/components/PMShowcaseSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
+import DigitalDocsSection from "@/components/DigitalDocsSection";
 import LocationsSection from "@/components/LocationsSection";
 import ExploreSection from "@/components/ExploreSection";
 import AlertSection from "@/components/AlertSection";
@@ -17,6 +18,7 @@ const Index = () => {
       <ToolsSection />
       <PMShowcaseSection />
       <HowItWorksSection />
+      <DigitalDocsSection />
       <TrustSection />
       <LocationsSection />
       <ExploreSection />
