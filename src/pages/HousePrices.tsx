@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, TrendingUp, BarChart3, Home, Calculator, MapPin } from "lucide-react";
@@ -66,6 +67,7 @@ const HousePrices = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO title="House Prices in Nigeria" description="Research property prices across Nigeria. Compare house prices by state, city, and property type to make informed decisions." canonical="/house-prices" />
       <section className="relative min-h-[480px]">
         <img src={heroImg} alt="Research house prices" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />

@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -16,6 +17,7 @@ const sections = [
 
 const Privacy = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <PageSEO title="Privacy Policy" description="Learn how PropatiHub collects, uses, and protects your personal information. Read our privacy policy." canonical="/privacy" />
     <Navbar />
     <section className="bg-primary pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">

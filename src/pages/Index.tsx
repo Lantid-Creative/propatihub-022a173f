@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import HeroSection from "@/components/HeroSection";
 import FeaturedProperties from "@/components/FeaturedProperties";
 import ToolsSection from "@/components/ToolsSection";
@@ -16,6 +17,11 @@ import Footer from "@/components/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO
+        title="PropatiHub — Buy, Rent & Manage Properties in Nigeria"
+        description="Nigeria's trusted property platform. Browse verified listings, manage rentals with escrow protection, and find estate agents across all 36 states."
+        canonical="/"
+      />
       <HeroSection />
       <FeaturedProperties />
       <ToolsSection />

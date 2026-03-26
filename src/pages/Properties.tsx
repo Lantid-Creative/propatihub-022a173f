@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -127,7 +128,7 @@ const Properties = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      <PageSEO title="Find Properties in Nigeria" description="Browse thousands of verified properties for sale and rent across Nigeria. Filter by location, price, and type." canonical="/properties" />
       <div className="bg-primary relative">
         <Navbar />
 

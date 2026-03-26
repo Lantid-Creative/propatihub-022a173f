@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, MapPin, Home, Building2, TrendingUp, Calculator, FileText, Users } from "lucide-react";
@@ -107,7 +108,7 @@ const ForSale = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
+      <PageSEO title="Property for Sale in Nigeria" description="Find houses, apartments, land, and commercial properties for sale across Nigeria. Verified listings from trusted agents." canonical="/for-sale" />
       <section className="relative min-h-[500px]">
         <img src={heroImg} alt="Property for sale in Nigeria" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />

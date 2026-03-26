@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +22,7 @@ const faqs = [
 
 const BuyingGuide = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <PageSEO title="Buying Guide — How to Buy Property in Nigeria" description="Step-by-step guide to buying property in Nigeria. From budgeting and mortgage advice to legal due diligence and moving in." canonical="/buying-guide" />
     <Navbar />
     <section className="bg-primary pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">

@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -24,6 +25,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <PageSEO title="Contact Us" description="Get in touch with PropatiHub. We're here to help with property listings, tenancy management, and any questions about our platform." canonical="/contact" />
       <Navbar />
       <section className="bg-primary pt-28 pb-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
