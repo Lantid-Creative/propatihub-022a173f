@@ -128,24 +128,10 @@ const Properties = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-primary">
-        <div className="relative z-50">
-          <nav className="px-6 py-4">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <Link to="/">
-                <img src="/src/assets/logo-dark.png" alt="PropatiHub" className="h-8 w-auto" />
-              </Link>
-              <div className="hidden md:flex items-center gap-6">
-                <Link to="/properties" className="text-primary-foreground/80 hover:text-primary-foreground font-body text-sm font-medium">All Properties</Link>
-                <Link to="/auth" className="border border-primary-foreground/30 text-primary-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-primary-foreground/10">
-                  {user ? "Dashboard" : "Sign in"}
-                </Link>
-              </div>
-            </div>
-          </nav>
-        </div>
+      <div className="bg-primary relative">
+        <Navbar />
 
-        <div className="px-6 pb-8 pt-4">
+        <div className="px-6 pb-8 pt-20">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-display font-bold text-primary-foreground mb-6">
               Find Properties
