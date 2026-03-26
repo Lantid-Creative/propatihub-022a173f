@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Building2, Users, MessageSquare, Heart, Search,
   Settings, LogOut, Menu, X, Home, BarChart3, CreditCard, UserPlus,
-  Building, Shield
+  Building, Shield, Wrench, KeyRound
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoLight from "@/assets/logo-light.png";
@@ -39,6 +39,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       return [
         { label: "Overview", href: "/agency", icon: LayoutDashboard },
         { label: "Properties", href: "/agency/properties", icon: Building2 },
+        { label: "Property Mgmt", href: "/agency/property-management", icon: KeyRound },
         { label: "Agents", href: "/agency/agents", icon: Users },
         { label: "Messages", href: "/agency/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/agency/inquiries", icon: MessageSquare },
@@ -51,6 +52,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       return [
         { label: "Overview", href: "/agent", icon: LayoutDashboard },
         { label: "My Listings", href: "/agent/properties", icon: Building2 },
+        { label: "Property Mgmt", href: "/agent/property-management", icon: KeyRound },
         { label: "Messages", href: "/agent/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/agent/inquiries", icon: MessageSquare },
         { label: "Analytics", href: "/agent/analytics", icon: BarChart3 },
@@ -60,6 +62,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
     return [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "My Tenancy", href: "/dashboard/tenancy", icon: KeyRound },
       { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
       { label: "Favourites", href: "/dashboard/favourites", icon: Heart },
       { label: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
