@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, Locate, Loader2 } from "lucide-react";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyCazL5Cqw90gNr2Kn28q3iXIfdwmI4Coss";
 
 const tabs = [
   { label: "Buy", type: "sale" },
@@ -16,10 +18,96 @@ const placeholders: Record<string, string> = {
   Land: "e.g. Epe, Ibeju-Lekki, Lugbe...",
 };
 
+const loadGoogleMaps = (): Promise<void> => {
+  return new Promise((resolve) => {
+    if ((window as any).google?.maps?.places) {
+      resolve();
+      return;
+    }
+    if (document.querySelector(`script[src*="maps.googleapis.com"]`)) {
+      const check = setInterval(() => {
+        if ((window as any).google?.maps?.places) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 100);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    script.onload = () => resolve();
+    document.head.appendChild(script);
+  });
+};
+
 const HeroSearch = () => {
   const [activeTab, setActiveTab] = useState("Buy");
   const [query, setQuery] = useState("");
+  const [detecting, setDetecting] = useState(false);
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    loadGoogleMaps().then(() => {
+      if (!mounted || !inputRef.current) return;
+      const autocomplete = new (window as any).google.maps.places.Autocomplete(inputRef.current, {
+        types: ["(regions)"],
+        componentRestrictions: { country: "ng" },
+      });
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place?.formatted_address) {
+          setQuery(place.formatted_address);
+        } else if (place?.name) {
+          setQuery(place.name);
+        }
+      });
+      autocompleteRef.current = autocomplete;
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  const detectLocation = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          await loadGoogleMaps();
+          const geocoder = new (window as any).google.maps.Geocoder();
+          geocoder.geocode(
+            { location: { lat: pos.coords.latitude, lng: pos.coords.longitude } },
+            (results: any[], status: string) => {
+              if (status === "OK" && results?.[0]) {
+                // Find the locality or sublocality
+                const locality = results.find((r: any) =>
+                  r.types.includes("locality") || r.types.includes("sublocality")
+                );
+                setQuery((locality || results[0]).formatted_address);
+              }
+              setDetecting(false);
+            }
+          );
+        } catch {
+          setDetecting(false);
+        }
+      },
+      () => setDetecting(false),
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
+  }, []);
+
+  // Auto-detect on first visit
+  useEffect(() => {
+    if (!query && navigator.geolocation) {
+      detectLocation();
+    }
+    // Run only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSearch = () => {
     const tab = tabs.find((t) => t.label === activeTab);
@@ -56,6 +144,7 @@ const HeroSearch = () => {
         <div className="flex items-center gap-3">
           <MapPin className="w-5 h-5 text-muted-foreground shrink-0" />
           <input
+            ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -63,6 +152,18 @@ const HeroSearch = () => {
             placeholder={placeholders[activeTab]}
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none font-body text-base"
           />
+          <button
+            onClick={detectLocation}
+            disabled={detecting}
+            className="text-muted-foreground hover:text-accent transition-colors shrink-0 p-1"
+            title="Detect my location"
+          >
+            {detecting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Locate className="w-5 h-5" />
+            )}
+          </button>
           <button
             onClick={handleSearch}
             className="bg-accent hover:bg-accent/90 text-accent-foreground p-3 rounded-lg transition-colors shrink-0"
