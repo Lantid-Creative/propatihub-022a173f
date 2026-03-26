@@ -22,8 +22,8 @@ const footerColumns = [
       { label: "Property valuation", href: "/property-valuation" },
       { label: "Mortgage calculator", href: "/mortgage-calculator" },
       { label: "Find estate agents", href: "/find-agents" },
-      { label: "Buying guide", href: "#" },
-      { label: "Renting guide", href: "#" },
+      { label: "Buying guide", href: "/buying-guide" },
+      { label: "Renting guide", href: "/renting-guide" },
     ],
   },
   {
@@ -31,7 +31,7 @@ const footerColumns = [
     links: [
       { label: "Estate agents", href: "/auth" },
       { label: "Agencies", href: "/auth" },
-      { label: "Advertise with us", href: "#" },
+      { label: "Advertise with us", href: "/advertise" },
       { label: "Agent portal", href: "/agent" },
       { label: "Agency portal", href: "/agency" },
     ],
@@ -50,14 +50,14 @@ const footerColumns = [
 ];
 
 const companyLinks = [
-  { label: "About PropatiHub", href: "#" },
-  { label: "Careers", href: "#" },
-  { label: "Contact us", href: "#" },
-  { label: "Terms", href: "#" },
-  { label: "Privacy", href: "#" },
-  { label: "Blog", href: "#" },
-  { label: "Press", href: "#" },
-  { label: "Sitemap", href: "#" },
+  { label: "About PropatiHub", href: "/about" },
+  { label: "Careers", href: "/careers" },
+  { label: "Contact us", href: "/contact" },
+  { label: "Terms", href: "/terms" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Blog", href: "/blog" },
+  { label: "Press", href: "/press" },
+  { label: "Sitemap", href: "/sitemap" },
 ];
 
 const socialLinks = [
