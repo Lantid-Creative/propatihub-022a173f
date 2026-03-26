@@ -8,6 +8,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Properties from "./pages/Properties";
+import PropertyDetail from "./pages/PropertyDetail";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -54,6 +56,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/property/:id" element={<PropertyDetail />} />
 
             {/* Admin Portal */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
