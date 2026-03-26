@@ -571,6 +571,100 @@ const PropertyManagement = () => {
               </div>
             )}
           </TabsContent>
+
+          {/* Contracts */}
+          <TabsContent value="contracts">
+            <div className="space-y-4">
+              {/* Generate contract form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-display text-lg flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-accent" />
+                    Generate AI Legal Contract
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-sm font-body font-medium text-foreground block mb-1.5">Tenancy *</label>
+                      <Select value={contractForm.tenancy_id} onValueChange={(v) => setContractForm({ ...contractForm, tenancy_id: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select a tenancy" /></SelectTrigger>
+                        <SelectContent>
+                          {tenancies.map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              {t.tenant?.full_name || "Tenant"} — {t.property?.title || "Property"}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-body font-medium text-foreground block mb-1.5">Contract Type</label>
+                      <Select value={contractForm.contract_type} onValueChange={(v) => setContractForm({ ...contractForm, contract_type: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="tenancy_agreement">Tenancy Agreement</SelectItem>
+                          <SelectItem value="lease_renewal">Lease Renewal</SelectItem>
+                          <SelectItem value="property_management">Property Management</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-end">
+                      <Button onClick={handleGenerateContract} disabled={generatingContract} className="w-full gap-2">
+                        {generatingContract ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                        {generatingContract ? "Generating..." : "Generate Contract"}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* View contract dialog */}
+              {viewingContract && (
+                <Dialog open={!!viewingContract} onOpenChange={() => setViewingContract(null)}>
+                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="font-display">{viewingContract.title}</DialogTitle>
+                    </DialogHeader>
+                    <div className="prose prose-sm max-w-none font-body text-foreground">
+                      <ReactMarkdown>{viewingContract.content}</ReactMarkdown>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+
+              {/* Contracts list */}
+              {contracts.length === 0 ? (
+                <Card><CardContent className="py-12 text-center">
+                  <Scale className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                  <p className="font-body text-sm text-muted-foreground">No contracts yet. Generate your first AI legal contract above.</p>
+                </CardContent></Card>
+              ) : (
+                <div className="space-y-3">
+                  {contracts.map((c) => (
+                    <Card key={c.id}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-body font-semibold text-foreground text-sm">{c.title}</p>
+                            <p className="text-xs text-muted-foreground font-body mt-1">
+                              {c.contract_type.replace("_", " ")} · Created {new Date(c.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {statusBadge(c.status)}
+                            <Button size="sm" variant="outline" onClick={() => setViewingContract(c)}>
+                              <Eye className="w-3 h-3 mr-1" /> View
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>
