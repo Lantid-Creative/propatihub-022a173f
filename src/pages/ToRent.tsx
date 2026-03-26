@@ -88,7 +88,7 @@ const ToRent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageSEO title="Properties to Rent in Nigeria" description="Search apartments, houses, and short-let properties to rent across Nigeria. Secure your tenancy with caution fee escrow." canonical="/to-rent" />
+      <PageSEO title="Properties to Rent in Nigeria" description="Search apartments, houses, and short-let properties to rent across Nigeria. Secure your tenancy with caution fee escrow." canonical="/to-rent" ogImage="https://propatihub.lovable.app/og-to-rent.png" />
       <section className="relative min-h-[540px]">
         <img src={heroImg} alt="Properties to rent in Nigeria" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />
