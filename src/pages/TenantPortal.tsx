@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList, Scale, Eye
+  Mail, CheckCircle, XCircle, Shield, Home, Banknote, Calendar, ArrowRight, Loader2, ClipboardList, Scale, Eye, ArrowUpRight, Clock
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TenantRecordForm from "@/components/TenantRecordForm";
@@ -233,6 +233,26 @@ const TenantPortal = () => {
 
   const formatPrice = (p: number) => `₦${p.toLocaleString()}`;
 
+  const handleRequestPayout = async (escrowId: string) => {
+    const autoReleaseAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase
+      .from("caution_fee_escrow")
+      .update({
+        escrow_status: "release_requested",
+        release_requested_at: new Date().toISOString(),
+        release_requested_by: "tenant",
+        auto_release_at: autoReleaseAt,
+      } as any)
+      .eq("id", escrowId);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Payout requested", description: "The landlord has 72 hours to approve or reject. Auto-payout applies after that." });
+      fetchAll();
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -403,28 +423,63 @@ const TenantPortal = () => {
             <h2 className="font-display font-bold text-foreground text-lg flex items-center gap-2">
               <Shield className="w-5 h-5 text-blue-500" /> Caution Fee Escrow
             </h2>
-            {escrows.filter(e => e.payment_status === "paid").map((esc) => (
-              <Card key={esc.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-body font-semibold text-foreground text-sm">{formatPrice(esc.amount)}</p>
-                      <p className="text-xs text-muted-foreground font-body capitalize">
-                        Status: {esc.escrow_status.replace("_", " ")}
-                      </p>
+            {escrows.filter(e => e.payment_status === "paid").map((esc) => {
+              const isHeld = esc.escrow_status === "held";
+              const isRequested = esc.escrow_status === "release_requested";
+              const isRejected = esc.escrow_status === "release_rejected";
+              const isReleased = esc.escrow_status === "released";
+              const autoReleaseAt = (esc as any).auto_release_at;
+
+              return (
+                <Card key={esc.id} className={isRejected ? "border-red-200" : ""}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <p className="font-body font-semibold text-foreground text-sm">{formatPrice(esc.amount)}</p>
+                        <p className="text-xs text-muted-foreground font-body capitalize">
+                          Status: {esc.escrow_status.replace(/_/g, " ")}
+                        </p>
+                        {isRequested && autoReleaseAt && (
+                          <p className="text-xs text-blue-600 font-body flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Auto-releases by {new Date(autoReleaseAt).toLocaleDateString()} if not actioned
+                          </p>
+                        )}
+                        {isRejected && (esc as any).release_rejected_reason && (
+                          <p className="text-xs text-red-600 font-body mt-1">
+                            Rejection reason: {(esc as any).release_rejected_reason}
+                          </p>
+                        )}
+                        {isRejected && (
+                          <p className="text-xs text-orange-600 font-body">
+                            ⚖️ This has been automatically escalated to our dispute resolution team.
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <Badge className={
+                          isHeld ? "bg-blue-100 text-blue-700" :
+                          isReleased ? "bg-green-100 text-green-700" :
+                          isRequested ? "bg-yellow-100 text-yellow-700" :
+                          isRejected ? "bg-red-100 text-red-700" :
+                          "bg-orange-100 text-orange-700"
+                        }>
+                          {isHeld ? "Secured" :
+                           isReleased ? "Released" :
+                           isRequested ? "Payout Requested" :
+                           isRejected ? "Rejected" : esc.escrow_status}
+                        </Badge>
+                        {isHeld && (
+                          <Button size="sm" onClick={() => handleRequestPayout(esc.id)}>
+                            <ArrowUpRight className="w-3 h-3 mr-1" /> Request Payout
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <Badge className={
-                      esc.escrow_status === "held" ? "bg-blue-100 text-blue-700" :
-                      esc.escrow_status === "released" ? "bg-green-100 text-green-700" :
-                      "bg-orange-100 text-orange-700"
-                    }>
-                      {esc.escrow_status === "held" ? "Secured" :
-                       esc.escrow_status === "released" ? "Released" : "Pending Release"}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
 
