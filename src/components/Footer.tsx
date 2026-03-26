@@ -1,4 +1,5 @@
 import { Phone, Mail, MapPin } from "lucide-react";
+import logoDark from "@/assets/logo-dark.png";
 
 const footerLinks = {
   "Property Types": ["Houses for Sale", "Flats for Rent", "Land for Sale", "Commercial", "Short Let"],
@@ -13,11 +14,8 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-6 gap-10 mb-12">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-lg">P</span>
-              </div>
-              <span className="font-display text-xl font-bold">PropatiHub</span>
+            <div className="mb-4">
+              <img src={logoDark} alt="PropatiHub" className="h-8 w-auto" />
             </div>
             <p className="text-background/60 font-body text-sm leading-relaxed mb-6">
               Nigeria's most trusted property platform. Find verified homes, land, and commercial properties across all 36 states.
