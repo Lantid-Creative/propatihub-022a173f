@@ -129,6 +129,17 @@ const AgentProperties = () => {
       caution_fee: parseFloat(form.caution_fee) || null,
       completion_percentage: percentage,
       status: "pending" as const,
+      // Auction fields (only meaningful for bid listings)
+      ...(form.listing_type === "bid" ? {
+        reserve_price: parseInt(form.reserve_price) || null,
+        auction_start_at: form.auction_start_at ? new Date(form.auction_start_at).toISOString() : null,
+        auction_end_at: form.auction_end_at ? new Date(form.auction_end_at).toISOString() : null,
+        deposit_percentage: parseFloat(form.deposit_percentage) || 5,
+        winner_payment_deadline_days: parseInt(form.winner_payment_deadline_days) || 7,
+        auction_auto_extend: form.auction_auto_extend,
+        auction_extend_minutes: parseInt(form.auction_extend_minutes) || 5,
+        auction_status: "upcoming",
+      } : {}),
     };
 
     let error;
