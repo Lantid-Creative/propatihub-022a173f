@@ -26,17 +26,35 @@ interface BidProperty {
   highest_bid: number;
 }
 
-const LiveBidProperties = () => {
+interface LiveBidPropertiesProps {
+  searchQuery?: string;
+  minBeds?: string;
+  maxPrice?: string;
+}
+
+const LiveBidProperties = ({ searchQuery, minBeds, maxPrice }: LiveBidPropertiesProps = {}) => {
   const [properties, setProperties] = useState<BidProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProperties = async () => {
     // Fetch bid-type active properties
-    const { data: props } = await supabase
+    let q = supabase
       .from("properties")
       .select("id, title, price, city, state, images, bedrooms, bathrooms, area_sqm, property_type, reserve_price, auction_end_at, auction_start_at, auction_status")
       .eq("listing_type", "bid")
-      .eq("status", "active")
+      .eq("status", "active");
+
+    if (searchQuery) {
+      q = q.or(`city.ilike.%${searchQuery}%,state.ilike.%${searchQuery}%,title.ilike.%${searchQuery}%,address.ilike.%${searchQuery}%`);
+    }
+    if (minBeds) {
+      q = q.gte("bedrooms", parseInt(minBeds));
+    }
+    if (maxPrice) {
+      q = q.lte("price", parseInt(maxPrice));
+    }
+
+    const { data: props } = await q
       .order("created_at", { ascending: false })
       .limit(12);
 
@@ -82,7 +100,8 @@ const LiveBidProperties = () => {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, minBeds, maxPrice]);
 
   const formatPrice = (price: number) => {
     if (price >= 1_000_000_000) return `₦${(price / 1_000_000_000).toFixed(1)}B`;
