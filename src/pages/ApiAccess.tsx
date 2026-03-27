@@ -89,42 +89,32 @@ const ApiAccess = () => {
       return;
     }
 
-    const { error } = await supabase.from("api_subscriptions").insert({
-      user_id: user.id,
-      lga: selectedLga,
-      state: selectedState,
-      amount: 10000,
-    } as any);
+    try {
+      const { data, error } = await supabase.functions.invoke("paystack-payment/initialize", {
+        body: {
+          email: user.email,
+          amount: 10000,
+          payment_type: "api_subscription",
+          metadata: {
+            user_id: user.id,
+            state: selectedState,
+            lga: selectedLga,
+            callback_url: `${window.location.origin}/payment/callback`,
+          },
+        },
+      });
 
-    if (error) {
-      if (error.code === "23505") {
-        // Unique constraint - update existing
-        const { error: updateErr } = await supabase
-          .from("api_subscriptions")
-          .update({
-            status: "active",
-            starts_at: new Date().toISOString(),
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          } as any)
-          .eq("user_id", user.id)
-          .eq("lga", selectedLga)
-          .eq("state", selectedState);
-
-        if (updateErr) {
-          toast({ title: "Error", description: updateErr.message, variant: "destructive" });
-        } else {
-          toast({ title: "Subscription renewed!", description: `${selectedLga}, ${selectedState} - ₦10,000/month` });
-          fetchData();
-        }
-      } else {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+      if (error || !data?.authorization_url) {
+        toast({ title: "Payment Error", description: "Could not initialize payment. Please try again.", variant: "destructive" });
+        return;
       }
-    } else {
-      toast({ title: "Subscribed!", description: `${selectedLga}, ${selectedState} - ₦10,000/month` });
-      fetchData();
+
+      window.location.href = data.authorization_url;
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Something went wrong.", variant: "destructive" });
+    } finally {
+      setSubscribing(false);
     }
-    setSubscribing(false);
-    setSelectedLga("");
   };
 
   const portalPrefix = hasRole("admin") ? "/admin" : hasRole("agency") ? "/agency" : hasRole("agent") ? "/agent" : "/dashboard";
