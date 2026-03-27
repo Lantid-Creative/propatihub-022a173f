@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { detectPII, getPIIWarningMessage } from "@/lib/piiDetection";
@@ -40,6 +41,7 @@ interface ChatViewProps {
 const ChatView = ({ onBack }: ChatViewProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -50,6 +52,14 @@ const ChatView = ({ onBack }: ChatViewProps) => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [participantProfiles, setParticipantProfiles] = useState<Record<string, { full_name: string | null; avatar_url: string | null }>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-select conversation from URL query param
+  useEffect(() => {
+    const convId = searchParams.get("conversation");
+    if (convId && !activeConversation) {
+      setActiveConversation(convId);
+    }
+  }, [searchParams]);
 
   // Fetch conversations
   useEffect(() => {
