@@ -14,7 +14,6 @@ import ExploreSection from "@/components/ExploreSection";
 import AlertSection from "@/components/AlertSection";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
-import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
