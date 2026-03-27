@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { GraduationCap, MapPin, Shield, ArrowRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import nyscIllustration from "@/assets/nysc-housing-illustration.jpg";
 
 const highlights = [
   { icon: MapPin, text: "Near NYSC secretariats & CDS venues" },
