@@ -340,6 +340,16 @@ const PropertyDetail = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* NYSC Details */}
+            {property.nysc_friendly && property.nysc_details && (
+              <Card className="border-primary/30 bg-primary/5">
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2">🎓 NYSC Housing Info</CardTitle></CardHeader>
+                <CardContent>
+                  <p className="text-sm font-body text-foreground leading-relaxed whitespace-pre-line">{property.nysc_details}</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
