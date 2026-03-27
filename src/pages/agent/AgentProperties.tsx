@@ -499,6 +499,35 @@ const AgentProperties = () => {
               <Textarea value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Swimming Pool, Generator, BQ, CCTV, Gym, Smart Home, Solar Panel, Water Treatment" rows={3} />
               <p className="text-[10px] text-muted-foreground font-body mt-1">Add at least 2 features for better completion</p>
             </div>
+
+            {/* NYSC Friendly */}
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="pt-4 pb-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={form.nysc_friendly}
+                    onChange={(e) => setForm({ ...form, nysc_friendly: e.target.checked })}
+                    className="rounded border-border w-4 h-4"
+                  />
+                  <div>
+                    <label className="text-sm font-body font-medium text-foreground">🎓 NYSC-Friendly Housing</label>
+                    <p className="text-[10px] text-muted-foreground font-body">Mark this if the property is suitable for NYSC corps members serving nearby</p>
+                  </div>
+                </div>
+                {form.nysc_friendly && (
+                  <div>
+                    <label className="text-sm font-body font-medium block mb-1">NYSC Details</label>
+                    <Textarea
+                      value={form.nysc_details}
+                      onChange={(e) => setForm({ ...form, nysc_details: e.target.value })}
+                      placeholder="e.g. Close to NYSC secretariat, 10 min to CDS venue, near orientation camp, affordable for corpers, shared apartments available..."
+                      rows={3}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setFormStep(0)} className="flex-1">← Back</Button>
               <Button onClick={() => setFormStep(2)} className="flex-1">Next: Photos →</Button>
