@@ -37,6 +37,7 @@ const Index = () => {
       <TrustSection />
       <LocationsSection />
       <ExploreSection />
+      <LatestNewsSection />
       <AlertSection />
       <Footer />
     </div>
