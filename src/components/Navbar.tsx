@@ -25,7 +25,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="absolute top-0 left-0 right-0 z-50 px-6 py-4">
+    <nav className="sticky top-0 left-0 right-0 z-50 px-6 py-4 bg-primary/95 backdrop-blur-sm shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/">
           <img src={logoDark} alt="PropatiHub" className="h-8 w-auto" />
