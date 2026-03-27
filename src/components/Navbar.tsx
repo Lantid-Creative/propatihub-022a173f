@@ -1,12 +1,20 @@
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import logoDark from "@/assets/logo-dark.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, hasRole } = useAuth();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const getDashboardLink = () => {
     if (hasRole("admin")) return "/admin";
@@ -25,7 +33,13 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 left-0 right-0 z-50 px-6 py-4 bg-primary/95 backdrop-blur-sm shadow-sm">
+    <nav
+      className={`sticky top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300 ${
+        scrolled
+          ? "bg-primary/95 backdrop-blur-sm shadow-sm"
+          : "bg-transparent"
+      }`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/">
           <img src={logoDark} alt="PropatiHub" className="h-8 w-auto" />
