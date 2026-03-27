@@ -71,6 +71,7 @@ import PropertyManagement from "./pages/PropertyManagement";
 import TenantPortal from "./pages/TenantPortal";
 import ApiDocs from "./pages/ApiDocs";
 import ApiAccess from "./pages/ApiAccess";
+import ApiLanding from "./pages/ApiLanding";
 import PaymentCallback from "./pages/PaymentCallback";
 import NYSCHousing from "./pages/NYSCHousing";
 import ScrollToTop from "./components/ScrollToTop";
@@ -114,6 +115,7 @@ const App = () => (
             <Route path="/press" element={<Press />} />
             <Route path="/sitemap" element={<Sitemap />} />
             <Route path="/api-docs" element={<ApiDocs />} />
+            <Route path="/api-access" element={<ApiLanding />} />
 
             {/* Admin Portal */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
