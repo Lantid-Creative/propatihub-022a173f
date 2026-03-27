@@ -147,7 +147,7 @@ const App = () => (
             <Route path="/agency" element={<ProtectedRoute requiredRole="agency"><AgencyDashboard /></ProtectedRoute>} />
             <Route path="/agency/properties" element={<ProtectedRoute requiredRole="agency"><AgencyProperties /></ProtectedRoute>} />
             <Route path="/agency/agents" element={<ProtectedRoute requiredRole="agency"><AgencyAgents /></ProtectedRoute>} />
-            <Route path="/agency/inquiries" element={<ProtectedRoute requiredRole="agent"><AgentInquiries /></ProtectedRoute>} />
+            <Route path="/agency/inquiries" element={<ProtectedRoute requiredRole="agency"><AgentInquiries /></ProtectedRoute>} />
             <Route path="/agency/analytics" element={<ProtectedRoute requiredRole="agency"><AgencyAnalytics /></ProtectedRoute>} />
             <Route path="/agency/billing" element={<ProtectedRoute requiredRole="agency"><AgencyBilling /></ProtectedRoute>} />
             <Route path="/agency/settings" element={<ProtectedRoute requiredRole="agency"><AgencySettings /></ProtectedRoute>} />
