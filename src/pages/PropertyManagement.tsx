@@ -594,8 +594,9 @@ const PropertyManagement = () => {
                             )}
                             {isTenantRequest && (
                               <>
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApproveRelease(esc.id)}>
-                                  <CheckCircle className="w-3 h-3 mr-1" /> Approve Payout
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApproveRelease(esc.id)} disabled={disbursing === esc.id}>
+                                  {disbursing === esc.id ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <CheckCircle className="w-3 h-3 mr-1" />}
+                                  {disbursing === esc.id ? "Disbursing..." : "Approve & Disburse"}
                                 </Button>
                                 {rejectingEscrowId === esc.id ? (
                                   <div className="space-y-2 w-56">
