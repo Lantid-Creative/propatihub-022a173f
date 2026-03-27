@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { GraduationCap, MapPin, Shield, ArrowRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import nyscIllustration from "@/assets/nysc-housing-illustration.jpg";
 
 const highlights = [
   { icon: MapPin, text: "Near NYSC secretariats & CDS venues" },
@@ -19,9 +20,16 @@ const NYSCBanner = () => (
 
     <div className="relative max-w-6xl mx-auto px-6 py-14 md:py-16 flex flex-col gap-10">
       <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-        {/* Left: Icon badge */}
-        <div className="shrink-0 flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-accent/20 border border-accent/30">
-          <GraduationCap className="w-10 h-10 md:w-12 md:h-12 text-accent" />
+        {/* Left: Illustration */}
+        <div className="shrink-0 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden border-2 border-accent/30 shadow-lg">
+          <img
+            src={nyscIllustration}
+            alt="NYSC corps member in front of affordable housing"
+            className="w-full h-full object-cover"
+            loading="lazy"
+            width={1024}
+            height={768}
+          />
         </div>
 
         {/* Centre: Copy */}
