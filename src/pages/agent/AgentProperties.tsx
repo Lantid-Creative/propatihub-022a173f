@@ -38,6 +38,8 @@ const emptyForm = {
   reserve_price: "", auction_start_at: "", auction_end_at: "",
   deposit_percentage: "5", winner_payment_deadline_days: "7",
   auction_auto_extend: true, auction_extend_minutes: "5",
+  // NYSC fields
+  nysc_friendly: false, nysc_details: "",
 };
 
 type FormData = typeof emptyForm;
@@ -129,6 +131,8 @@ const AgentProperties = () => {
       caution_fee: parseFloat(form.caution_fee) || null,
       completion_percentage: percentage,
       status: "pending" as const,
+      nysc_friendly: form.nysc_friendly,
+      nysc_details: form.nysc_details || null,
       // Auction fields (only meaningful for bid listings)
       ...(form.listing_type === "bid" ? {
         reserve_price: parseInt(form.reserve_price) || null,
@@ -194,6 +198,8 @@ const AgentProperties = () => {
       winner_payment_deadline_days: String(p.winner_payment_deadline_days ?? "7"),
       auction_auto_extend: p.auction_auto_extend ?? true,
       auction_extend_minutes: String(p.auction_extend_minutes ?? "5"),
+      nysc_friendly: p.nysc_friendly ?? false,
+      nysc_details: p.nysc_details || "",
     });
     setFormStep(0);
     setEditOpen(true);
