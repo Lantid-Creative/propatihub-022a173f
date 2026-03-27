@@ -155,9 +155,41 @@ serve(async (req) => {
           paystack_reference: reference,
           status: "active",
         });
+      } else if (meta.payment_type === "api_subscription") {
+        // Create or renew API subscription for a state/LGA
+        const now = new Date();
+        const expiresAt = new Date(now);
+        expiresAt.setDate(expiresAt.getDate() + 30);
+
+        // Deactivate existing subscription for same state/lga
+        await supabase
+          .from("api_subscriptions")
+          .update({ status: "expired" })
+          .eq("user_id", meta.user_id)
+          .eq("state", meta.state)
+          .eq("lga", meta.lga)
+          .eq("status", "active");
+
+        await supabase.from("api_subscriptions").insert({
+          user_id: meta.user_id,
+          state: meta.state,
+          lga: meta.lga,
+          amount: amountPaid,
+          starts_at: now.toISOString(),
+          expires_at: expiresAt.toISOString(),
+          paystack_reference: reference,
+          status: "active",
+        });
       }
 
-      return new Response(JSON.stringify({ success: true, amount: amountPaid }), {
+      return new Response(JSON.stringify({
+        success: true,
+        amount: amountPaid,
+        payment_type: meta.payment_type,
+        tier: meta.tier || null,
+        state: meta.state || null,
+        lga: meta.lga || null,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

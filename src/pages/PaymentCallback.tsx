@@ -10,12 +10,20 @@ import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 type VerifyStatus = "verifying" | "success" | "failed";
 
+interface PaymentDetails {
+  amount?: number;
+  payment_type?: string;
+  tier?: string;
+  state?: string;
+  lga?: string;
+}
+
 const PaymentCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [status, setStatus] = useState<VerifyStatus>("verifying");
-  const [details, setDetails] = useState<{ amount?: number; tier?: string }>({});
+  const [details, setDetails] = useState<PaymentDetails>({});
 
   const reference = searchParams.get("reference") || searchParams.get("trxref");
 
@@ -36,7 +44,13 @@ const PaymentCallback = () => {
           return;
         }
 
-        setDetails({ amount: data.amount });
+        setDetails({
+          amount: data.amount,
+          payment_type: data.payment_type,
+          tier: data.tier,
+          state: data.state,
+          lga: data.lga,
+        });
         setStatus("success");
       } catch {
         setStatus("failed");
@@ -45,6 +59,43 @@ const PaymentCallback = () => {
 
     verify();
   }, [reference]);
+
+  const getSuccessMessage = () => {
+    switch (details.payment_type) {
+      case "bid_subscription":
+        return `Your ${details.tier ? details.tier.charAt(0).toUpperCase() + details.tier.slice(1) : ""} bidding subscription has been activated.`;
+      case "api_subscription":
+        return `Your API access for ${details.lga}, ${details.state} has been activated for 30 days.`;
+      case "caution_fee":
+        return "Your caution fee has been paid and is now held in escrow.";
+      case "rent":
+        return "Your rent payment has been processed successfully.";
+      default:
+        return "Your payment has been processed successfully.";
+    }
+  };
+
+  const getReturnPath = () => {
+    switch (details.payment_type) {
+      case "bid_subscription":
+        return "/bid";
+      case "api_subscription":
+        return "/agent/api-access";
+      default:
+        return "/dashboard";
+    }
+  };
+
+  const getReturnLabel = () => {
+    switch (details.payment_type) {
+      case "bid_subscription":
+        return "Back to Bidding";
+      case "api_subscription":
+        return "Back to API Access";
+      default:
+        return "Go to Dashboard";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -57,7 +108,7 @@ const PaymentCallback = () => {
                 <Loader2 className="w-16 h-16 text-accent animate-spin mx-auto" />
                 <h1 className="font-display text-xl font-bold text-foreground">Verifying Payment…</h1>
                 <p className="font-body text-muted-foreground text-sm">
-                  Please wait while we confirm your transaction with Paystack.
+                  Please wait while we confirm your transaction.
                 </p>
               </>
             )}
@@ -67,14 +118,14 @@ const PaymentCallback = () => {
                 <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
                 <h1 className="font-display text-xl font-bold text-foreground">Payment Successful!</h1>
                 <p className="font-body text-muted-foreground text-sm">
-                  Your subscription has been activated.
+                  {getSuccessMessage()}
                   {details.amount && (
                     <> You paid <strong>₦{details.amount.toLocaleString()}</strong>.</>
                   )}
                 </p>
                 <div className="flex flex-col gap-3 pt-2">
-                  <Button onClick={() => navigate("/bid")} className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                    Back to Bidding
+                  <Button onClick={() => navigate(getReturnPath())} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                    {getReturnLabel()}
                   </Button>
                   <Button variant="outline" onClick={() => navigate("/dashboard")}>
                     Go to Dashboard
