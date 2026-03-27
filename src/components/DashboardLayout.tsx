@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Building2, Users, MessageSquare, Heart, Search,
   Settings, LogOut, Menu, X, Home, BarChart3, CreditCard, UserPlus,
-  Building, Shield, Wrench, KeyRound
+  Building, Shield, Wrench, KeyRound, Scale
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoLight from "@/assets/logo-light.png";
@@ -32,6 +32,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         { label: "Messages", href: "/admin/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
         { label: "KYC Verification", href: "/admin/kyc", icon: Shield },
+        { label: "Disputes", href: "/admin/disputes", icon: Scale },
         { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
         { label: "Settings", href: "/admin/settings", icon: Settings },
       ];
