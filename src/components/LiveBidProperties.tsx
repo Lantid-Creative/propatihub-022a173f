@@ -92,8 +92,6 @@ const LiveBidProperties = ({ searchQuery, minBeds, maxPrice }: LiveBidProperties
 
   useEffect(() => {
     fetchProperties();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, minBeds, maxPrice]);
 
     // Realtime subscription for bid updates
     const channel = supabase
@@ -102,7 +100,8 @@ const LiveBidProperties = ({ searchQuery, minBeds, maxPrice }: LiveBidProperties
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, minBeds, maxPrice]);
 
   const formatPrice = (price: number) => {
     if (price >= 1_000_000_000) return `₦${(price / 1_000_000_000).toFixed(1)}B`;
