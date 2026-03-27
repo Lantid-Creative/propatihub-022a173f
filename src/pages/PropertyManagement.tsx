@@ -37,6 +37,7 @@ const PropertyManagement = () => {
   const [viewingContract, setViewingContract] = useState<any | null>(null);
   const [rejectingEscrowId, setRejectingEscrowId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [disbursing, setDisbursing] = useState<string | null>(null);
 
   // Invite form
   const [inviteOpen, setInviteOpen] = useState(false);
