@@ -64,6 +64,7 @@ import UserFavourites from "./pages/user/UserFavourites";
 import UserInquiries from "./pages/user/UserInquiries";
 import UserSearches from "./pages/user/UserSearches";
 import UserSettings from "./pages/user/UserSettings";
+import UserListProperty from "./pages/user/UserListProperty";
 import CookieConsent from "./components/CookieConsent";
 import MessagesPage from "./pages/MessagesPage";
 import PropertyManagement from "./pages/PropertyManagement";
@@ -156,6 +157,7 @@ const App = () => (
             <Route path="/dashboard/inquiries" element={<ProtectedRoute><UserInquiries /></ProtectedRoute>} />
             <Route path="/dashboard/searches" element={<ProtectedRoute><UserSearches /></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+            <Route path="/dashboard/list-property" element={<ProtectedRoute><UserListProperty /></ProtectedRoute>} />
             <Route path="/dashboard/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
             <Route path="/dashboard/tenancy" element={<ProtectedRoute><TenantPortal /></ProtectedRoute>} />
             <Route path="/dashboard/property-management" element={<ProtectedRoute><PropertyManagement /></ProtectedRoute>} />
