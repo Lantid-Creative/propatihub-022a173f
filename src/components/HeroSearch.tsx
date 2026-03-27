@@ -115,6 +115,13 @@ const HeroSearch = () => {
     const tab = tabs.find((t) => t.label === activeTab);
     const params = new URLSearchParams();
     if (query) params.set("q", query);
+
+    // Route Bid tab to the dedicated bidding page
+    if (tab?.type === "bid") {
+      navigate(`/bid?${params.toString()}`);
+      return;
+    }
+
     if (tab) params.set("type", tab.type);
     navigate(`/properties?${params.toString()}`);
   };
