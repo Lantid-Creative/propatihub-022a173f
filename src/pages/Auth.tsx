@@ -133,7 +133,7 @@ const Auth = () => {
             Nigeria's Premier Property Marketplace
           </h1>
           <p className="text-primary-foreground/70 font-body text-lg">
-            Buy, rent, or list properties across Lagos, Abuja, Port Harcourt and all 36 states.
+            Buy, rent, or list properties across Lagos, Abuja, Port Harcourt and all 36 states + FCT.
           </p>
         </div>
       </div>
