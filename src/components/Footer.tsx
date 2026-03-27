@@ -10,10 +10,10 @@ const footerColumns = [
       { label: "Properties for sale", href: "/for-sale" },
       { label: "Properties to rent", href: "/to-rent" },
       { label: "Bid on properties", href: "/bid" },
+      { label: "NYSC housing", href: "/nysc-housing" },
       { label: "Short let properties", href: "/properties?type=short_let" },
       { label: "Land for sale", href: "/properties?type=land" },
       { label: "Commercial property", href: "/properties?property=commercial" },
-      { label: "New developments", href: "/properties?type=sale&property=house" },
     ],
   },
   {

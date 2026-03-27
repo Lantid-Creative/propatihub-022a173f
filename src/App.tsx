@@ -71,6 +71,7 @@ import TenantPortal from "./pages/TenantPortal";
 import ApiDocs from "./pages/ApiDocs";
 import ApiAccess from "./pages/ApiAccess";
 import PaymentCallback from "./pages/PaymentCallback";
+import NYSCHousing from "./pages/NYSCHousing";
 import ScrollToTop from "./components/ScrollToTop";
 import GoToTopButton from "./components/GoToTopButton";
 
@@ -93,6 +94,7 @@ const App = () => (
             <Route path="/for-sale" element={<ForSale />} />
             <Route path="/to-rent" element={<ToRent />} />
             <Route path="/bid" element={<Bid />} />
+            <Route path="/nysc-housing" element={<NYSCHousing />} />
             <Route path="/payment/callback" element={<PaymentCallback />} />
             <Route path="/find-agents" element={<FindAgents />} />
             <Route path="/house-prices" element={<HousePrices />} />

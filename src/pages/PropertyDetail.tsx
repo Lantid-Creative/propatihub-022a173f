@@ -268,6 +268,7 @@ const PropertyDetail = () => {
                 </Badge>
                 <Badge variant="secondary" className="capitalize">{property.property_type}</Badge>
                 {property.featured && <Badge className="bg-primary text-primary-foreground">Featured</Badge>}
+                {property.nysc_friendly && <Badge className="bg-primary text-primary-foreground">🎓 NYSC-Friendly</Badge>}
               </div>
               <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">{property.title}</h1>
               <p className="text-muted-foreground font-body flex items-center gap-1">
@@ -336,6 +337,16 @@ const PropertyDetail = () => {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* NYSC Details */}
+            {property.nysc_friendly && property.nysc_details && (
+              <Card className="border-primary/30 bg-primary/5">
+                <CardHeader><CardTitle className="text-lg flex items-center gap-2">🎓 NYSC Housing Info</CardTitle></CardHeader>
+                <CardContent>
+                  <p className="text-sm font-body text-foreground leading-relaxed whitespace-pre-line">{property.nysc_details}</p>
                 </CardContent>
               </Card>
             )}
