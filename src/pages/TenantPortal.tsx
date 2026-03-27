@@ -13,6 +13,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TenantRecordForm from "@/components/TenantRecordForm";
 import DisputeManager from "@/components/DisputeManager";
+import TenantBankDetailsForm from "@/components/TenantBankDetailsForm";
 import ReactMarkdown from "react-markdown";
 
 const TenantPortal = () => {
@@ -606,6 +607,16 @@ const TenantPortal = () => {
             </div>
           )}
         </div>
+
+        {/* Bank Details for Payouts */}
+        {tenancies.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="font-display font-bold text-foreground text-lg flex items-center gap-2">
+              <Banknote className="w-5 h-5 text-accent" /> Payout Settings
+            </h2>
+            <TenantBankDetailsForm />
+          </div>
+        )}
 
         {/* Disputes */}
         <div className="mt-10">
