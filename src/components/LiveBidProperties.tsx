@@ -145,7 +145,7 @@ const LiveBidProperties = () => {
           {properties.map((property) => {
             const auctionEnded = property.auction_end_at && new Date(property.auction_end_at).getTime() <= Date.now();
             return (
-              <Link to={`/properties/${property.id}`} key={property.id} className="group">
+              <Link to={`/property/${property.id}`} key={property.id} className="group">
                 <Card className="overflow-hidden border-border hover:border-accent/40 transition-all hover:shadow-lg">
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden bg-muted">
