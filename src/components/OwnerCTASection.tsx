@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Building2, ShieldCheck, PlusCircle, ArrowRight } from "lucide-react";
+import { Building2, ShieldCheck, PlusCircle, ArrowRight, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ctaCards = [
@@ -30,6 +30,15 @@ const ctaCards = [
     accent: "from-blue-600 to-blue-500",
     iconBg: "bg-blue-100 text-blue-600",
   },
+  {
+    icon: Code2,
+    title: "Property Data API",
+    desc: "Access real-time property listings programmatically. Subscribe per LGA and integrate PropatiHub data into your own apps.",
+    cta: "View API Docs",
+    link: "/api-docs",
+    accent: "from-emerald-600 to-emerald-500",
+    iconBg: "bg-emerald-100 text-emerald-600",
+  },
 ];
 
 const OwnerCTASection = () => {
@@ -48,7 +57,7 @@ const OwnerCTASection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {ctaCards.map((card) => (
             <div
               key={card.title}
