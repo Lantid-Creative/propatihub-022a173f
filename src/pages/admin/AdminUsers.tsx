@@ -128,7 +128,7 @@ const AdminUsers = () => {
                 <tr className="bg-muted/50">
                   <th className="text-left p-3 text-xs font-body font-medium text-muted-foreground">User</th>
                   <th className="text-left p-3 text-xs font-body font-medium text-muted-foreground hidden sm:table-cell">Location</th>
-                  <th className="text-left p-3 text-xs font-body font-medium text-muted-foreground hidden md:table-cell">Phone</th>
+                  
                   <th className="text-left p-3 text-xs font-body font-medium text-muted-foreground">Role</th>
                   <th className="text-left p-3 text-xs font-body font-medium text-muted-foreground hidden md:table-cell">Joined</th>
                   <th className="p-3 text-xs font-body font-medium text-muted-foreground w-10"></th>
