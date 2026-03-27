@@ -7,7 +7,7 @@ import { Building2, Users, MapPin, TrendingUp, Shield, Heart } from "lucide-reac
 const stats = [
   { value: "10,000+", label: "Properties listed" },
   { value: "500+", label: "Verified agents" },
-  { value: "36", label: "States covered" },
+  { value: "36 + FCT", label: "States covered" },
   { value: "50,000+", label: "Monthly visitors" },
 ];
 
