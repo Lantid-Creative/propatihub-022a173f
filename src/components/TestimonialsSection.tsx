@@ -53,7 +53,7 @@ const testimonials = [
 
 const stats = [
   { value: "10,000+", label: "Verified Listings" },
-  { value: "36", label: "States Covered" },
+  { value: "36 + FCT", label: "States Covered" },
   { value: "5,000+", label: "Happy Users" },
   { value: "99.9%", label: "Uptime" },
 ];
