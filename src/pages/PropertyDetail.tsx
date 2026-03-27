@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
   BedDouble, Bath, Maximize, MapPin, Heart, Share2, ArrowLeft,
-  CheckCircle, Phone, Mail, ChevronLeft, ChevronRight, Eye
+  CheckCircle, ChevronLeft, ChevronRight, Eye
 } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import MortgageCalculator from "@/components/MortgageCalculator";
