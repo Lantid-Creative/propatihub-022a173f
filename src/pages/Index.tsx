@@ -35,6 +35,7 @@ const Index = () => {
       <LegalContractSection />
       <DisputeSection />
       <TestimonialsSection />
+      <NYSCBanner />
       <TrustSection />
       <LocationsSection />
       <ExploreSection />
