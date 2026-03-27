@@ -162,9 +162,6 @@ const AgencyAgents = () => {
                   {a.license_number && (
                     <span className="flex items-center gap-1"><Award className="w-3 h-3" /> Licensed</span>
                   )}
-                  {a.profile?.phone && (
-                    <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> Available</span>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -198,12 +195,6 @@ const AgencyAgents = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                {selectedAgent.profile?.phone && (
-                  <div className="flex items-center gap-2 text-sm font-body text-foreground">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    {selectedAgent.profile.phone}
-                  </div>
-                )}
                 {selectedAgent.profile?.city && (
                   <div className="flex items-center gap-2 text-sm font-body text-foreground">
                     <Building2 className="w-4 h-4 text-muted-foreground" />

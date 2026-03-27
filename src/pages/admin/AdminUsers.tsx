@@ -154,9 +154,6 @@ const AdminUsers = () => {
                       <td className="p-3 hidden sm:table-cell">
                         <p className="text-sm text-muted-foreground font-body">{u.city || "—"}, {u.state || "—"}</p>
                       </td>
-                      <td className="p-3 hidden md:table-cell">
-                        <p className="text-sm text-muted-foreground font-body">{u.phone || "—"}</p>
-                      </td>
                       <td className="p-3">
                         <div className="flex gap-1 flex-wrap">
                           {u.user_roles?.map((r: any) => (
