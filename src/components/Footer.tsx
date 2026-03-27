@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import logoDark from "@/assets/logo-dark.png";
-import badgeAppStore from "@/assets/badge-app-store.png";
-import badgeGooglePlay from "@/assets/badge-google-play.png";
+import badgeAppStore from "@/assets/badge-app-store.svg";
+import badgeGooglePlay from "@/assets/badge-google-play.svg";
 
 const footerColumns = [
   {
