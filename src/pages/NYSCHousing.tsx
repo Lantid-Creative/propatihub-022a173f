@@ -48,7 +48,7 @@ const NYSCHousing = () => {
     <div className="min-h-screen bg-background">
       <PageSEO
         title="NYSC Housing — Affordable Accommodation for Corps Members"
-        description="Find verified, affordable housing near NYSC secretariats and CDS venues across all 36 states. NYSC-friendly properties vetted for corps members."
+        description="Find verified, affordable housing near NYSC secretariats and CDS venues across all 36 states + FCT. NYSC-friendly properties vetted for corps members."
         canonical="/nysc-housing"
       />
 

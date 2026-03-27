@@ -21,7 +21,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <PageSEO
         title="PropatiHub — Buy, Rent & Manage Properties in Nigeria"
-        description="Nigeria's trusted property platform. Browse verified listings, manage rentals with escrow protection, and find estate agents across all 36 states."
+        description="Nigeria's trusted property platform. Browse verified listings, manage rentals with escrow protection, and find estate agents across all 36 states + FCT."
         canonical="/"
       />
       <HeroSection />
