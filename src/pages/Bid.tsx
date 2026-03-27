@@ -1,6 +1,6 @@
 import PageSEO from "@/components/PageSEO";
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Search, MapPin, Gavel, TrendingUp, Shield, Users, Clock, Banknote, ShieldCheck, Crown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
@@ -34,9 +34,10 @@ const minBedOptions = [
 ];
 
 const Bid = () => {
-  const [query, setQuery] = useState("");
-  const [minBeds, setMinBeds] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [minBeds, setMinBeds] = useState(searchParams.get("beds") || "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
