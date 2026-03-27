@@ -74,6 +74,7 @@ import ApiAccess from "./pages/ApiAccess";
 import ApiLanding from "./pages/ApiLanding";
 import PaymentCallback from "./pages/PaymentCallback";
 import NYSCHousing from "./pages/NYSCHousing";
+import VulnerabilityDisclosure from "./pages/VulnerabilityDisclosure";
 import ScrollToTop from "./components/ScrollToTop";
 import GoToTopButton from "./components/GoToTopButton";
 
@@ -114,6 +115,7 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/press" element={<Press />} />
             <Route path="/sitemap" element={<Sitemap />} />
+            <Route path="/vulnerability-disclosure" element={<VulnerabilityDisclosure />} />
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/api-access" element={<ApiLanding />} />
 
