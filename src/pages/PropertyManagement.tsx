@@ -594,8 +594,9 @@ const PropertyManagement = () => {
                           </div>
                           <div className="flex flex-col items-end gap-2 shrink-0">
                             {esc.escrow_status === "held" && esc.payment_status === "paid" && (
-                              <Button size="sm" variant="outline" onClick={() => handleReleaseEscrow(esc.id)}>
-                                <ArrowUpRight className="w-3 h-3 mr-1" /> Initiate Release
+                              <Button size="sm" variant="outline" onClick={() => handleReleaseEscrow(esc.id)} disabled={disbursing === esc.id}>
+                                {disbursing === esc.id ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ArrowUpRight className="w-3 h-3 mr-1" />}
+                                {disbursing === esc.id ? "Disbursing..." : "Release & Disburse"}
                               </Button>
                             )}
                             {isTenantRequest && (
