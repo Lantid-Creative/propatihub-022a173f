@@ -32,11 +32,17 @@ const AdminUsers = () => {
   const { toast } = useToast();
 
   const fetchUsers = async () => {
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("*, user_roles(role)")
-      .order("created_at", { ascending: false });
-    setUsers(profiles || []);
+    const [{ data: profiles }, { data: roles }] = await Promise.all([
+      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      supabase.from("user_roles").select("user_id, role"),
+    ]);
+    
+    const usersWithRoles = (profiles || []).map((p) => ({
+      ...p,
+      user_roles: (roles || []).filter((r) => r.user_id === p.user_id),
+    }));
+    
+    setUsers(usersWithRoles);
     setLoading(false);
   };
 
