@@ -1,4 +1,5 @@
 import { Menu, X } from "lucide-react";
+import DarkModeToggle from "./DarkModeToggle";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,6 +56,7 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          <DarkModeToggle />
           {user ? (
             <Link
               to={getDashboardLink()}

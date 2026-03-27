@@ -75,6 +75,7 @@ import ApiLanding from "./pages/ApiLanding";
 import PaymentCallback from "./pages/PaymentCallback";
 import NYSCHousing from "./pages/NYSCHousing";
 import VulnerabilityDisclosure from "./pages/VulnerabilityDisclosure";
+import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import GoToTopButton from "./components/GoToTopButton";
 
@@ -92,6 +93,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/properties" element={<Properties />} />
             <Route path="/property/:id" element={<PropertyDetail />} />
             <Route path="/for-sale" element={<ForSale />} />
@@ -147,7 +149,7 @@ const App = () => (
             <Route path="/agency" element={<ProtectedRoute requiredRole="agency"><AgencyDashboard /></ProtectedRoute>} />
             <Route path="/agency/properties" element={<ProtectedRoute requiredRole="agency"><AgencyProperties /></ProtectedRoute>} />
             <Route path="/agency/agents" element={<ProtectedRoute requiredRole="agency"><AgencyAgents /></ProtectedRoute>} />
-            <Route path="/agency/inquiries" element={<ProtectedRoute requiredRole="agent"><AgentInquiries /></ProtectedRoute>} />
+            <Route path="/agency/inquiries" element={<ProtectedRoute requiredRole="agency"><AgentInquiries /></ProtectedRoute>} />
             <Route path="/agency/analytics" element={<ProtectedRoute requiredRole="agency"><AgencyAnalytics /></ProtectedRoute>} />
             <Route path="/agency/billing" element={<ProtectedRoute requiredRole="agency"><AgencyBilling /></ProtectedRoute>} />
             <Route path="/agency/settings" element={<ProtectedRoute requiredRole="agency"><AgencySettings /></ProtectedRoute>} />

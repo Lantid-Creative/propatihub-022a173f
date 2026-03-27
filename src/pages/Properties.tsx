@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { BedDouble, Bath, Maximize, Heart, Search, MapPin, SlidersHorizontal, X } from "lucide-react";
+import { BedDouble, Bath, Maximize, Heart, Search, MapPin, SlidersHorizontal, X, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,12 +23,17 @@ const listingTypeLabels: Record<string, string> = {
   bid: "For Bidding",
 };
 
+const ITEMS_PER_PAGE = 12;
+
 const Properties = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page") || "1"));
+  const [savingSearch, setSavingSearch] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -42,14 +47,18 @@ const Properties = () => {
     bedrooms: searchParams.get("beds") || "any",
   });
 
-  const fetchProperties = async () => {
+  const fetchProperties = async (page = currentPage) => {
     setLoading(true);
+    const from = (page - 1) * ITEMS_PER_PAGE;
+    const to = from + ITEMS_PER_PAGE - 1;
+
     let query = supabase
       .from("properties")
-      .select("*")
+      .select("*", { count: "exact" })
       .eq("status", "active")
       .order("featured", { ascending: false })
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
     if (filters.listing_type !== "all") {
       query = query.eq("listing_type", filters.listing_type as any);
@@ -73,8 +82,9 @@ const Properties = () => {
       query = query.or(`title.ilike.%${filters.query}%,city.ilike.%${filters.query}%,address.ilike.%${filters.query}%`);
     }
 
-    const { data } = await query;
+    const { data, count } = await query;
     setProperties(data || []);
+    setTotalCount(count || 0);
     setLoading(false);
   };
 
@@ -89,6 +99,8 @@ const Properties = () => {
     fetchFavorites();
   }, []);
 
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (filters.query) params.set("q", filters.query);
@@ -99,7 +111,14 @@ const Properties = () => {
     if (filters.max_price) params.set("max", filters.max_price);
     if (filters.bedrooms !== "any") params.set("beds", filters.bedrooms);
     setSearchParams(params);
-    fetchProperties();
+    setCurrentPage(1);
+    fetchProperties(1);
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    fetchProperties(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const toggleFavorite = async (propertyId: string) => {
@@ -118,12 +137,38 @@ const Properties = () => {
     }
   };
 
+  const saveSearch = async () => {
+    if (!user) {
+      toast({ title: "Sign in required", description: "Please sign in to save searches.", variant: "destructive" });
+      return;
+    }
+    setSavingSearch(true);
+    const activeFilters = Object.entries(filters).filter(([, v]) => v && v !== "all" && v !== "All States" && v !== "any");
+    const name = activeFilters.length > 0
+      ? activeFilters.map(([k, v]) => `${k}: ${v}`).join(", ")
+      : "All properties";
+
+    const { error } = await supabase.from("saved_searches").insert({
+      user_id: user.id,
+      name: name.length > 100 ? name.substring(0, 100) : name,
+      filters: filters as any,
+      alert_enabled: true,
+    });
+    if (error) {
+      toast({ title: "Error saving search", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Search saved!", description: "You'll be notified of new matches." });
+    }
+    setSavingSearch(false);
+  };
+
   const formatPrice = (price: number) => `₦${price.toLocaleString()}`;
 
   const clearFilters = () => {
     setFilters({ query: "", listing_type: "all", property_type: "all", state: "All States", min_price: "", max_price: "", bedrooms: "any" });
     setSearchParams({});
-    setTimeout(fetchProperties, 0);
+    setCurrentPage(1);
+    setTimeout(() => fetchProperties(1), 0);
   };
 
   return (
@@ -239,8 +284,18 @@ const Properties = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <p className="font-body text-sm text-muted-foreground">
-              {loading ? "Searching..." : `${properties.length} properties found`}
+              {loading ? "Searching..." : `${totalCount} properties found`}
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={saveSearch}
+              disabled={savingSearch}
+              className="font-body"
+            >
+              <Bookmark className="w-4 h-4 mr-2" />
+              {savingSearch ? "Saving..." : "Save this search"}
+            </Button>
           </div>
 
           {loading ? (
@@ -257,61 +312,108 @@ const Properties = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((prop) => (
-                <Link key={prop.id} to={`/property/${prop.id}`} className="block">
-                  <Card className="overflow-hidden card-hover">
-                    <div className="relative aspect-[4/3]">
-                      {prop.images?.[0] ? (
-                        <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                          <MapPin className="w-8 h-8 text-muted-foreground" />
-                        </div>
-                      )}
-                      <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground">
-                        {listingTypeLabels[prop.listing_type] || prop.listing_type}
-                      </Badge>
-                      {prop.featured && (
-                        <Badge className="absolute top-3 left-24 bg-primary text-primary-foreground">Featured</Badge>
-                      )}
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(prop.id); }}
-                        className="absolute top-3 right-3 w-9 h-9 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-card transition-colors"
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {properties.map((prop) => (
+                  <Link key={prop.id} to={`/property/${prop.id}`} className="block">
+                    <Card className="overflow-hidden card-hover">
+                      <div className="relative aspect-[4/3]">
+                        {prop.images?.[0] ? (
+                          <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <MapPin className="w-8 h-8 text-muted-foreground" />
+                          </div>
+                        )}
+                        <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground">
+                          {listingTypeLabels[prop.listing_type] || prop.listing_type}
+                        </Badge>
+                        {prop.featured && (
+                          <Badge className="absolute top-3 left-24 bg-primary text-primary-foreground">Featured</Badge>
+                        )}
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(prop.id); }}
+                          className="absolute top-3 right-3 w-9 h-9 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-card transition-colors"
+                        >
+                          <Heart className={`w-4 h-4 ${favorites.includes(prop.id) ? "fill-destructive text-destructive" : "text-foreground"}`} />
+                        </button>
+                      </div>
+                      <CardContent className="p-4">
+                        <p className="font-display text-lg font-bold text-accent">{formatPrice(prop.price)}</p>
+                        <h3 className="font-body text-sm font-semibold text-foreground mt-1 line-clamp-1">{prop.title}</h3>
+                        <p className="text-muted-foreground text-xs font-body mt-1 flex items-center gap-1">
+                          <MapPin className="w-3 h-3" /> {prop.city}, {prop.state}
+                        </p>
+                        {(prop.bedrooms || prop.bathrooms || prop.area_sqm) && (
+                          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border">
+                            {prop.bedrooms && (
+                              <span className="flex items-center gap-1 text-muted-foreground text-xs font-body">
+                                <BedDouble className="w-3.5 h-3.5" /> {prop.bedrooms} Beds
+                              </span>
+                            )}
+                            {prop.bathrooms && (
+                              <span className="flex items-center gap-1 text-muted-foreground text-xs font-body">
+                                <Bath className="w-3.5 h-3.5" /> {prop.bathrooms} Baths
+                              </span>
+                            )}
+                            {prop.area_sqm && (
+                              <span className="flex items-center gap-1 text-muted-foreground text-xs font-body">
+                                <Maximize className="w-3.5 h-3.5" /> {prop.area_sqm}m²
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-10">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                    let page: number;
+                    if (totalPages <= 7) {
+                      page = i + 1;
+                    } else if (currentPage <= 4) {
+                      page = i + 1;
+                    } else if (currentPage >= totalPages - 3) {
+                      page = totalPages - 6 + i;
+                    } else {
+                      page = currentPage - 3 + i;
+                    }
+                    return (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="icon"
+                        onClick={() => goToPage(page)}
+                        className="font-body text-sm"
                       >
-                        <Heart className={`w-4 h-4 ${favorites.includes(prop.id) ? "fill-destructive text-destructive" : "text-foreground"}`} />
-                      </button>
-                    </div>
-                    <CardContent className="p-4">
-                      <p className="font-display text-lg font-bold text-accent">{formatPrice(prop.price)}</p>
-                      <h3 className="font-body text-sm font-semibold text-foreground mt-1 line-clamp-1">{prop.title}</h3>
-                      <p className="text-muted-foreground text-xs font-body mt-1 flex items-center gap-1">
-                        <MapPin className="w-3 h-3" /> {prop.city}, {prop.state}
-                      </p>
-                      {(prop.bedrooms || prop.bathrooms || prop.area_sqm) && (
-                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border">
-                          {prop.bedrooms && (
-                            <span className="flex items-center gap-1 text-muted-foreground text-xs font-body">
-                              <BedDouble className="w-3.5 h-3.5" /> {prop.bedrooms} Beds
-                            </span>
-                          )}
-                          {prop.bathrooms && (
-                            <span className="flex items-center gap-1 text-muted-foreground text-xs font-body">
-                              <Bath className="w-3.5 h-3.5" /> {prop.bathrooms} Baths
-                            </span>
-                          )}
-                          {prop.area_sqm && (
-                            <span className="flex items-center gap-1 text-muted-foreground text-xs font-body">
-                              <Maximize className="w-3.5 h-3.5" /> {prop.area_sqm}m²
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+                        {page}
+                      </Button>
+                    );
+                  })}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
