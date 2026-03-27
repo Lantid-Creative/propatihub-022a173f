@@ -12,7 +12,7 @@ import {
   BedDouble, Bath, Maximize, MapPin, Heart, Share2, ArrowLeft,
   CheckCircle, ChevronLeft, ChevronRight, Eye
 } from "lucide-react";
-import logoDark from "@/assets/logo-dark.png";
+import logoLight from "@/assets/logo-light.png";
 import MortgageCalculator from "@/components/MortgageCalculator";
 import PropertyMap from "@/components/PropertyMap";
 import BidSection from "@/components/BidSection";
@@ -141,7 +141,7 @@ const PropertyDetail = () => {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <Link to="/">
-              <img src={logoDark} alt="PropatiHub" className="h-7 w-auto" />
+              <img src={logoLight} alt="PropatiHub" className="h-7 w-auto" />
             </Link>
           </div>
           <div className="flex items-center gap-2">
