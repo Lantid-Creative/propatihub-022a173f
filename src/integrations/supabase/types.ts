@@ -998,6 +998,8 @@ export type Database = {
           latitude: number | null
           listing_type: Database["public"]["Enums"]["listing_type"]
           longitude: number | null
+          nysc_details: string | null
+          nysc_friendly: boolean | null
           parking_spaces: number | null
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
@@ -1042,6 +1044,8 @@ export type Database = {
           latitude?: number | null
           listing_type: Database["public"]["Enums"]["listing_type"]
           longitude?: number | null
+          nysc_details?: string | null
+          nysc_friendly?: boolean | null
           parking_spaces?: number | null
           price: number
           property_type: Database["public"]["Enums"]["property_type"]
@@ -1086,6 +1090,8 @@ export type Database = {
           latitude?: number | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
           longitude?: number | null
+          nysc_details?: string | null
+          nysc_friendly?: boolean | null
           parking_spaces?: number | null
           price?: number
           property_type?: Database["public"]["Enums"]["property_type"]
