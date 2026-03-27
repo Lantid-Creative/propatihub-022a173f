@@ -126,16 +126,6 @@ const AdminAgencies = () => {
           {selected && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                {selected.phone && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground font-body">
-                    <Phone className="w-4 h-4" /> {selected.phone}
-                  </div>
-                )}
-                {selected.email && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground font-body">
-                    <Mail className="w-4 h-4" /> {selected.email}
-                  </div>
-                )}
                 {selected.website && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground font-body">
                     <Globe className="w-4 h-4" /> {selected.website}

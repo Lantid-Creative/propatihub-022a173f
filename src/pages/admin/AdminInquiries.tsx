@@ -130,9 +130,6 @@ const AdminInquiries = () => {
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-muted/50">
                 <p className="text-sm font-body font-medium text-foreground mb-1">From: {selected.profiles?.full_name || "User"}</p>
-                {selected.profiles?.phone && (
-                  <p className="text-xs text-muted-foreground font-body">Phone: {selected.profiles.phone}</p>
-                )}
               </div>
               <div className="p-4 rounded-xl bg-muted/50">
                 <p className="text-sm font-body font-medium text-foreground mb-1">Property: {selected.properties?.title}</p>

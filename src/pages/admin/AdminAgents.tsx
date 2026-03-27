@@ -138,11 +138,6 @@ const AdminAgents = () => {
                     License: {selected.license_number}
                   </div>
                 )}
-                {selected.profiles?.phone && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Phone className="w-4 h-4" /> {selected.profiles.phone}
-                  </div>
-                )}
                 {(selected.profiles?.city || selected.profiles?.state) && (
                   <div className="flex items-center gap-2 text-muted-foreground col-span-2">
                     <MapPin className="w-4 h-4" /> {selected.profiles.city}, {selected.profiles.state}

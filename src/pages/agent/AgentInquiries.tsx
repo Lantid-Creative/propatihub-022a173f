@@ -127,11 +127,6 @@ const AgentInquiries = () => {
                   <User className="w-4 h-4 text-muted-foreground" />
                   <span className="font-body text-sm text-foreground font-medium">{selectedInq.profiles?.full_name || "User"}</span>
                 </div>
-                {selectedInq.profiles?.phone && (
-                  <a href={`tel:${selectedInq.profiles.phone}`} className="flex items-center gap-2 text-sm font-body text-accent hover:underline">
-                    <Phone className="w-4 h-4" /> {selectedInq.profiles.phone}
-                  </a>
-                )}
               </div>
 
               {/* Message */}
@@ -242,13 +237,6 @@ const AgentInquiries = () => {
                     >
                       <XCircle className="w-3 h-3" /> Close
                     </Button>
-                    {inq.profiles?.phone && (
-                      <a href={`tel:${inq.profiles.phone}`} onClick={(e) => e.stopPropagation()}>
-                        <Button size="sm" variant="ghost" className="text-xs gap-1">
-                          <Phone className="w-3 h-3" /> Call
-                        </Button>
-                      </a>
-                    )}
                   </div>
                 )}
               </CardContent>
