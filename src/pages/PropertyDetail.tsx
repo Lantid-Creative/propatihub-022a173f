@@ -306,11 +306,6 @@ const PropertyDetail = () => {
                     <p className="text-xs text-muted-foreground font-body">{agent?.city || ""}{agent?.state ? `, ${agent.state}` : ""}</p>
                   </div>
                 </div>
-                {agent?.phone && (
-                  <a href={`tel:${agent.phone}`} className="flex items-center gap-2 text-sm font-body text-foreground hover:text-accent transition-colors mb-3">
-                    <Phone className="w-4 h-4" /> {agent.phone}
-                  </a>
-                )}
                 <StartChatButton
                   recipientId={property.agent_id}
                   propertyId={property.id}
