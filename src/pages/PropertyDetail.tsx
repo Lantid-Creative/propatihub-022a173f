@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
+import PageSEO from "@/components/PageSEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -131,8 +132,59 @@ const PropertyDetail = () => {
 
   const images = property.images?.length ? property.images : [];
 
+  const seoTitle = `${property.title} — ${listingTypeLabels[property.listing_type] || ""} in ${property.city}, ${property.state}`;
+  const seoDesc = property.description
+    ? property.description.slice(0, 155).replace(/\s+/g, " ").trim()
+    : `${property.bedrooms || ""}${property.bedrooms ? "-bedroom " : ""}${property.property_type} ${listingTypeLabels[property.listing_type]?.toLowerCase() || ""} in ${property.city}, ${property.state}. ${formatPrice(property.price)}.`;
+  const seoImage = images.length > 0 ? images[0] : undefined;
+
+  // JSON-LD structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: property.title,
+    description: property.description || seoDesc,
+    url: `https://propatihub.lovable.app/property/${property.id}`,
+    image: images.length > 0 ? images : undefined,
+    datePosted: property.created_at,
+    offers: {
+      "@type": "Offer",
+      price: property.price,
+      priceCurrency: "NGN",
+      availability: property.status === "active" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+    },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: property.address || undefined,
+      addressLocality: property.city,
+      addressRegion: property.state,
+      addressCountry: "NG",
+    },
+    ...(property.latitude && property.longitude ? {
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: property.latitude,
+        longitude: property.longitude,
+      },
+    } : {}),
+    ...(property.area_sqm ? { floorSize: { "@type": "QuantitativeValue", value: property.area_sqm, unitCode: "MTK" } } : {}),
+    numberOfRooms: property.bedrooms || undefined,
+    numberOfBathroomsTotal: property.bathrooms || undefined,
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO
+        title={seoTitle}
+        description={seoDesc}
+        canonical={`/property/${property.id}`}
+        ogType="article"
+        ogImage={seoImage}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <nav className="bg-card border-b border-border px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -340,7 +392,16 @@ const PropertyDetail = () => {
 
             {/* Bid Section for bid listings */}
             {property.listing_type === "bid" && (
-              <BidSection propertyId={property.id} askingPrice={property.price} />
+              <BidSection
+                propertyId={property.id}
+                askingPrice={property.price}
+                reservePrice={property.reserve_price}
+                auctionEndAt={property.auction_end_at}
+                auctionStartAt={property.auction_start_at}
+                auctionStatus={property.auction_status}
+                depositPercentage={property.deposit_percentage}
+                winnerPaymentDays={property.winner_payment_deadline_days}
+              />
             )}
 
             {/* Map */}
