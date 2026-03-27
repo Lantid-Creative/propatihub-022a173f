@@ -12,6 +12,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import LocationsSection from "@/components/LocationsSection";
 import ExploreSection from "@/components/ExploreSection";
 import AlertSection from "@/components/AlertSection";
+import LatestNewsSection from "@/components/LatestNewsSection";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
 
