@@ -7,6 +7,7 @@ const categories = [
   { label: "Short let properties", href: "/properties?type=short_let" },
   { label: "Land for sale", href: "/properties?type=land" },
   { label: "New developments", href: "/properties?type=sale&property=house" },
+  { label: "NYSC-friendly housing", href: "/nysc-housing" },
 ];
 
 const researchTools = [
