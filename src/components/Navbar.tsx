@@ -35,13 +35,13 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300 ${
+      className={`sticky top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
         scrolled
-          ? "bg-primary/95 backdrop-blur-sm shadow-sm"
-          : "bg-transparent"
+          ? "border-border bg-background/95 backdrop-blur-sm shadow-sm"
+          : "border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 flex h-16 items-center justify-between">
         <Link to="/">
           <img src={logoDark} alt="PropatiHub" className="h-8 w-auto" />
         </Link>
@@ -51,7 +51,7 @@ const Navbar = () => {
             <Link
               key={item.label}
               to={item.href}
-              className="text-primary-foreground/80 hover:text-primary-foreground font-body text-sm font-medium transition-colors"
+              className="text-foreground/70 hover:text-foreground font-body text-sm font-medium transition-colors"
             >
               {item.label}
             </Link>
@@ -60,57 +60,62 @@ const Navbar = () => {
           {user ? (
             <Link
               to={getDashboardLink()}
-              className="border border-primary-foreground/30 text-primary-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-primary-foreground/10 transition-colors"
+              className="border border-border text-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-muted transition-colors"
             >
               Dashboard
             </Link>
           ) : (
             <Link
               to="/auth"
-              className="border border-primary-foreground/30 text-primary-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-primary-foreground/10 transition-colors"
+              className="border border-border text-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-muted transition-colors"
             >
               Sign in
             </Link>
           )}
         </div>
 
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden text-primary-foreground"
-        >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <DarkModeToggle />
+          <button
+            onClick={() => setOpen(!open)}
+            className="text-foreground"
+          >
+            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {open && (
-        <div className="md:hidden mt-4 bg-card rounded-xl p-4 shadow-xl">
-          {navLinks.map((item) => (
-            <Link
-              key={item.label}
-              to={item.href}
-              onClick={() => setOpen(false)}
-              className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
-          {user ? (
-            <Link
-              to={getDashboardLink()}
-              onClick={() => setOpen(false)}
-              className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-            >
-              Dashboard
-            </Link>
-          ) : (
-            <Link
-              to="/auth"
-              onClick={() => setOpen(false)}
-              className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-            >
-              Sign in
-            </Link>
-          )}
+        <div className="md:hidden border-t border-border bg-background text-foreground">
+          <div className="flex flex-col gap-1 px-6 py-4">
+            {navLinks.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                onClick={() => setOpen(false)}
+                className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+            {user ? (
+              <Link
+                to={getDashboardLink()}
+                onClick={() => setOpen(false)}
+                className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                onClick={() => setOpen(false)}
+                className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
+              >
+                Sign in
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </nav>
