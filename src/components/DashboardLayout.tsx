@@ -66,6 +66,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
     return [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "List Property", href: "/dashboard/list-property", icon: Home },
       { label: "My Tenancy", href: "/dashboard/tenancy", icon: KeyRound },
       { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
       { label: "Favourites", href: "/dashboard/favourites", icon: Heart },
