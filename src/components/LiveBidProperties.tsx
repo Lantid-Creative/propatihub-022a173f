@@ -92,6 +92,8 @@ const LiveBidProperties = ({ searchQuery, minBeds, maxPrice }: LiveBidProperties
 
   useEffect(() => {
     fetchProperties();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, minBeds, maxPrice]);
 
     // Realtime subscription for bid updates
     const channel = supabase

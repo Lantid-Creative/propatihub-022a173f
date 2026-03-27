@@ -151,7 +151,7 @@ const Bid = () => {
       </section>
 
       {/* Live Bidding Properties */}
-      <LiveBidProperties />
+      <LiveBidProperties searchQuery={query} minBeds={minBeds} maxPrice={maxPrice} />
 
       {/* How Bidding Works - Updated */}
       <section className="py-16 px-6">
