@@ -19,7 +19,7 @@ const features = [
   {
     icon: Users,
     title: "Trusted Agents",
-    desc: "Connect with licensed and vetted real estate agents across all 36 states.",
+    desc: "Connect with licensed and vetted real estate agents across all 36 states + FCT.",
   },
 ];
 
