@@ -23,10 +23,23 @@ const AgentInquiries = () => {
     if (!user) return;
     const { data } = await supabase
       .from("inquiries")
-      .select("*, properties(id, title, city, state, price, images), profiles!inquiries_user_id_fkey(full_name, phone, email:user_id)")
+      .select("*, properties(id, title, city, state, price, images)")
       .eq("agent_id", user.id)
       .order("created_at", { ascending: false });
-    setInquiries(data || []);
+    
+    // Fetch profile info for each inquiry's user_id
+    const inquiriesWithProfiles = await Promise.all(
+      (data || []).map(async (inq) => {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("full_name, phone")
+          .eq("user_id", inq.user_id)
+          .single();
+        return { ...inq, profiles: profileData };
+      })
+    );
+    
+    setInquiries(inquiriesWithProfiles);
     setLoading(false);
   };
 
