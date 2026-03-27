@@ -187,20 +187,27 @@ const PropertyManagement = () => {
   };
 
   const handleApproveRelease = async (escrowId: string) => {
-    const { error } = await supabase
-      .from("caution_fee_escrow")
-      .update({
-        escrow_status: "released",
-        release_approved_at: new Date().toISOString(),
-      } as any)
-      .eq("id", escrowId);
+    setDisbursing(escrowId);
+    try {
+      const { data, error } = await supabase.functions.invoke("escrow-disburse", {
+        body: { escrow_id: escrowId },
+      });
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Payout approved!", description: "The caution fee will be released to the tenant." });
-      fetchAll();
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: "Payout sent!",
+          description: `₦${data.amount?.toLocaleString()} has been transferred to ${data.recipient}. Ref: ${data.transfer_reference}`,
+        });
+      } else if (data?.error) {
+        toast({ title: "Disbursement failed", description: data.error, variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to disburse funds", variant: "destructive" });
     }
+    setDisbursing(null);
+    fetchAll();
   };
 
 
