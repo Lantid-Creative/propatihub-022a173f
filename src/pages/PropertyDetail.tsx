@@ -268,6 +268,7 @@ const PropertyDetail = () => {
                 </Badge>
                 <Badge variant="secondary" className="capitalize">{property.property_type}</Badge>
                 {property.featured && <Badge className="bg-primary text-primary-foreground">Featured</Badge>}
+                {property.nysc_friendly && <Badge className="bg-primary text-primary-foreground">🎓 NYSC-Friendly</Badge>}
               </div>
               <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">{property.title}</h1>
               <p className="text-muted-foreground font-body flex items-center gap-1">
