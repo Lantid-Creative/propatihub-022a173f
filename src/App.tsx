@@ -71,6 +71,8 @@ import TenantPortal from "./pages/TenantPortal";
 import ApiDocs from "./pages/ApiDocs";
 import ApiAccess from "./pages/ApiAccess";
 import PaymentCallback from "./pages/PaymentCallback";
+import ScrollToTop from "./components/ScrollToTop";
+import GoToTopButton from "./components/GoToTopButton";
 
 const queryClient = new QueryClient();
 
@@ -80,7 +82,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
+          <GoToTopButton />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
