@@ -37,6 +37,7 @@ const PropertyManagement = () => {
   const [viewingContract, setViewingContract] = useState<any | null>(null);
   const [rejectingEscrowId, setRejectingEscrowId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [disbursing, setDisbursing] = useState<string | null>(null);
 
   // Invite form
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -169,38 +170,51 @@ const PropertyManagement = () => {
   };
 
   const handleReleaseEscrow = async (escrowId: string) => {
-    const { error } = await supabase
-      .from("caution_fee_escrow")
-      .update({
-        escrow_status: "release_requested",
-        release_requested_at: new Date().toISOString(),
-        release_requested_by: "landlord",
-      } as any)
-      .eq("id", escrowId);
+    setDisbursing(escrowId);
+    try {
+      const { data, error } = await supabase.functions.invoke("escrow-disburse", {
+        body: { escrow_id: escrowId },
+      });
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Release initiated", description: "The caution fee will be released to the tenant." });
-      fetchAll();
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: "Caution fee disbursed!",
+          description: `₦${data.amount?.toLocaleString()} transferred to ${data.recipient}. Ref: ${data.transfer_reference}`,
+        });
+      } else if (data?.error) {
+        toast({ title: "Disbursement failed", description: data.error, variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to disburse funds", variant: "destructive" });
     }
+    setDisbursing(null);
+    fetchAll();
   };
 
   const handleApproveRelease = async (escrowId: string) => {
-    const { error } = await supabase
-      .from("caution_fee_escrow")
-      .update({
-        escrow_status: "released",
-        release_approved_at: new Date().toISOString(),
-      } as any)
-      .eq("id", escrowId);
+    setDisbursing(escrowId);
+    try {
+      const { data, error } = await supabase.functions.invoke("escrow-disburse", {
+        body: { escrow_id: escrowId },
+      });
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Payout approved!", description: "The caution fee will be released to the tenant." });
-      fetchAll();
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: "Payout sent!",
+          description: `₦${data.amount?.toLocaleString()} has been transferred to ${data.recipient}. Ref: ${data.transfer_reference}`,
+        });
+      } else if (data?.error) {
+        toast({ title: "Disbursement failed", description: data.error, variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to disburse funds", variant: "destructive" });
     }
+    setDisbursing(null);
+    fetchAll();
   };
 
 
@@ -580,14 +594,16 @@ const PropertyManagement = () => {
                           </div>
                           <div className="flex flex-col items-end gap-2 shrink-0">
                             {esc.escrow_status === "held" && esc.payment_status === "paid" && (
-                              <Button size="sm" variant="outline" onClick={() => handleReleaseEscrow(esc.id)}>
-                                <ArrowUpRight className="w-3 h-3 mr-1" /> Initiate Release
+                              <Button size="sm" variant="outline" onClick={() => handleReleaseEscrow(esc.id)} disabled={disbursing === esc.id}>
+                                {disbursing === esc.id ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ArrowUpRight className="w-3 h-3 mr-1" />}
+                                {disbursing === esc.id ? "Disbursing..." : "Release & Disburse"}
                               </Button>
                             )}
                             {isTenantRequest && (
                               <>
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApproveRelease(esc.id)}>
-                                  <CheckCircle className="w-3 h-3 mr-1" /> Approve Payout
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApproveRelease(esc.id)} disabled={disbursing === esc.id}>
+                                  {disbursing === esc.id ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <CheckCircle className="w-3 h-3 mr-1" />}
+                                  {disbursing === esc.id ? "Disbursing..." : "Approve & Disburse"}
                                 </Button>
                                 {rejectingEscrowId === esc.id ? (
                                   <div className="space-y-2 w-56">

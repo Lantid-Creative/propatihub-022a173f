@@ -1249,6 +1249,45 @@ export type Database = {
           },
         ]
       }
+      tenant_bank_details: {
+        Row: {
+          account_name: string | null
+          account_number: string
+          bank_code: string
+          bank_name: string
+          created_at: string
+          id: string
+          is_verified: boolean
+          paystack_recipient_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name?: string | null
+          account_number: string
+          bank_code: string
+          bank_name: string
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          paystack_recipient_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string | null
+          account_number?: string
+          bank_code?: string
+          bank_name?: string
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          paystack_recipient_code?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tenant_invitations: {
         Row: {
           accepted_by: string | null
