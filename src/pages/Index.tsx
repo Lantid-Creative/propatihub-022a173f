@@ -1,5 +1,6 @@
 import PageSEO from "@/components/PageSEO";
 import HeroSection from "@/components/HeroSection";
+import NYSCBanner from "@/components/NYSCBanner";
 import FeaturedProperties from "@/components/FeaturedProperties";
 import ToolsSection from "@/components/ToolsSection";
 import OwnerCTASection from "@/components/OwnerCTASection";
@@ -34,6 +35,7 @@ const Index = () => {
       <LegalContractSection />
       <DisputeSection />
       <TestimonialsSection />
+      <NYSCBanner />
       <TrustSection />
       <LocationsSection />
       <ExploreSection />
