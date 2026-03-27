@@ -20,7 +20,7 @@ const values = [
 
 const About = () => (
   <div className="min-h-screen flex flex-col bg-background">
-    <PageSEO title="About PropatiHub" description="Learn about Nigeria's trusted property platform connecting buyers, renters, agents, and agencies across all 36 states + FCT." canonical="/about" /> description="Learn about Nigeria's trusted property platform connecting buyers, renters, agents, and agencies across all 36 states + FCT." canonical="/about" /> canonical="/about" />
+    <PageSEO title="About PropatiHub" description="Learn about Nigeria's trusted property platform connecting buyers, renters, agents, and agencies across all 36 states + FCT." canonical="/about" />
     <Navbar />
     <section className="bg-primary pt-28 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">
