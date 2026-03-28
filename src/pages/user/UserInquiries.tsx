@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import VerificationGate from "@/components/verification/VerificationGate";
 
 const UserInquiries = () => {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ const UserInquiries = () => {
 
   return (
     <DashboardLayout>
+      <VerificationGate verificationType="customer" actionLabel="inquiries">
       <div className="mb-6">
         <h1 className="text-2xl font-display font-bold text-foreground">My Inquiries</h1>
         <p className="text-muted-foreground font-body text-sm">{inquiries.length} inquiries sent</p>
@@ -57,6 +59,7 @@ const UserInquiries = () => {
           ))}
         </div>
       )}
+      </VerificationGate>
     </DashboardLayout>
   );
 };
