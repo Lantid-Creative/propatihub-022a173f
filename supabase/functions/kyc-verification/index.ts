@@ -142,7 +142,8 @@ Deno.serve(async (req) => {
       const { verification_id } = body as any;
 
       const azureKey = Deno.env.get("AZURE_FACE_API_KEY");
-      const azureEndpoint = Deno.env.get("AZURE_FACE_API_ENDPOINT");
+      const azureEndpointRaw = Deno.env.get("AZURE_FACE_API_ENDPOINT");
+      const azureEndpoint = azureEndpointRaw?.endsWith("/") ? azureEndpointRaw : `${azureEndpointRaw}/`;
 
       if (!azureKey || !azureEndpoint) {
         return jsonResponse({ error: "Azure Face API not configured" }, 500);
