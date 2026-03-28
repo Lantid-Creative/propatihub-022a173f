@@ -70,12 +70,12 @@ const AdminInquiries = () => {
       </div>
 
       {/* Status tabs */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 flex-wrap">
         {["all", "pending", "responded", "closed"].map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-4 py-2 rounded-lg text-sm font-body transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-body transition-colors ${
               statusFilter === s ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
@@ -101,18 +101,22 @@ const AdminInquiries = () => {
             const cfg = statusConfig[inq.status] || statusConfig.pending;
             return (
               <Card key={inq.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelected(inq)}>
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-                    <MessageSquare className="w-4 h-4 text-accent" />
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                      <MessageSquare className="w-4 h-4 text-accent" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body font-semibold text-foreground text-sm truncate">
+                        {inq.profiles?.full_name || "User"} <ArrowRight className="w-3 h-3 inline text-muted-foreground mx-1" /> {inq.properties?.title || "Property"}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-body line-clamp-1 mt-0.5">{inq.message}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <Badge className={`${cfg.color} text-[10px]`}>{inq.status}</Badge>
+                      <span className="text-[10px] text-muted-foreground font-body whitespace-nowrap">{timeAgo(inq.created_at)}</span>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body font-semibold text-foreground text-sm">
-                      {inq.profiles?.full_name || "User"} <ArrowRight className="w-3 h-3 inline text-muted-foreground mx-1" /> {inq.properties?.title || "Property"}
-                    </p>
-                    <p className="text-xs text-muted-foreground font-body line-clamp-1 mt-0.5">{inq.message}</p>
-                  </div>
-                  <Badge className={`${cfg.color} text-[10px]`}>{inq.status}</Badge>
-                  <span className="text-[10px] text-muted-foreground font-body whitespace-nowrap">{timeAgo(inq.created_at)}</span>
                 </CardContent>
               </Card>
             );
@@ -122,7 +126,7 @@ const AdminInquiries = () => {
 
       {/* Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg w-[95vw]">
           <DialogHeader>
             <DialogTitle>Inquiry Details</DialogTitle>
           </DialogHeader>
@@ -141,11 +145,11 @@ const AdminInquiries = () => {
                 <p className="text-xs text-muted-foreground font-body mb-1">Message:</p>
                 <p className="text-sm font-body text-foreground bg-card p-3 rounded-lg border border-border">{selected.message}</p>
               </div>
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2">
                 <Badge className={statusConfig[selected.status]?.color || ""}>{selected.status}</Badge>
                 <p className="text-xs text-muted-foreground font-body">{new Date(selected.created_at).toLocaleString()}</p>
               </div>
-              <div className="flex gap-2 pt-2 border-t border-border">
+              <div className="flex gap-2 pt-2 border-t border-border flex-wrap">
                 {selected.status === "pending" && (
                   <Button size="sm" onClick={() => updateStatus(selected.id, "responded")} className="bg-primary hover:bg-primary/90">
                     Mark Responded
