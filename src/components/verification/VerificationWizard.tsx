@@ -200,6 +200,10 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       if (isLastStep) {
         if (!currentVerification) throw new Error("Verification not found");
         const result = await submitVerification(currentVerification.id);
+        
+        // Immediately refetch so the "Under Review" card shows right away
+        await refetch();
+        
         toast({
           title: result.autoApproved ? "✅ Verified!" : "Submitted for Review",
           description: result.autoApproved
@@ -223,16 +227,23 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
   };
 
   const handleSelfieCapture = async (blob: Blob) => {
-    if (!verification) return;
     setSubmitting(true);
 
     try {
+      // Ensure we have a verification record before uploading
+      let vid = verification?.id;
+      if (!vid) {
+        const created = await createVerification(formData);
+        vid = created?.id;
+      }
+      if (!vid) throw new Error("Could not create verification record");
+
       toast({
         title: "Securing Identity Scan",
         description: "Processing your biometric capture...",
       });
 
-      await uploadSelfie(verification.id, blob);
+      await uploadSelfie(vid, blob);
       
       toast({ 
         title: "✅ Identity Secured", 
