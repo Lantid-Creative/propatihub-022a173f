@@ -3,8 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Search, MapPin, Gavel, TrendingUp, Shield, Users, Clock, Banknote, ShieldCheck, Crown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import BidSubscriptionTiers from "@/components/BidSubscriptionTiers";
 import LiveBidProperties from "@/components/LiveBidProperties";
 import heroImg from "@/assets/hero-for-sale.jpg";
@@ -76,7 +74,6 @@ const Bid = () => {
       <section className="relative min-h-[500px]">
         <img src={heroImg} alt="Properties for bidding in Nigeria" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />
-        <Navbar />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-4">
           <div className="flex items-center gap-2 font-body text-sm text-primary-foreground/60">
@@ -277,7 +274,6 @@ const Bid = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };

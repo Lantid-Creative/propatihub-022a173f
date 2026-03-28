@@ -361,7 +361,7 @@ const PropertyManagement = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-body font-medium text-foreground block mb-1.5">Tenant Name</label>
                     <Input value={inviteForm.tenant_name} onChange={(e) => setInviteForm({ ...inviteForm, tenant_name: e.target.value })} placeholder="John Doe" />
@@ -371,7 +371,7 @@ const PropertyManagement = () => {
                     <Input type="email" value={inviteForm.tenant_email} onChange={(e) => setInviteForm({ ...inviteForm, tenant_email: e.target.value })} placeholder="tenant@email.com" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-body font-medium text-foreground block mb-1.5">Monthly Rent (₦) *</label>
                     <Input type="number" value={inviteForm.monthly_rent} onChange={(e) => setInviteForm({ ...inviteForm, monthly_rent: e.target.value })} placeholder="500000" />
@@ -381,7 +381,7 @@ const PropertyManagement = () => {
                     <Input type="number" value={inviteForm.caution_fee} onChange={(e) => setInviteForm({ ...inviteForm, caution_fee: e.target.value })} placeholder="1000000" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-body font-medium text-foreground block mb-1.5">Lease Start *</label>
                     <Input type="date" value={inviteForm.lease_start} onChange={(e) => setInviteForm({ ...inviteForm, lease_start: e.target.value })} />
@@ -440,15 +440,15 @@ const PropertyManagement = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-8 w-full">
-            <TabsTrigger value="tenancies" className="text-xs">Tenancies</TabsTrigger>
-            <TabsTrigger value="invitations" className="text-xs">Invitations</TabsTrigger>
-            <TabsTrigger value="records" className="text-xs">Records</TabsTrigger>
-            <TabsTrigger value="contracts" className="text-xs">Contracts</TabsTrigger>
-            <TabsTrigger value="escrow" className="text-xs">Escrow</TabsTrigger>
-            <TabsTrigger value="rent" className="text-xs">Rent</TabsTrigger>
-            <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
-            <TabsTrigger value="disputes" className="text-xs">Disputes</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto overflow-y-hidden h-auto p-1 bg-muted no-scrollbar justify-start">
+            <TabsTrigger value="tenancies" className="text-xs flex-shrink-0">Tenancies</TabsTrigger>
+            <TabsTrigger value="invitations" className="text-xs flex-shrink-0">Invitations</TabsTrigger>
+            <TabsTrigger value="records" className="text-xs flex-shrink-0">Records</TabsTrigger>
+            <TabsTrigger value="contracts" className="text-xs flex-shrink-0">Contracts</TabsTrigger>
+            <TabsTrigger value="escrow" className="text-xs flex-shrink-0">Escrow</TabsTrigger>
+            <TabsTrigger value="rent" className="text-xs flex-shrink-0">Rent</TabsTrigger>
+            <TabsTrigger value="maintenance" className="text-xs flex-shrink-0">Maintenance</TabsTrigger>
+            <TabsTrigger value="disputes" className="text-xs flex-shrink-0">Disputes</TabsTrigger>
           </TabsList>
 
           {/* Tenancies */}

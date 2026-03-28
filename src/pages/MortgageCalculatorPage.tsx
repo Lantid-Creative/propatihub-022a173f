@@ -1,12 +1,11 @@
-import PageSEO from "@/components/PageSEO";
 import { useState, useMemo } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, PiggyBank, Clock, ShieldCheck } from "lucide-react";
+import PageSEO from "@/components/PageSEO";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 const MortgageCalculatorPage = () => {
   const [propertyPrice, setPropertyPrice] = useState(50000000);
@@ -30,6 +29,11 @@ const MortgageCalculatorPage = () => {
   const totalPayment = monthlyPayment * loanTermYears * 12;
   const totalInterest = totalPayment - loanAmount;
 
+  const chartData = [
+    { name: "Principal", value: loanAmount, color: "#1E3A8A" }, // primary
+    { name: "Total Interest", value: totalInterest, color: "#008080" }, // accent
+  ];
+
   const fmt = (n: number) => `₦${Math.round(n).toLocaleString()}`;
 
   const tips = [
@@ -42,9 +46,7 @@ const MortgageCalculatorPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PageSEO title="Mortgage Calculator Nigeria" description="Calculate your monthly mortgage repayments for Nigerian property. Free tool to estimate payments, interest, and loan affordability." canonical="/mortgage-calculator" />
-      <Navbar />
-      {/* Hero */}
-      <section className="bg-primary pt-28 pb-16">
+      <section className="bg-primary pt-12 pb-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 bg-primary-foreground/10 rounded-full px-4 py-1.5 mb-6">
             <Calculator className="w-4 h-4 text-primary-foreground" />
@@ -66,14 +68,18 @@ const MortgageCalculatorPage = () => {
             <CardContent className="p-8 space-y-6">
               <div className="space-y-2">
                 <Label>Property Price</Label>
-                <Input
-                  type="text"
-                  value={fmt(propertyPrice)}
-                  onChange={(e) => {
-                    const val = Number(e.target.value.replace(/[^0-9]/g, ""));
-                    if (!isNaN(val)) setPropertyPrice(val);
-                  }}
-                />
+                <div className="relative">
+                  <Input
+                    type="text"
+                    value={fmt(propertyPrice)}
+                    onChange={(e) => {
+                      const val = Number(e.target.value.replace(/[^0-9]/g, ""));
+                      if (!isNaN(val)) setPropertyPrice(val);
+                    }}
+                    className="pl-8"
+                  />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></span>
+                </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -101,14 +107,39 @@ const MortgageCalculatorPage = () => {
 
           {/* Results */}
           <div className="md:col-span-2 space-y-6">
-            <Card className="bg-accent text-accent-foreground shadow-lg">
-              <CardContent className="p-8 text-center">
+            <Card className="bg-accent text-accent-foreground shadow-lg overflow-hidden">
+              <CardContent className="p-8 text-center relative">
                 <p className="text-sm opacity-80 mb-1">Monthly Repayment</p>
                 <p className="text-3xl font-heading font-bold">{fmt(monthlyPayment)}</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="p-6 space-y-3">
+
+            <Card className="shadow-lg">
+              <CardContent className="p-6 space-y-6">
+                <div className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value: number) => fmt(value)}
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      />
+                      <Legend verticalAlign="bottom" height={36}/>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Loan Amount</span>
                   <span className="font-semibold">{fmt(loanAmount)}</span>
@@ -141,7 +172,6 @@ const MortgageCalculatorPage = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };

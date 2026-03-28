@@ -5,8 +5,6 @@ import { Search, TrendingUp, BarChart3, Home, Calculator, MapPin } from "lucide-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import heroImg from "@/assets/hero-house-prices.jpg";
@@ -71,7 +69,6 @@ const HousePrices = () => {
       <section className="relative min-h-[480px]">
         <img src={heroImg} alt="Research house prices" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />
-        <Navbar />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-4">
           <div className="flex items-center gap-2 font-body text-sm text-primary-foreground/60">
@@ -226,7 +223,6 @@ const HousePrices = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };

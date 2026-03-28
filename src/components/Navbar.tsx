@@ -35,18 +35,18 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
         scrolled
           ? "border-border bg-background/95 backdrop-blur-sm shadow-sm"
           : "border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex h-16 items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex h-16 items-center justify-between">
         <Link to="/">
-          <img src={logoDark} alt="PropatiHub" className="h-8 w-auto" />
+          <img src={logoDark} alt="PropatiHub" className="h-8 w-auto max-w-[120px] sm:max-w-none" />
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8">
           {navLinks.map((item) => (
             <Link
               key={item.label}
@@ -74,7 +74,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <DarkModeToggle />
           <button
             onClick={() => setOpen(!open)}
@@ -85,15 +85,14 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Animated mobile menu */}
       <div
-        className={`md:hidden grid transition-[grid-template-rows] duration-300 ease-out ${
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        className={`lg:hidden absolute top-full left-0 right-0 w-full grid transition-[grid-template-rows] duration-300 ease-out z-50 ${
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"
         }`}
       >
         <div className="overflow-hidden min-h-0">
-          <div className="border-t border-border bg-background text-foreground">
-            <div className="flex flex-col gap-1 px-6 py-4">
+          <div className="border-t border-border bg-background/95 backdrop-blur-md text-foreground shadow-xl">
+            <div className="flex flex-col gap-1 px-4 sm:px-6 py-4">
               {navLinks.map((item) => (
                 <Link
                   key={item.label}

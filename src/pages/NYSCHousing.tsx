@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import PageSEO from "@/components/PageSEO";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -54,7 +52,6 @@ const NYSCHousing = () => {
 
       {/* Hero */}
       <section className="relative bg-primary pt-0">
-        <Navbar />
         <div className="max-w-7xl mx-auto px-6 pt-8 pb-16">
           <div className="flex items-center gap-2 font-body text-sm text-primary-foreground/60 mb-6">
             <Link to="/" className="hover:text-primary-foreground transition-colors">PropatiHub</Link>
@@ -193,7 +190,6 @@ const NYSCHousing = () => {
         )}
       </section>
 
-      <Footer />
     </div>
   );
 };

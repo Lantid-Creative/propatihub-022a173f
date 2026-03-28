@@ -273,7 +273,7 @@ const AdminProperties = () => {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3 text-sm font-body">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm font-body">
                 <div><span className="text-muted-foreground">Price:</span> <span className="font-bold text-accent">{formatPrice(selected.price)}</span></div>
                 <div><span className="text-muted-foreground">Type:</span> <span className="capitalize">{selected.property_type}</span></div>
                 <div><span className="text-muted-foreground">Listing:</span> <span className="capitalize">{selected.listing_type}</span></div>
@@ -329,7 +329,7 @@ const AdminProperties = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">Price (₦)</Label>
                   <Input type="number" value={editForm.price} onChange={(e) => handleField("price", e.target.value)} />
@@ -369,7 +369,7 @@ const AdminProperties = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">City</Label>
                   <Input value={editForm.city} onChange={(e) => handleField("city", e.target.value)} />
@@ -384,7 +384,7 @@ const AdminProperties = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">Bedrooms</Label>
                   <Input type="number" value={editForm.bedrooms} onChange={(e) => handleField("bedrooms", e.target.value)} />
@@ -403,7 +403,7 @@ const AdminProperties = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">Furnishing</Label>
                   <Select value={editForm.furnishing || "none"} onValueChange={(v) => handleField("furnishing", v === "none" ? "" : v)}>
@@ -435,7 +435,7 @@ const AdminProperties = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">Service Charge (₦)</Label>
                   <Input type="number" value={editForm.service_charge} onChange={(e) => handleField("service_charge", e.target.value)} />

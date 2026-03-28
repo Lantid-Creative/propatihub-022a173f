@@ -41,7 +41,6 @@ const Index = () => {
       <ExploreSection />
       <LatestNewsSection />
       <AlertSection />
-      <Footer />
     </div>
   );
 };

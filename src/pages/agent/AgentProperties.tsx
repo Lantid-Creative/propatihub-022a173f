@@ -332,7 +332,7 @@ const AgentProperties = () => {
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Provide a detailed description of the property. Include features, surroundings, and any unique selling points..." rows={5} />
               <p className="text-[10px] text-muted-foreground font-body mt-1">{form.description.length} chars (min 30 for completion)</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-body font-medium block mb-1">Property Type *</label>
                 <Select value={form.property_type} onValueChange={(v: any) => setForm({ ...form, property_type: v })}>
@@ -375,7 +375,7 @@ const AgentProperties = () => {
                     <label className="text-sm font-body font-medium block mb-1">Reserve Price (₦) — minimum accepted bid</label>
                     <Input type="number" value={form.reserve_price} onChange={(e) => setForm({ ...form, reserve_price: e.target.value })} placeholder="40000000" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="text-sm font-body font-medium block mb-1">Auction Start</label>
                       <Input type="datetime-local" value={form.auction_start_at} onChange={(e) => setForm({ ...form, auction_start_at: e.target.value })} />
@@ -385,7 +385,7 @@ const AgentProperties = () => {
                       <Input type="datetime-local" value={form.auction_end_at} onChange={(e) => setForm({ ...form, auction_end_at: e.target.value })} />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="text-sm font-body font-medium block mb-1">Deposit (%)</label>
                       <Input type="number" value={form.deposit_percentage} onChange={(e) => setForm({ ...form, deposit_percentage: e.target.value })} placeholder="5" />
@@ -395,7 +395,7 @@ const AgentProperties = () => {
                       <Input type="number" value={form.winner_payment_deadline_days} onChange={(e) => setForm({ ...form, winner_payment_deadline_days: e.target.value })} placeholder="7" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2">
                       <input type="checkbox" checked={form.auction_auto_extend} onChange={(e) => setForm({ ...form, auction_auto_extend: e.target.checked })} className="rounded border-border" />
                       <label className="text-sm font-body">Auto-extend on late bids</label>
@@ -412,7 +412,7 @@ const AgentProperties = () => {
               <label className="text-sm font-body font-medium block mb-1">Address *</label>
               <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="123 Admiralty Way, Lekki Phase 1" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-body font-medium block mb-1">City *</label>
                 <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Lekki" />
@@ -434,7 +434,7 @@ const AgentProperties = () => {
         {/* Step 1: Property Details */}
         {formStep === 1 && (
           <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="text-sm font-body font-medium block mb-1">Bedrooms</label>
                 <Input type="number" value={form.bedrooms} onChange={(e) => setForm({ ...form, bedrooms: e.target.value })} placeholder="4" />
@@ -448,7 +448,7 @@ const AgentProperties = () => {
                 <Input type="number" value={form.area_sqm} onChange={(e) => setForm({ ...form, area_sqm: e.target.value })} placeholder="350" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-body font-medium block mb-1">Year Built</label>
                 <Input type="number" value={form.year_built} onChange={(e) => setForm({ ...form, year_built: e.target.value })} placeholder="2022" />
@@ -458,7 +458,7 @@ const AgentProperties = () => {
                 <Input type="number" value={form.parking_spaces} onChange={(e) => setForm({ ...form, parking_spaces: e.target.value })} placeholder="2" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-body font-medium block mb-1">Furnishing</label>
                 <Select value={form.furnishing} onValueChange={(v) => setForm({ ...form, furnishing: v })}>
@@ -484,7 +484,7 @@ const AgentProperties = () => {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-body font-medium block mb-1">Service Charge (₦/yr)</label>
                 <Input type="number" value={form.service_charge} onChange={(e) => setForm({ ...form, service_charge: e.target.value })} placeholder="500000" />

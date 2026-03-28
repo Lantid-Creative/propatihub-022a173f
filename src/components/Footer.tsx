@@ -114,7 +114,7 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       {/* Main footer links */}
-      <div className="max-w-7xl mx-auto px-6 pt-16 pb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {footerColumns.map((col) => (
             <div key={col.title}>
@@ -138,7 +138,7 @@ const Footer = () => {
 
       {/* Separator + company links bar */}
       <div className="border-t border-background/10">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               {companyLinks.map((link) => (
@@ -171,7 +171,7 @@ const Footer = () => {
 
       {/* App download + copyright */}
       <div className="border-t border-background/10">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-4 rounded-xl bg-primary dark:bg-green-900/80 px-4 py-3">
               <Link to="/" className="shrink-0">
@@ -195,7 +195,7 @@ const Footer = () => {
 
       {/* Legal disclaimer */}
       <div className="border-t border-background/5">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <p className="font-body text-xs text-background/30 leading-relaxed mb-2">
             PropatiHub is Nigeria's leading property platform. Our website is completely free for you to use but we may receive a commission from some of the companies we link to on the site.
           </p>

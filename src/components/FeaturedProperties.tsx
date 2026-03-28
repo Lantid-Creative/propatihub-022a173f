@@ -115,7 +115,7 @@ const FeaturedProperties = () => {
   const formatPrice = (price: number) => `₦${price.toLocaleString()}`;
 
   return (
-    <section className="py-20 px-6 bg-secondary">
+    <section className="py-20 px-4 sm:px-6 bg-secondary">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center mb-3">
           Featured Properties

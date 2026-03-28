@@ -1,6 +1,4 @@
 import PageSEO from "@/components/PageSEO";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, FileText, Home, CreditCard, Key, ShieldCheck } from "lucide-react";
 
@@ -25,8 +23,7 @@ const tips = [
 const RentingGuide = () => (
   <div className="min-h-screen flex flex-col bg-background">
     <PageSEO title="Renting Guide — How to Rent Property in Nigeria" description="Complete guide to renting in Nigeria. Tips on budgeting, viewing properties, tenancy agreements, and knowing your rights." canonical="/renting-guide" />
-    <Navbar />
-    <section className="bg-primary pt-28 pb-16">
+    <section className="bg-primary pt-12 pb-16">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <h1 className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4">Renting guide</h1>
         <p className="text-primary-foreground/70 text-lg max-w-2xl mx-auto">Your complete guide to renting property in Nigeria — from searching to signing your tenancy agreement.</p>
@@ -67,8 +64,7 @@ const RentingGuide = () => (
         </div>
       </div>
     </section>
-    <Footer />
-  </div>
+    </div>
 );
 
 export default RentingGuide;

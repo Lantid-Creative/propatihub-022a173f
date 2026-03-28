@@ -4,8 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { Search, MapPin, Home, Building2, TrendingUp, Calculator, FileText, Users } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import heroImg from "@/assets/hero-for-sale.jpg";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCazL5Cqw90gNr2Kn28q3iXIfdwmI4Coss";
@@ -112,7 +110,6 @@ const ForSale = () => {
       <section className="relative min-h-[500px]">
         <img src={heroImg} alt="Property for sale in Nigeria" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />
-        <Navbar />
 
         {/* Breadcrumb */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-4">
@@ -277,7 +274,6 @@ const ForSale = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };

@@ -75,6 +75,7 @@ import ApiLanding from "./pages/ApiLanding";
 import PaymentCallback from "./pages/PaymentCallback";
 import NYSCHousing from "./pages/NYSCHousing";
 import VulnerabilityDisclosure from "./pages/VulnerabilityDisclosure";
+import PublicLayout from "./components/PublicLayout";
 import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import GoToTopButton from "./components/GoToTopButton";
@@ -93,35 +94,37 @@ const App = () => (
           <PageTracker />
           <GoToTopButton />
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/properties" element={<Properties />} />
-            <Route path="/property/:id" element={<PropertyDetail />} />
-            <Route path="/for-sale" element={<ForSale />} />
-            <Route path="/to-rent" element={<ToRent />} />
-            <Route path="/bid" element={<Bid />} />
-            <Route path="/nysc-housing" element={<NYSCHousing />} />
-            <Route path="/payment/callback" element={<PaymentCallback />} />
-            <Route path="/find-agents" element={<FindAgents />} />
-            <Route path="/house-prices" element={<HousePrices />} />
-            <Route path="/property-valuation" element={<PropertyValuation />} />
-            <Route path="/mortgage-calculator" element={<MortgageCalculatorPage />} />
-            <Route path="/buying-guide" element={<BuyingGuide />} />
-            <Route path="/renting-guide" element={<RentingGuide />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/advertise" element={<Advertise />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/press" element={<Press />} />
-            <Route path="/sitemap" element={<Sitemap />} />
-            <Route path="/vulnerability-disclosure" element={<VulnerabilityDisclosure />} />
-            <Route path="/api-docs" element={<ApiDocs />} />
-            <Route path="/api-access" element={<ApiLanding />} />
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/properties" element={<Properties />} />
+              <Route path="/property/:id" element={<PropertyDetail />} />
+              <Route path="/for-sale" element={<ForSale />} />
+              <Route path="/to-rent" element={<ToRent />} />
+              <Route path="/bid" element={<Bid />} />
+              <Route path="/nysc-housing" element={<NYSCHousing />} />
+              <Route path="/payment/callback" element={<PaymentCallback />} />
+              <Route path="/find-agents" element={<FindAgents />} />
+              <Route path="/house-prices" element={<HousePrices />} />
+              <Route path="/property-valuation" element={<PropertyValuation />} />
+              <Route path="/mortgage-calculator" element={<MortgageCalculatorPage />} />
+              <Route path="/buying-guide" element={<BuyingGuide />} />
+              <Route path="/renting-guide" element={<RentingGuide />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/advertise" element={<Advertise />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/press" element={<Press />} />
+              <Route path="/sitemap" element={<Sitemap />} />
+              <Route path="/vulnerability-disclosure" element={<VulnerabilityDisclosure />} />
+              <Route path="/api-docs" element={<ApiDocs />} />
+              <Route path="/api-access" element={<ApiLanding />} />
+            </Route>
 
             {/* Admin Portal */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />

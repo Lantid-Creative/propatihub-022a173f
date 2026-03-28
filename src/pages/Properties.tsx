@@ -2,8 +2,6 @@ import PageSEO from "@/components/PageSEO";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,9 +173,7 @@ const Properties = () => {
     <div className="min-h-screen bg-background">
       <PageSEO title="Find Properties in Nigeria" description="Browse thousands of verified properties for sale and rent across Nigeria. Filter by location, price, and type." canonical="/properties" />
       <div className="bg-primary relative">
-        <Navbar />
-
-        <div className="px-6 pb-8 pt-20">
+        <div className="px-6 pb-8 pt-4">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-display font-bold text-primary-foreground mb-6">
               Find Properties
@@ -418,7 +414,6 @@ const Properties = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };

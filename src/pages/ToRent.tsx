@@ -4,8 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { Search, MapPin, Home, Shield, BookOpen } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import heroImg from "@/assets/hero-to-rent.jpg";
 
 const maxPriceOptions = [
@@ -92,7 +90,6 @@ const ToRent = () => {
       <section className="relative min-h-[540px]">
         <img src={heroImg} alt="Properties to rent in Nigeria" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="hero-gradient absolute inset-0" />
-        <Navbar />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-4">
           <div className="flex items-center gap-2 font-body text-sm text-primary-foreground/60">
@@ -237,7 +234,6 @@ const ToRent = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };

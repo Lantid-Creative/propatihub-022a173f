@@ -128,13 +128,13 @@ const HeroSearch = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div className="bg-card rounded-t-xl border-b border-border">
-        <div className="flex">
+      <div className="bg-card rounded-t-xl border-b border-border overflow-hidden">
+        <div className="flex overflow-x-auto scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab.label}
               onClick={() => setActiveTab(tab.label)}
-              className={`px-6 py-4 font-body text-sm font-medium transition-colors relative ${
+              className={`px-4 sm:px-6 py-4 font-body text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab.label
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"

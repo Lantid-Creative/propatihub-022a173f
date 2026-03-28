@@ -17,9 +17,7 @@ const HeroSection = () => {
       />
       <div className="hero-gradient absolute inset-0" />
 
-      <Navbar />
-
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-16">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pt-16">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white text-center max-w-4xl leading-[1.1] mb-5">
           Just ask <span className="text-accent">PropatiHub</span>
         </h1>
