@@ -1,0 +1,1 @@
+ALTER TABLE public.verification_profiles ADD COLUMN IF NOT EXISTS id_number_raw text;
