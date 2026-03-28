@@ -56,7 +56,6 @@ const AdminDashboard = () => {
         pendingAgents: pendingAgents.count || 0,
       });
 
-      // Build activity feed from mixed sources
       const activities: Activity[] = [];
       (latestProps.data || []).forEach((p: any) => {
         activities.push({
@@ -90,7 +89,6 @@ const AdminDashboard = () => {
       activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
       setRecentActivity(activities.slice(0, 10));
 
-      // Generate mock growth data based on actual counts
       const total = props.count || 1;
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
       setGrowthData(months.map((m, i) => ({
@@ -152,12 +150,12 @@ const AdminDashboard = () => {
 
       {/* Alert Banner */}
       {(stats.pendingProps > 0 || stats.pendingAgents > 0) && (
-        <div className="mb-6 p-4 rounded-xl bg-accent/10 border border-accent/20 flex items-center gap-3">
+        <div className="mb-6 p-4 rounded-xl bg-accent/10 border border-accent/20 flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <Clock className="w-5 h-5 text-accent shrink-0" />
           <p className="text-sm font-body text-foreground">
             <strong>{stats.pendingProps}</strong> properties and <strong>{stats.pendingAgents}</strong> agents awaiting review.
           </p>
-          <div className="ml-auto flex gap-2">
+          <div className="sm:ml-auto flex gap-2 flex-wrap">
             <Link to="/admin/properties" className="text-xs font-body text-accent hover:underline">Review Properties</Link>
             <Link to="/admin/agents" className="text-xs font-body text-accent hover:underline">Review Agents</Link>
           </div>
@@ -186,7 +184,7 @@ const AdminDashboard = () => {
             <TrendingUp className="w-5 h-5 text-accent" /> Platform Growth
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-64">
+        <CardContent className="h-48 sm:h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={growthData}>
               <defs>
@@ -201,7 +199,7 @@ const AdminDashboard = () => {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+              <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} width={35} />
               <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
               <Area type="monotone" dataKey="properties" stroke="hsl(var(--accent))" fillOpacity={1} fill="url(#colorProps)" name="Properties" />
               <Area type="monotone" dataKey="users" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorUsers)" name="Users" />
@@ -232,12 +230,14 @@ const AdminDashboard = () => {
                       <p className="font-body text-sm font-medium text-foreground truncate">{a.title}</p>
                       <p className="text-xs text-muted-foreground font-body truncate">{a.subtitle}</p>
                     </div>
-                    {a.status && (
-                      <Badge className={`${statusColors[a.status] || "bg-muted text-muted-foreground"} text-[10px]`}>
-                        {a.status}
-                      </Badge>
-                    )}
-                    <span className="text-[10px] text-muted-foreground font-body whitespace-nowrap">{timeAgo(a.time)}</span>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      {a.status && (
+                        <Badge className={`${statusColors[a.status] || "bg-muted text-muted-foreground"} text-[10px]`}>
+                          {a.status}
+                        </Badge>
+                      )}
+                      <span className="text-[10px] text-muted-foreground font-body whitespace-nowrap">{timeAgo(a.time)}</span>
+                    </div>
                   </div>
                 ))}
               </div>

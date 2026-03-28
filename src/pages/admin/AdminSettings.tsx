@@ -28,11 +28,11 @@ const AdminSettings = () => {
       </div>
 
       <Tabs defaultValue="general" className="max-w-3xl">
-        <TabsList className="mb-6">
-          <TabsTrigger value="general" className="gap-1.5"><Globe className="w-3.5 h-3.5" /> General</TabsTrigger>
-          <TabsTrigger value="features" className="gap-1.5"><Settings className="w-3.5 h-3.5" /> Features</TabsTrigger>
-          <TabsTrigger value="notifications" className="gap-1.5"><Bell className="w-3.5 h-3.5" /> Notifications</TabsTrigger>
-          <TabsTrigger value="security" className="gap-1.5"><Shield className="w-3.5 h-3.5" /> Security</TabsTrigger>
+        <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="general" className="gap-1.5 text-xs sm:text-sm"><Globe className="w-3.5 h-3.5" /> General</TabsTrigger>
+          <TabsTrigger value="features" className="gap-1.5 text-xs sm:text-sm"><Settings className="w-3.5 h-3.5" /> Features</TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-1.5 text-xs sm:text-sm"><Bell className="w-3.5 h-3.5" /> Notifications</TabsTrigger>
+          <TabsTrigger value="security" className="gap-1.5 text-xs sm:text-sm"><Shield className="w-3.5 h-3.5" /> Security</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">

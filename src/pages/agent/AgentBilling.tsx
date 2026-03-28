@@ -83,7 +83,7 @@ const AgentBilling = () => {
 
       {/* Current Plan Banner */}
       <Card className="mb-8 bg-primary/5 border-primary/20">
-        <CardContent className="p-5 flex items-center justify-between">
+        <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <p className="text-xs font-body text-muted-foreground uppercase tracking-wide">Current Plan</p>
             <p className="text-xl font-display font-bold text-foreground capitalize mt-0.5">{currentPlan}</p>
@@ -96,7 +96,7 @@ const AgentBilling = () => {
       </Card>
 
       {/* Plans */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
         {plans.map((plan) => {
           const isCurrent = currentPlan === plan.id;
           return (
