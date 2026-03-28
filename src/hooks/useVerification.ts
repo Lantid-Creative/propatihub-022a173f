@@ -1,7 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import type { VerificationProfile, VerificationType } from "@/types/verification";
+
+async function getFunctionErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof FunctionsHttpError) {
+    try {
+      const payload = await error.context.json();
+      if (payload?.error && typeof payload.error === "string") {
+        return payload.error;
+      }
+    } catch {
+      // Ignore JSON parse issues and fall through to generic handling.
+    }
+  }
+
+  return error instanceof Error ? error.message : fallback;
+}
 
 export function useVerification(verificationType: VerificationType) {
   const { user } = useAuth();
@@ -19,7 +35,7 @@ export function useVerification(verificationType: VerificationType) {
       if (fnError) throw fnError;
       setVerification(data.verification);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load verification");
+      setError(await getFunctionErrorMessage(e, "Failed to load verification"));
     } finally {
       setLoading(false);
     }
@@ -33,7 +49,7 @@ export function useVerification(verificationType: VerificationType) {
     const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
       body: { action: "create_verification", verification_type: verificationType, ...fields },
     });
-    if (fnError) throw fnError;
+    if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to create verification"));
     setVerification(data.verification);
     return data.verification;
   };
@@ -42,7 +58,7 @@ export function useVerification(verificationType: VerificationType) {
     const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
       body: { action: "save_step", verification_id: verificationId, step, fields },
     });
-    if (fnError) throw fnError;
+    if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to save verification step"));
     setVerification(data.verification);
     return data.verification;
   };
@@ -51,7 +67,7 @@ export function useVerification(verificationType: VerificationType) {
     const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
       body: { action: "create_liveness_session", verification_id: verificationId },
     });
-    if (fnError) throw fnError;
+    if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to create liveness session"));
     return data;
   };
 
@@ -59,7 +75,7 @@ export function useVerification(verificationType: VerificationType) {
     const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
       body: { action: "verify_liveness_result", verification_id: verificationId, session_id: sessionId },
     });
-    if (fnError) throw fnError;
+    if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to fetch liveness result"));
     return data;
   };
 
@@ -67,7 +83,7 @@ export function useVerification(verificationType: VerificationType) {
     const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
       body: { action: "submit_verification", verification_id: verificationId, verification_type: verificationType },
     });
-    if (fnError) throw fnError;
+    if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to submit verification"));
     setVerification(data.verification);
     return data;
   };
@@ -93,7 +109,6 @@ export function useVerification(verificationType: VerificationType) {
     });
     if (uploadError) throw uploadError;
 
-    // Record document in DB
     const { error: dbError } = await supabase.from("verification_documents").insert({
       verification_id: verificationId,
       user_id: user.id,
