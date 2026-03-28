@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Building2, Users, MessageSquare, Heart, Search,
   Settings, LogOut, Menu, X, Home, BarChart3, CreditCard, UserPlus,
-  Building, Shield, Wrench, KeyRound, Scale
+  Building, Shield, ShieldCheck, Wrench, KeyRound, Scale
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoLight from "@/assets/logo-light.png";
@@ -66,6 +66,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
     return [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Verification", href: "/dashboard/verification", icon: ShieldCheck },
       { label: "List Property", href: "/dashboard/list-property", icon: Home },
       { label: "My Tenancy", href: "/dashboard/tenancy", icon: KeyRound },
       { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },

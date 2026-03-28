@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import ImageUploader from "@/components/ImageUploader";
 import { useToast } from "@/hooks/use-toast";
 import { Home, Loader2, CheckCircle } from "lucide-react";
+import VerificationGate from "@/components/verification/VerificationGate";
 
 const nigerianStates = [
   "Lagos", "Abuja FCT", "Rivers", "Oyo", "Kano", "Enugu", "Anambra", "Delta",
@@ -115,6 +116,7 @@ const UserListProperty = () => {
 
   return (
     <DashboardLayout>
+      <VerificationGate verificationType="customer" actionLabel="property listing">
       <div className="mb-6">
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
           <Home className="w-6 h-6 text-accent" /> List Your Property
@@ -264,6 +266,7 @@ const UserListProperty = () => {
           </Button>
         </div>
       </div>
+      </VerificationGate>
     </DashboardLayout>
   );
 };
