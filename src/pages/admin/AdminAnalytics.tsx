@@ -122,7 +122,7 @@ const AdminAnalytics = () => {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Properties by State */}
         <Card>
           <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MapPin className="w-4 h-4 text-accent" /> Properties by State</CardTitle></CardHeader>
@@ -159,7 +159,7 @@ const AdminAnalytics = () => {
         </Card>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         {/* Listing Status */}
         <Card>
           <CardHeader><CardTitle className="text-sm">Listing Status</CardTitle></CardHeader>

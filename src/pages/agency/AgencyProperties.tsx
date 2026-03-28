@@ -107,7 +107,7 @@ const AgencyProperties = () => {
 
       {/* Status Tabs */}
       <Tabs value={statusFilter} onValueChange={setStatusFilter} className="mb-6">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto gap-1">
           <TabsTrigger value="all">All ({statusCounts.all})</TabsTrigger>
           <TabsTrigger value="active">Active ({statusCounts.active})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({statusCounts.pending})</TabsTrigger>

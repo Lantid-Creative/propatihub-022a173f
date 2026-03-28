@@ -42,7 +42,7 @@ const UserInquiries = () => {
           {inquiries.map((inq) => (
             <Card key={inq.id}>
               <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
                   <div>
                     <p className="font-body font-semibold text-foreground text-sm">{inq.properties?.title}</p>
                     <p className="text-xs text-muted-foreground font-body mt-1 line-clamp-2">{inq.message}</p>

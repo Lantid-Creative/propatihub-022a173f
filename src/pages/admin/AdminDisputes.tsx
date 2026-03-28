@@ -144,12 +144,12 @@ const AdminDisputes = () => {
             {disputes.map((d) => (
               <Card key={d.id}>
                 <CardContent className="p-5">
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <div>
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0">
                       <p className="font-display font-bold text-foreground">{d.subject}</p>
                       <p className="text-xs text-muted-foreground font-body mt-1">{d.description}</p>
                     </div>
-                    <div className="shrink-0 flex flex-col items-end gap-1">
+                    <div className="shrink-0 flex items-center sm:flex-col sm:items-end gap-1">
                       {statusBadge(d.status)}
                       <Badge variant="outline" className="text-[10px]">{d.priority}</Badge>
                     </div>

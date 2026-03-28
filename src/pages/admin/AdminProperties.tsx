@@ -153,8 +153,8 @@ const AdminProperties = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-4 flex-wrap">
-        <div className="relative max-w-sm flex-1">
+      <div className="flex gap-3 mb-4 flex-col sm:flex-row">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search properties..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
