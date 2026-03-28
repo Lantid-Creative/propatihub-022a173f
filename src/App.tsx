@@ -90,6 +90,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <AuthProvider>
+          <PageTracker />
           <GoToTopButton />
           <Routes>
             <Route path="/" element={<Index />} />
