@@ -10,12 +10,11 @@ const roleToVerificationType: Record<string, VerificationType> = {
   user: "customer",
   agent: "agent",
   agency: "agency",
-  owner: "owner",
-  admin: "customer",
+  admin: "customer", // admins verifying as customer by default
 };
 
 const Verify = () => {
-  const { user, loading, roles, rolesLoading, accountType } = useAuth();
+  const { user, loading, roles, rolesLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,22 +22,13 @@ const Verify = () => {
   }, [user, loading, navigate]);
 
   const autoType = useMemo<VerificationType | undefined>(() => {
-    if (rolesLoading) return undefined;
-    
-    // 1. Check specific account_type from metadata (highest priority)
-    if (accountType && roleToVerificationType[accountType]) {
-      return roleToVerificationType[accountType];
+    if (rolesLoading || roles.length === 0) return undefined;
+    // Pick the most specific role (agency > agent > user)
+    for (const role of ["agency", "agent", "user", "admin"] as const) {
+      if (roles.includes(role)) return roleToVerificationType[role];
     }
-
-    // 2. Fallback to roles if metadata is missing
-    if (roles.length > 0) {
-      for (const role of ["agency", "agent", "user", "admin"] as const) {
-        if (roles.includes(role)) return roleToVerificationType[role];
-      }
-    }
-    
     return "customer";
-  }, [roles, rolesLoading, accountType]);
+  }, [roles, rolesLoading]);
 
   if (!user || rolesLoading) {
     return (

@@ -3,7 +3,6 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 type AppRole = "admin" | "agent" | "agency" | "user";
-type AccountType = "buyer" | "agent" | "agency" | "owner";
 
 interface AuthContextType {
   user: User | null;
@@ -11,7 +10,6 @@ interface AuthContextType {
   loading: boolean;
   rolesLoading: boolean;
   roles: AppRole[];
-  accountType: AccountType | null;
   profile: any;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
@@ -24,54 +22,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<AppRole[]>([]);
-  const [accountType, setAccountType] = useState<AccountType | null>(null);
   const [rolesLoading, setRolesLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
 
   const fetchUserData = async (userId: string) => {
     setRolesLoading(true);
-    const [rolesRes, profileRes, { data: { user } }] = await Promise.all([
+    const [rolesRes, profileRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("*").eq("user_id", userId).single(),
-      supabase.auth.getUser()
     ]);
     if (rolesRes.data) setRoles(rolesRes.data.map((r) => r.role as AppRole));
     if (profileRes.data) setProfile(profileRes.data);
-    if (user?.user_metadata?.account_type) setAccountType(user.user_metadata.account_type as AccountType);
     setRolesLoading(false);
   };
 
   useEffect(() => {
+    // First restore session from storage
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserData(session.user.id);
+      } else {
+        setRolesLoading(false);
+      }
+      setLoading(false);
+    });
+
+    // Then listen for subsequent auth changes (sign in/out)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          if (session.user.user_metadata?.account_type) {
-            setAccountType(session.user.user_metadata.account_type as AccountType);
-          }
+          // Use setTimeout to avoid deadlock inside onAuthStateChange callback
           setTimeout(() => fetchUserData(session.user.id), 0);
         } else {
           setRoles([]);
-          setAccountType(null);
           setProfile(null);
           setRolesLoading(false);
         }
         setLoading(false);
       }
     );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        if (session.user.user_metadata?.account_type) {
-          setAccountType(session.user.user_metadata.account_type as AccountType);
-        }
-        fetchUserData(session.user.id);
-      }
-      setLoading(false);
-    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -83,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hasRole = (role: AppRole) => roles.includes(role);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, accountType, profile, signOut, hasRole }}>
+    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, profile, signOut, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

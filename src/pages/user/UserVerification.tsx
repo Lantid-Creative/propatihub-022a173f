@@ -40,21 +40,18 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 };
 
 const typeLabels: Record<string, string> = {
-  customer: "Buyer / Renter",
-  buyer: "Buyer / Renter",
-  owner: "Property Owner",
-  agent: "Estate Agent",
-  agency: "Real Estate Agency",
+  customer: "Customer (Buyer / Bidder)",
+  owner: "Property Owner (Seller)",
+  agent: "Real Estate Agent",
+  agency: "Agency (KYB)",
   api_partner: "API Partner",
 };
 
 const UserVerification = () => {
-  const { user, accountType } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [verifications, setVerifications] = useState<VerificationRecord[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const accountTypeLabel = accountType ? typeLabels[accountType] || typeLabels.customer : typeLabels.customer;
 
   useEffect(() => {
     if (!user) return;
@@ -70,7 +67,9 @@ const UserVerification = () => {
     fetch();
   }, [user]);
 
-  const isVerified = verifications.some((v) => v.status === "approved");
+  const hasApprovedCustomer = verifications.some(
+    (v) => v.verification_type === "customer" && v.status === "approved"
+  );
 
   const getStatusInfo = (status: string) => statusConfig[status] || statusConfig.not_started;
 
@@ -85,7 +84,7 @@ const UserVerification = () => {
           Identity Verification
         </h1>
         <p className="text-muted-foreground font-body text-sm">
-          Verify your identity as a <span className="text-foreground font-semibold">{accountTypeLabel}</span> to access all PropatiHub features.
+          Verify your identity to access all PropatiHub features including bidding, listing, and messaging.
         </p>
       </div>
 
@@ -96,11 +95,11 @@ const UserVerification = () => {
       ) : (
         <div className="max-w-2xl space-y-6">
           {/* Overall Status Card */}
-          <Card className={isVerified ? "border-green-500/30" : "border-amber-500/30"}>
+          <Card className={hasApprovedCustomer ? "border-green-500/30" : "border-amber-500/30"}>
             <CardContent className="py-6">
               <div className="flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isVerified ? "bg-green-100 dark:bg-green-950/30" : "bg-amber-100 dark:bg-amber-950/30"}`}>
-                  {isVerified ? (
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${hasApprovedCustomer ? "bg-green-100 dark:bg-green-950/30" : "bg-amber-100 dark:bg-amber-950/30"}`}>
+                  {hasApprovedCustomer ? (
                     <CheckCircle2 className="w-7 h-7 text-green-600" />
                   ) : (
                     <ShieldAlert className="w-7 h-7 text-amber-600" />
@@ -108,15 +107,15 @@ const UserVerification = () => {
                 </div>
                 <div className="flex-1">
                   <h2 className="font-display text-lg font-bold text-foreground">
-                    {isVerified ? `${accountTypeLabel} Verified` : "Verification Required"}
+                    {hasApprovedCustomer ? "Account Verified" : "Verification Required"}
                   </h2>
                   <p className="text-sm font-body text-muted-foreground">
-                    {isVerified
-                      ? `Your ${accountTypeLabel} identity has been verified. You have full access to PropatiHub features.`
-                      : `Complete your ${accountTypeLabel} verification to unlock bidding, property listing, and more.`}
+                    {hasApprovedCustomer
+                      ? "Your identity has been verified. You have full access to PropatiHub features."
+                      : "Complete identity verification to unlock bidding, property listing, messaging, and more."}
                   </p>
                 </div>
-                {!isVerified && (
+                {!hasApprovedCustomer && (
                   <Button onClick={() => navigate("/verify")} className="gap-2 shrink-0">
                     Verify Now <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -218,11 +217,11 @@ const UserVerification = () => {
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { label: "Place bids on properties", verified: isVerified },
-                  { label: "List properties for sale/rent", verified: isVerified },
-                  { label: "Send messages to agents", verified: isVerified },
-                  { label: "Submit property inquiries", verified: isVerified },
-                  { label: "Access tenant portal", verified: isVerified },
+                  { label: "Place bids on properties", verified: hasApprovedCustomer },
+                  { label: "List properties for sale/rent", verified: hasApprovedCustomer },
+                  { label: "Send messages to agents", verified: hasApprovedCustomer },
+                  { label: "Submit property inquiries", verified: hasApprovedCustomer },
+                  { label: "Access tenant portal", verified: hasApprovedCustomer },
                   { label: "Save favourite properties", verified: true },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2 text-sm font-body">

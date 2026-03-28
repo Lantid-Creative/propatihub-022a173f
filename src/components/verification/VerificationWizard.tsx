@@ -612,7 +612,7 @@ function getRequiredDocs(type: VerificationType) {
         { type: "id_front", label: "National ID (Front)", required: true },
         { type: "id_back", label: "National ID (Back)", required: true },
         { type: "proof_of_address", label: "Proof of Address", required: true },
-        { type: "ownership_document", label: "Land Title / Certificate of Occupancy", required: true },
+        { type: "ownership_document", label: "Certificate of Occupancy", required: false },
       ];
     case "agent":
       return [
