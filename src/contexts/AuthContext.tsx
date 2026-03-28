@@ -3,6 +3,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 type AppRole = "admin" | "agent" | "agency" | "user";
+type AccountType = "buyer" | "agent" | "agency" | "owner";
 
 interface AuthContextType {
   user: User | null;
@@ -10,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   rolesLoading: boolean;
   roles: AppRole[];
+  accountType: AccountType | null;
   profile: any;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
@@ -22,17 +24,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
   const [rolesLoading, setRolesLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
 
   const fetchUserData = async (userId: string) => {
     setRolesLoading(true);
-    const [rolesRes, profileRes] = await Promise.all([
+    const [rolesRes, profileRes, { data: { user } }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("*").eq("user_id", userId).single(),
+      supabase.auth.getUser()
     ]);
     if (rolesRes.data) setRoles(rolesRes.data.map((r) => r.role as AppRole));
     if (profileRes.data) setProfile(profileRes.data);
+    if (user?.user_metadata?.account_type) setAccountType(user.user_metadata.account_type as AccountType);
     setRolesLoading(false);
   };
 
@@ -42,9 +47,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
+          if (session.user.user_metadata?.account_type) {
+            setAccountType(session.user.user_metadata.account_type as AccountType);
+          }
           setTimeout(() => fetchUserData(session.user.id), 0);
         } else {
           setRoles([]);
+          setAccountType(null);
           setProfile(null);
           setRolesLoading(false);
         }
@@ -55,7 +64,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) fetchUserData(session.user.id);
+      if (session?.user) {
+        if (session.user.user_metadata?.account_type) {
+          setAccountType(session.user.user_metadata.account_type as AccountType);
+        }
+        fetchUserData(session.user.id);
+      }
       setLoading(false);
     });
 
@@ -69,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hasRole = (role: AppRole) => roles.includes(role);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, profile, signOut, hasRole }}>
+    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, accountType, profile, signOut, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

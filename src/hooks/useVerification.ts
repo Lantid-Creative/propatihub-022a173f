@@ -12,11 +12,18 @@ async function getFunctionErrorMessage(error: unknown, fallback: string) {
         return payload.error;
       }
     } catch {
-      // Ignore JSON parse issues and fall through to generic handling.
+      // Ignore JSON parse issues
     }
   }
 
-  return error instanceof Error ? error.message : fallback;
+  const message = error instanceof Error ? error.message : String(error);
+  
+  // Handle common connectivity errors
+  if (message.includes("Failed to fetch") || message.includes("Load failed") || message.includes("CONNECTION_CLOSED")) {
+    return "Network error: Connection to the Edge Function was closed. Please ensure the function is deployed and your internet connection is stable.";
+  }
+
+  return message || fallback;
 }
 
 export function useVerification(verificationType: VerificationType) {
