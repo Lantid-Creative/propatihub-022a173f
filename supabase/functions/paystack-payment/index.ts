@@ -197,12 +197,14 @@ serve(async (req) => {
     if (req.method === "POST" && action === "webhook") {
       // Paystack webhook verification
       const body = await req.text();
-      const crypto = await import("https://deno.land/std@0.168.0/crypto/mod.ts");
-      const hash = await crypto.crypto.subtle.digest(
-        "HMAC",
+      const key = await crypto.subtle.importKey(
+        "raw",
         new TextEncoder().encode(PAYSTACK_SECRET_KEY!),
-        new TextEncoder().encode(body),
+        { name: "HMAC", hash: "SHA-512" },
+        false,
+        ["sign"],
       );
+      const hash = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body));
 
       // Not implementing full webhook here — primary flow uses verify endpoint
       return new Response(JSON.stringify({ received: true }), {
@@ -214,8 +216,8 @@ serve(async (req) => {
       status: 404,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

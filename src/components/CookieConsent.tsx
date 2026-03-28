@@ -40,10 +40,10 @@ const CookieConsent = () => {
           </Link>.
         </p>
         <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-center">
-          <Button variant="outline" size="xs" className="h-7 px-3 text-[10px] sm:h-9 sm:px-4 sm:text-xs" onClick={decline}>
+          <Button variant="outline" size="sm" className="h-7 px-3 text-[10px] sm:h-9 sm:px-4 sm:text-xs" onClick={decline}>
             Decline
           </Button>
-          <Button size="xs" className="h-7 px-3 text-[10px] sm:h-9 sm:px-4 sm:text-xs" onClick={accept}>
+          <Button size="sm" className="h-7 px-3 text-[10px] sm:h-9 sm:px-4 sm:text-xs" onClick={accept}>
             Accept All
           </Button>
         </div>

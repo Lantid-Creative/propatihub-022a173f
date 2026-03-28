@@ -84,8 +84,8 @@ Deno.serve(async (req) => {
         "Cache-Control": "public, max-age=3600, s-maxage=3600",
       },
     });
-  } catch (err) {
-    return new Response(`<error>${err.message}</error>`, {
+  } catch (err: unknown) {
+    return new Response(`<error>${err instanceof Error ? err.message : "Unknown error"}</error>`, {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/xml" },
     });
