@@ -25,9 +25,9 @@ export function useVerification(verificationType: VerificationType) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchVerification = useCallback(async () => {
+  const fetchVerification = useCallback(async (silent = false) => {
     if (!user) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
         body: { action: "get_verification", verification_type: verificationType },
@@ -37,7 +37,7 @@ export function useVerification(verificationType: VerificationType) {
     } catch (e: unknown) {
       setError(await getFunctionErrorMessage(e, "Failed to load verification"));
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [user, verificationType]);
 
