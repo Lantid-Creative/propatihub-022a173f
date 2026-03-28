@@ -51,16 +51,17 @@ const BidSection = ({
   const [kycStatus, setKycStatus] = useState<string>("none");
   const [kycLoading, setKycLoading] = useState(true);
 
-  // Check KYC status
+  // Check KYC status via verification_profiles
   useEffect(() => {
     if (!user) { setKycLoading(false); return; }
     const checkKyc = async () => {
       const { data } = await supabase
-        .from("kyc_verifications")
-        .select("verification_status")
+        .from("verification_profiles")
+        .select("status")
         .eq("user_id", user.id)
+        .eq("verification_type", "customer")
         .maybeSingle();
-      setKycStatus(data?.verification_status || "none");
+      setKycStatus(data?.status === "approved" ? "verified" : (data?.status || "none"));
       setKycLoading(false);
     };
     checkKyc();
