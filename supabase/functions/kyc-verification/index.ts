@@ -119,7 +119,10 @@ Deno.serve(async (req) => {
         .eq("id", verification_id)
         .eq("user_id", user.id)
         .select()
-        .single();
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return jsonResponse({ error: "Verification profile not found" }, 404);
 
       if (error) throw error;
 
