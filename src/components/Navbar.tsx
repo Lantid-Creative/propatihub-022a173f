@@ -85,39 +85,46 @@ const Navbar = () => {
         </div>
       </div>
 
-      {open && (
-        <div className="md:hidden border-t border-border bg-background text-foreground">
-          <div className="flex flex-col gap-1 px-6 py-4">
-            {navLinks.map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                onClick={() => setOpen(false)}
-                className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-            {user ? (
-              <Link
-                to={getDashboardLink()}
-                onClick={() => setOpen(false)}
-                className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-              >
-                Dashboard
-              </Link>
-            ) : (
-              <Link
-                to="/auth"
-                onClick={() => setOpen(false)}
-                className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-              >
-                Sign in
-              </Link>
-            )}
+      {/* Animated mobile menu */}
+      <div
+        className={`md:hidden grid transition-[grid-template-rows] duration-300 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden min-h-0">
+          <div className="border-t border-border bg-background text-foreground">
+            <div className="flex flex-col gap-1 px-6 py-4">
+              {navLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  onClick={() => setOpen(false)}
+                  className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {user ? (
+                <Link
+                  to={getDashboardLink()}
+                  onClick={() => setOpen(false)}
+                  className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };
