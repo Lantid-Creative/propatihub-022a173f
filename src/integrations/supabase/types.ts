@@ -393,6 +393,65 @@ export type Database = {
           },
         ]
       }
+      biometric_verifications: {
+        Row: {
+          attempt_number: number | null
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          face_match_passed: boolean | null
+          face_match_score: number | null
+          id: string
+          image_path: string | null
+          liveness_passed: boolean | null
+          liveness_score: number | null
+          metadata: Json | null
+          session_id: string | null
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          attempt_number?: number | null
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          face_match_passed?: boolean | null
+          face_match_score?: number | null
+          id?: string
+          image_path?: string | null
+          liveness_passed?: boolean | null
+          liveness_score?: number | null
+          metadata?: Json | null
+          session_id?: string | null
+          user_id: string
+          verification_id: string
+        }
+        Update: {
+          attempt_number?: number | null
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          face_match_passed?: boolean | null
+          face_match_score?: number | null
+          id?: string
+          image_path?: string | null
+          liveness_passed?: boolean | null
+          liveness_score?: number | null
+          metadata?: Json | null
+          session_id?: string | null
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "biometric_verifications_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "verification_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       caution_fee_escrow: {
         Row: {
           amount: number
@@ -1556,6 +1615,253 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: string | null
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_id: string
+          verification_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_audit_logs_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "verification_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          rejection_reason: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          rejection_reason?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          verification_id: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          rejection_reason?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_documents_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "verification_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_profiles: {
+        Row: {
+          admin_notes: string | null
+          agent_license_number: string | null
+          approved_at: string | null
+          attempt_count: number | null
+          biometric_consent: boolean | null
+          biometric_verified: boolean | null
+          business_address: string | null
+          business_name: string | null
+          business_type: string | null
+          bvn_hash: string | null
+          bvn_masked: string | null
+          cac_registration_number: string | null
+          company_name: string | null
+          consent_timestamp: string | null
+          contact_person: string | null
+          country: string | null
+          created_at: string
+          date_of_birth: string | null
+          director_full_name: string | null
+          director_phone: string | null
+          document_consent: boolean | null
+          expires_at: string | null
+          face_match_score: number | null
+          full_legal_name: string | null
+          id: string
+          id_number_hash: string | null
+          id_number_masked: string | null
+          id_type: string | null
+          liveness_score: number | null
+          liveness_session_id: string | null
+          max_attempts: number | null
+          nin_hash: string | null
+          nin_masked: string | null
+          phone: string | null
+          rejected_at: string | null
+          rejection_reason: string | null
+          residential_address: string | null
+          resubmission_notes: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          status: Database["public"]["Enums"]["verification_status"]
+          submitted_at: string | null
+          technical_use_case: string | null
+          tin_number: string | null
+          updated_at: string
+          user_id: string
+          verification_type: Database["public"]["Enums"]["verification_type"]
+        }
+        Insert: {
+          admin_notes?: string | null
+          agent_license_number?: string | null
+          approved_at?: string | null
+          attempt_count?: number | null
+          biometric_consent?: boolean | null
+          biometric_verified?: boolean | null
+          business_address?: string | null
+          business_name?: string | null
+          business_type?: string | null
+          bvn_hash?: string | null
+          bvn_masked?: string | null
+          cac_registration_number?: string | null
+          company_name?: string | null
+          consent_timestamp?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          director_full_name?: string | null
+          director_phone?: string | null
+          document_consent?: boolean | null
+          expires_at?: string | null
+          face_match_score?: number | null
+          full_legal_name?: string | null
+          id?: string
+          id_number_hash?: string | null
+          id_number_masked?: string | null
+          id_type?: string | null
+          liveness_score?: number | null
+          liveness_session_id?: string | null
+          max_attempts?: number | null
+          nin_hash?: string | null
+          nin_masked?: string | null
+          phone?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          residential_address?: string | null
+          resubmission_notes?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          submitted_at?: string | null
+          technical_use_case?: string | null
+          tin_number?: string | null
+          updated_at?: string
+          user_id: string
+          verification_type: Database["public"]["Enums"]["verification_type"]
+        }
+        Update: {
+          admin_notes?: string | null
+          agent_license_number?: string | null
+          approved_at?: string | null
+          attempt_count?: number | null
+          biometric_consent?: boolean | null
+          biometric_verified?: boolean | null
+          business_address?: string | null
+          business_name?: string | null
+          business_type?: string | null
+          bvn_hash?: string | null
+          bvn_masked?: string | null
+          cac_registration_number?: string | null
+          company_name?: string | null
+          consent_timestamp?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          director_full_name?: string | null
+          director_phone?: string | null
+          document_consent?: boolean | null
+          expires_at?: string | null
+          face_match_score?: number | null
+          full_legal_name?: string | null
+          id?: string
+          id_number_hash?: string | null
+          id_number_masked?: string | null
+          id_type?: string | null
+          liveness_score?: number | null
+          liveness_session_id?: string | null
+          max_attempts?: number | null
+          nin_hash?: string | null
+          nin_masked?: string | null
+          phone?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          residential_address?: string | null
+          resubmission_notes?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          submitted_at?: string | null
+          technical_use_case?: string | null
+          tin_number?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_type?: Database["public"]["Enums"]["verification_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1572,6 +1878,13 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      is_verified: {
+        Args: {
+          _type: Database["public"]["Enums"]["verification_type"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "agent" | "agency" | "user"
@@ -1584,6 +1897,24 @@ export type Database = {
         | "rented"
         | "inactive"
       property_type: "house" | "apartment" | "land" | "commercial" | "short_let"
+      verification_status:
+        | "not_started"
+        | "in_progress"
+        | "awaiting_liveness"
+        | "awaiting_documents"
+        | "pending_review"
+        | "under_manual_review"
+        | "approved"
+        | "rejected"
+        | "needs_resubmission"
+        | "expired"
+        | "suspended"
+      verification_type:
+        | "customer"
+        | "owner"
+        | "agent"
+        | "agency"
+        | "api_partner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1722,6 +2053,26 @@ export const Constants = {
         "inactive",
       ],
       property_type: ["house", "apartment", "land", "commercial", "short_let"],
+      verification_status: [
+        "not_started",
+        "in_progress",
+        "awaiting_liveness",
+        "awaiting_documents",
+        "pending_review",
+        "under_manual_review",
+        "approved",
+        "rejected",
+        "needs_resubmission",
+        "expired",
+        "suspended",
+      ],
+      verification_type: [
+        "customer",
+        "owner",
+        "agent",
+        "agency",
+        "api_partner",
+      ],
     },
   },
 } as const
