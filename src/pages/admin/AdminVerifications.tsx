@@ -343,9 +343,14 @@ const AdminVerifications = () => {
                               {b.liveness_passed ? "Passed" : "Failed"}
                             </Badge>
                           </div>
-                          {b.image_path && (
-                            <div className="w-24 h-24 rounded-lg overflow-hidden border bg-muted">
-                              <img src={b.image_path} alt="Liveness capture" className="w-full h-full object-cover" />
+                          {(b.signed_url || b.image_path) && (
+                            <div className="w-full max-w-sm rounded-lg overflow-hidden border bg-muted group relative">
+                              <a href={b.signed_url || b.image_path || "#"} target="_blank" rel="noopener noreferrer">
+                                <img src={b.signed_url || b.image_path || ""} alt="Liveness capture" className="w-full h-auto object-cover max-h-64 transition-transform group-hover:scale-105" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                  <span className="text-white bg-primary/80 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">View Full Image</span>
+                                </div>
+                              </a>
                             </div>
                           )}
                           <div className="grid grid-cols-2 gap-2 text-xs">

@@ -25,9 +25,12 @@ const UserInquiries = () => {
     fetch();
   }, [user]);
 
+  const { accountType } = useAuth();
+  const verType = (accountType === "buyer" ? "customer" : accountType) as any || "customer";
+
   return (
     <DashboardLayout>
-      <VerificationGate verificationType="customer" actionLabel="inquiries">
+      <VerificationGate verificationType={verType} actionLabel="inquiries">
       <div className="mb-6">
         <h1 className="text-2xl font-display font-bold text-foreground">My Inquiries</h1>
         <p className="text-muted-foreground font-body text-sm">{inquiries.length} inquiries sent</p>

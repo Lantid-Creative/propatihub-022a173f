@@ -362,6 +362,50 @@ Deno.serve(async (req) => {
     }
 
     // ============================================================
+    // ACTION: restart_verification (reset status for resubmission)
+    // ============================================================
+    if (action === "restart_verification") {
+      const { verification_id } = body as any;
+
+      const { data: current } = await adminClient
+        .from("verification_profiles")
+        .select("attempt_count, max_attempts, verification_type")
+        .eq("id", verification_id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (current?.attempt_count >= (current?.max_attempts || 3)) {
+        return jsonResponse({ error: "Maximum attempts reached. Please contact support." }, 403);
+      }
+
+      const { data, error } = await adminClient
+        .from("verification_profiles")
+        .update({
+          status: "in_progress",
+          resubmission_notes: null,
+          rejection_reason: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", verification_id)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await adminClient.from("verification_audit_logs").insert({
+        verification_id,
+        user_id: user.id,
+        action: "restarted",
+        actor_id: user.id,
+        actor_role: "user",
+        details: { verification_type: current?.verification_type },
+      });
+
+      return jsonResponse({ verification: data });
+    }
+
+    // ============================================================
     // ACTION: admin_review (approve/reject/resubmit)
     // ============================================================
     if (action === "admin_review") {
@@ -522,25 +566,14 @@ Deno.serve(async (req) => {
           .order("created_at", { ascending: false }),
       ]);
 
-      if (verificationRes.error) throw verificationRes.error;
-
-      // Get user info
-      const { data: userData } = await adminClient.auth.admin.getUserById(verificationRes.data.user_id);
-
-      // Generate signed URLs for documents
-      const docsWithUrls = await Promise.all(
-        (verificationRes.data.verification_documents || []).map(async (doc: any) => {
-          const bucket = doc.document_type.includes("business") || doc.document_type.includes("cac")
-            ? "verification-business-documents"
-            : doc.document_type.includes("selfie") || doc.document_type.includes("liveness")
-            ? "verification-selfies"
-            : "verification-id-documents";
-
+      // Generate signed URLs for biometric images
+      const biometricsWithUrls = await Promise.all(
+        (biometricRes.data || []).map(async (b: any) => {
+          if (!b.image_path) return b;
           const { data: signedUrl } = await adminClient.storage
-            .from(bucket)
-            .createSignedUrl(doc.file_path, 300); // 5 min expiry
-
-          return { ...doc, signed_url: signedUrl?.signedUrl || null };
+            .from("verification-selfies")
+            .createSignedUrl(b.image_path, 300);
+          return { ...b, signed_url: signedUrl?.signedUrl || null };
         })
       );
 
@@ -549,7 +582,7 @@ Deno.serve(async (req) => {
         user_email: userData?.user?.email,
         user_phone: userData?.user?.phone,
         audit_logs: auditRes.data,
-        biometric_results: biometricRes.data,
+        biometric_results: biometricsWithUrls,
       });
     }
 

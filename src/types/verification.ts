@@ -106,6 +106,7 @@ export interface BiometricVerification {
   error_message: string | null;
   attempt_number: number;
   image_path: string | null;
+  signed_url?: string | null;
   metadata: Record<string, unknown>;
   created_at: string;
 }

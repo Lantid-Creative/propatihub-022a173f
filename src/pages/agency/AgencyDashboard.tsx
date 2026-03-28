@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Building2, Users, MessageSquare, Eye, TrendingUp, ArrowRight, Clock, Settings, AlertCircle } from "lucide-react";
+import VerificationBanner from "@/components/verification/VerificationBanner";
 
 const statusColors: Record<string, string> = {
   active: "bg-primary/10 text-primary",
@@ -121,17 +122,7 @@ const AgencyDashboard = () => {
       {agency && (
         <>
           {/* Verification Banner */}
-          {!agency.verified && (
-            <div className="mb-6 bg-accent/10 border border-accent/30 rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="font-body text-sm font-medium text-foreground">Your agency is pending verification</p>
-                <p className="text-xs text-muted-foreground font-body mt-0.5">Verified agencies get higher visibility and buyer trust.</p>
-              </div>
-              <Link to="/agency/settings">
-                <Button size="sm" variant="outline">Complete Profile</Button>
-              </Link>
-            </div>
-          )}
+          <VerificationBanner type="agency" />
 
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

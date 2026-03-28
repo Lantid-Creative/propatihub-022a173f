@@ -10,6 +10,7 @@ import { Gavel, TrendingUp, Users, Clock, ShieldCheck, Banknote } from "lucide-r
 import { Link } from "react-router-dom";
 import AuctionCountdown from "./AuctionCountdown";
 import KYCVerificationCard from "./KYCVerificationCard";
+import { useVerificationStatus } from "@/hooks/useVerification";
 
 interface BidSectionProps {
   propertyId: string;
@@ -42,30 +43,17 @@ const BidSection = ({
   depositPercentage = 5,
   winnerPaymentDays = 7,
 }: BidSectionProps) => {
-  const { user } = useAuth();
+  const { user, accountType } = useAuth();
   const { toast } = useToast();
   const [bids, setBids] = useState<Bid[]>([]);
   const [bidAmount, setBidAmount] = useState("");
   const [placing, setPlacing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [kycStatus, setKycStatus] = useState<string>("none");
-  const [kycLoading, setKycLoading] = useState(true);
 
-  // Check KYC status via verification_profiles
-  useEffect(() => {
-    if (!user) { setKycLoading(false); return; }
-    const checkKyc = async () => {
-      const { data } = await supabase
-        .from("verification_profiles")
-        .select("status")
-        .eq("user_id", user.id)
-        .eq("verification_type", "customer")
-        .maybeSingle();
-      setKycStatus(data?.status === "approved" ? "verified" : (data?.status || "none"));
-      setKycLoading(false);
-    };
-    checkKyc();
-  }, [user]);
+  // Unified verification status
+  const { isVerified, loading: verLoading } = useVerificationStatus(
+    (accountType === "buyer" ? "customer" : accountType) as any || "customer"
+  );
 
   const fetchBids = async () => {
     const { data } = await supabase
@@ -97,7 +85,12 @@ const BidSection = ({
     fetchBids();
     const channel = supabase
       .channel(`bids-${propertyId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "bids", filter: `property_id=eq.${propertyId}` }, () => fetchBids())
+      .on("postgres_changes", { 
+        event: "*", 
+        schema: "public", 
+        table: "bids", 
+        filter: `property_id=eq.${propertyId}` 
+      }, () => fetchBids())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [propertyId]);
@@ -107,7 +100,7 @@ const BidSection = ({
   const depositAmount = Math.round((highestBid > 0 ? highestBid : askingPrice) * (depositPercentage / 100));
   const auctionEnded = auctionEndAt && new Date(auctionEndAt).getTime() <= Date.now();
   const auctionNotStarted = auctionStartAt && new Date(auctionStartAt).getTime() > Date.now();
-  const canBid = !auctionEnded && !auctionNotStarted && kycStatus === "verified";
+  const canBid = !auctionEnded && !auctionNotStarted && isVerified;
 
   const handlePlaceBid = async () => {
     if (!user) {
@@ -119,7 +112,7 @@ const BidSection = ({
       return;
     }
 
-    if (kycStatus !== "verified") {
+    if (!isVerified) {
       toast({ 
         title: "Identity Verification Required", 
         description: "To ensure a secure bidding environment, please complete your identity verification (KYC) before placing a bid.", 
@@ -150,7 +143,7 @@ const BidSection = ({
     if (highestBid > 0 && amount <= highestBid) {
       toast({ 
         title: "Bid Increment Required", 
-        description: `To become the leading bidder, your offer must be higher than the current highest bid of ₦${highestBid.toLocaleString()}.`, 
+        description: `Your bid must be higher than the current highest bid of ₦${highestBid.toLocaleString()}.`, 
         variant: "destructive" 
       });
       return;
@@ -166,13 +159,13 @@ const BidSection = ({
     if (error) {
       toast({ 
         title: "Bidding Error", 
-        description: error.message || "We encountered an issue while placing your bid. Please try again.", 
+        description: error.message || "Issue placing your bid. Please try again.", 
         variant: "destructive" 
       });
     } else {
       toast({ 
         title: "Bid Placed Successfully", 
-        description: `Success! Your bid of ₦${amount.toLocaleString()} has been recorded. You are now the leading bidder.`,
+        description: `Your bid of ₦${amount.toLocaleString()} has been recorded.`,
         className: "bg-primary text-primary-foreground border-none",
       });
       setBidAmount("");
@@ -195,12 +188,10 @@ const BidSection = ({
 
   return (
     <div className="space-y-4">
-      {/* Auction Timer */}
       {auctionEndAt && (
         <AuctionCountdown endAt={auctionEndAt} startAt={auctionStartAt} status={auctionStatus} />
       )}
 
-      {/* Bid Summary */}
       <Card className="border-accent/30 bg-accent/5">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
@@ -238,40 +229,36 @@ const BidSection = ({
             )}
           </div>
 
-          {/* Deposit Info */}
           <div className="bg-muted/50 border border-border rounded-lg p-3 flex items-start gap-2">
             <Banknote className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <div>
               <p className="font-body text-xs font-semibold text-foreground">Refundable Deposit Required</p>
               <p className="font-body text-xs text-muted-foreground">
-                {depositPercentage}% deposit ({formatPrice(depositAmount)}) required. Refunded if you don't win. Forfeited if winner defaults.
+                {depositPercentage}% deposit ({formatPrice(depositAmount)}) required. Refunded if you don't win.
               </p>
             </div>
           </div>
 
-          {/* Winner Deadline */}
           <div className="bg-muted/50 border border-border rounded-lg p-3 flex items-start gap-2">
             <Clock className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <div>
               <p className="font-body text-xs font-semibold text-foreground">Winner Payment Deadline</p>
               <p className="font-body text-xs text-muted-foreground">
-                {winnerPaymentDays} days to complete payment after winning. Failure forfeits deposit.
+                {winnerPaymentDays} days to complete payment after winning.
               </p>
             </div>
           </div>
 
-          {/* KYC Status */}
-          {user && !kycLoading && kycStatus !== "verified" && (
-            <KYCVerificationCard onVerified={() => setKycStatus("pending")} />
+          {user && !verLoading && !isVerified && (
+            <KYCVerificationCard />
           )}
-          {user && kycStatus === "verified" && (
+          {user && isVerified && (
             <div className="flex items-center gap-2 px-3 py-2 bg-green-500/5 rounded-lg border border-green-500/20">
               <ShieldCheck className="w-4 h-4 text-green-600" />
               <span className="font-body text-xs text-green-700">Identity Verified — You can bid</span>
             </div>
           )}
 
-          {/* Place Bid */}
           {!auctionEnded && (
             <div className="space-y-3">
               <label className="font-body text-sm font-medium text-foreground block">Place your bid (₦)</label>
@@ -298,7 +285,7 @@ const BidSection = ({
                 className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
               >
                 <Gavel className="w-4 h-4 mr-2" />
-                {placing ? "Placing bid..." : auctionNotStarted ? "Auction not started" : !user ? "Sign in to bid" : kycStatus !== "verified" ? "Complete KYC first" : "Place Bid"}
+                {placing ? "Placing bid..." : auctionNotStarted ? "Auction not started" : !user ? "Sign in to bid" : !isVerified ? "Complete KYC first" : "Place Bid"}
               </Button>
               {!user && (
                 <p className="text-xs text-muted-foreground font-body text-center">
@@ -310,7 +297,6 @@ const BidSection = ({
         </CardContent>
       </Card>
 
-      {/* Bid History */}
       {bids.length > 0 && (
         <Card>
           <CardHeader className="pb-3">

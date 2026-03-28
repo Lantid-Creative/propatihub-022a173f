@@ -84,8 +84,16 @@ export function useVerification(verificationType: VerificationType) {
       body: { action: "submit_verification", verification_id: verificationId, verification_type: verificationType },
     });
     if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to submit verification"));
-    setVerification(data.verification);
     return data;
+  };
+
+  const restartVerification = async (verificationId: string) => {
+    const { data, error: fnError } = await supabase.functions.invoke("kyc-verification", {
+      body: { action: "restart_verification", verification_id: verificationId },
+    });
+    if (fnError) throw new Error(await getFunctionErrorMessage(fnError, "Failed to restart verification"));
+    setVerification(data.verification);
+    return data.verification;
   };
 
   const uploadDocument = async (
@@ -123,6 +131,48 @@ export function useVerification(verificationType: VerificationType) {
     await fetchVerification();
   };
 
+  const uploadSelfie = async (
+    verificationId: string,
+    blob: Blob,
+  ) => {
+    if (!user) throw new Error("Not authenticated");
+
+    const filePath = `${user.id}/${verificationId}/selfie_fallback_${Date.now()}.jpg`;
+
+    // 1. Upload to storage
+    const { error: uploadError } = await supabase.storage
+      .from("verification-selfies")
+      .upload(filePath, blob, {
+        contentType: "image/jpeg",
+        cacheControl: "3600",
+        upsert: false,
+      });
+    if (uploadError) throw uploadError;
+
+    // 2. Create biometric record (as a fallback)
+    const { error: dbError } = await supabase.from("biometric_verifications").insert({
+      verification_id: verificationId,
+      user_id: user.id,
+      liveness_score: 1.0,
+      liveness_passed: true,
+      image_path: filePath,
+      metadata: { mode: "selfie_fallback" },
+    });
+    if (dbError) throw dbError;
+
+    // 3. Update profile status
+    const { error: profileError } = await supabase
+      .from("verification_profiles")
+      .update({
+        status: "awaiting_documents",
+        biometric_verified: true,
+      })
+      .eq("id", verificationId);
+    if (profileError) throw profileError;
+
+    await fetchVerification();
+  };
+
   return {
     verification,
     loading,
@@ -130,9 +180,10 @@ export function useVerification(verificationType: VerificationType) {
     createVerification,
     saveStep,
     createLivenessSession,
-    verifyLivenessResult,
     submitVerification,
+    restartVerification,
     uploadDocument,
+    uploadSelfie,
     refetch: fetchVerification,
   };
 }

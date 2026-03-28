@@ -1,148 +1,80 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, ShieldAlert, Loader2 } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { useVerificationStatus } from "@/hooks/useVerification";
 
 interface KYCVerificationCardProps {
   onVerified?: () => void;
   compact?: boolean;
 }
 
-const KYCVerificationCard = ({ onVerified, compact }: KYCVerificationCardProps) => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [status, setStatus] = useState<string>("none");
-  const [bvn, setBvn] = useState("");
-  const [nin, setNin] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user) return;
-    const fetch = async () => {
-      const { data } = await supabase
-        .from("kyc_verifications")
-        .select("verification_status, bvn_verified, nin_verified")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (data) setStatus(data.verification_status);
-      else setStatus("none");
-      setLoading(false);
-    };
-    fetch();
-  }, [user]);
-
-  const handleSubmit = async () => {
-    if (!user) return;
-    if (!bvn && !nin) {
-      toast({ 
-        title: "Identification Required", 
-        description: "Please provide either your BVN or NIN to proceed with identity verification.", 
-        variant: "destructive" 
-      });
-      return;
-    }
-
-    setSubmitting(true);
-    const payload: any = {
-      user_id: user.id,
-      verification_status: "pending",
-      ...(bvn && { bvn_hash: bvn, bvn_verified: false }),
-      ...(nin && { nin_hash: nin, nin_verified: false }),
-    };
-
-    const { error } = await supabase.from("kyc_verifications").upsert(payload, { onConflict: "user_id" });
-
-    if (error) {
-      toast({ 
-        title: "Submission Error", 
-        description: error.message || "We encountered an issue while submitting your verification request. Please try again.", 
-        variant: "destructive" 
-      });
-    } else {
-      toast({ 
-        title: "Verification Request Submitted", 
-        description: "Thank you for verifying your identity. Our team will review your information within 24 hours.",
-        className: "bg-primary text-primary-foreground border-none",
-      });
-      setStatus("pending");
-      onVerified?.();
-    }
-    setSubmitting(false);
-  };
+const KYCVerificationCard = ({ compact }: KYCVerificationCardProps) => {
+  const { accountType } = useAuth();
+  const navigate = useNavigate();
+  const verType = (accountType === "buyer" ? "customer" : accountType) as any || "customer";
+  const { status, isVerified, loading } = useVerificationStatus(verType);
 
   if (loading) return null;
 
-  if (status === "verified") {
+  if (isVerified) {
     if (compact) {
       return (
         <div className="flex items-center gap-2 text-green-600">
           <ShieldCheck className="w-4 h-4" />
-          <span className="font-body text-sm">KYC Verified</span>
+          <span className="font-body text-sm">Verified</span>
         </div>
       );
     }
     return (
       <Card className="border-green-500/20 bg-green-500/5">
         <CardContent className="py-4 flex items-center gap-3">
-          <ShieldCheck className="w-6 h-6 text-green-600" />
+          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+            <ShieldCheck className="w-5 h-5 text-green-600" />
+          </div>
           <div>
             <p className="font-body text-sm font-semibold text-green-700">Identity Verified</p>
-            <p className="font-body text-xs text-muted-foreground">Your BVN/NIN has been verified. You can bid on properties.</p>
+            <p className="font-body text-xs text-muted-foreground">You have full access to bidding and all professional features.</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  if (status === "pending") {
+  if (status === "pending_review" || status === "under_manual_review") {
     return (
-      <Card className="border-yellow-500/20 bg-yellow-500/5">
+      <Card className="border-blue-500/20 bg-blue-50/50 dark:bg-blue-950/10">
         <CardContent className="py-4 flex items-center gap-3">
-          <Loader2 className="w-6 h-6 text-yellow-600 animate-spin" />
-          <div>
-            <p className="font-body text-sm font-semibold text-yellow-700">Verification Pending</p>
-            <p className="font-body text-xs text-muted-foreground">Your identity verification is being processed. This may take up to 24 hours.</p>
+          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5 text-blue-600" />
           </div>
+          <div className="flex-1">
+            <p className="font-body text-sm font-semibold text-blue-700">Verification Under Review</p>
+            <p className="font-body text-xs text-muted-foreground">We are reviewing your documents. This usually takes less than 24h.</p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard/verification")} className="shrink-0 text-blue-600 hover:text-blue-700">
+            Details
+          </Button>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="border-destructive/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-destructive" />
-          KYC Required to Bid
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="font-body text-xs text-muted-foreground">
-          Verify your identity with your BVN or NIN before placing bids. This protects all parties.
-        </p>
-        <div className="space-y-2">
-          <Input
-            placeholder="Bank Verification Number (BVN)"
-            value={bvn}
-            onChange={(e) => setBvn(e.target.value.replace(/\D/g, "").slice(0, 11))}
-            maxLength={11}
-          />
-          <Input
-            placeholder="National Identification Number (NIN)"
-            value={nin}
-            onChange={(e) => setNin(e.target.value.replace(/\D/g, "").slice(0, 11))}
-            maxLength={11}
-          />
+    <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg shadow-amber-500/5 overflow-hidden">
+      <CardContent className="py-5 px-6 space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+            <ShieldAlert className="w-6 h-6 text-amber-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-display font-bold text-foreground">Verification Required</h3>
+            <p className="font-body text-xs text-muted-foreground">Complete identity verification to unlock bidding and property listing.</p>
+          </div>
         </div>
-        <Button onClick={handleSubmit} disabled={submitting} className="w-full" size="sm">
-          {submitting ? "Submitting..." : "Submit for Verification"}
+        <Button onClick={() => navigate("/verify")} className="w-full gap-2 h-11 rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5" size="sm">
+          Verify Now <ArrowRight className="w-4 h-4" />
         </Button>
       </CardContent>
     </Card>

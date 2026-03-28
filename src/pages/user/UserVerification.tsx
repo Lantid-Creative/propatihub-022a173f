@@ -71,6 +71,9 @@ const UserVerification = () => {
     (v) => v.verification_type === "customer" && v.status === "approved"
   );
 
+  const isVerified = verifications.some((v) => v.status === "approved");
+  const accountTypeLabel = user?.user_metadata?.account_type ? (user.user_metadata.account_type === "buyer" ? "Customer" : user.user_metadata.account_type.charAt(0).toUpperCase() + user.user_metadata.account_type.slice(1)) : "Identity";
+
   const getStatusInfo = (status: string) => statusConfig[status] || statusConfig.not_started;
 
   const canContinue = (status: string) =>
@@ -94,35 +97,70 @@ const UserVerification = () => {
         </div>
       ) : (
         <div className="max-w-2xl space-y-6">
-          {/* Overall Status Card */}
-          <Card className={hasApprovedCustomer ? "border-green-500/30" : "border-amber-500/30"}>
-            <CardContent className="py-6">
-              <div className="flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${hasApprovedCustomer ? "bg-green-100 dark:bg-green-950/30" : "bg-amber-100 dark:bg-amber-950/30"}`}>
-                  {hasApprovedCustomer ? (
-                    <CheckCircle2 className="w-7 h-7 text-green-600" />
-                  ) : (
+          {/* Overall Status Card - Only show if not verified or pending */}
+          {!isVerified && !verifications.some(v => ["pending_review", "under_manual_review"].includes(v.status)) && (
+            <Card className="border-amber-500/30 bg-amber-500/5 shadow-lg shadow-amber-500/5">
+              <CardContent className="py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center shrink-0">
                     <ShieldAlert className="w-7 h-7 text-amber-600" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h2 className="font-display text-lg font-bold text-foreground">
-                    {hasApprovedCustomer ? "Account Verified" : "Verification Required"}
-                  </h2>
-                  <p className="text-sm font-body text-muted-foreground">
-                    {hasApprovedCustomer
-                      ? "Your identity has been verified. You have full access to PropatiHub features."
-                      : "Complete identity verification to unlock bidding, property listing, messaging, and more."}
-                  </p>
-                </div>
-                {!hasApprovedCustomer && (
-                  <Button onClick={() => navigate("/verify")} className="gap-2 shrink-0">
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="font-display text-lg font-bold text-foreground">Verification Required</h2>
+                    <p className="text-sm font-body text-muted-foreground">
+                      Complete your {accountTypeLabel} verification to unlock bidding, property listing, and more.
+                    </p>
+                  </div>
+                  <Button onClick={() => navigate("/verify")} className="gap-2 shrink-0 h-11 px-6 shadow-xl shadow-primary/20">
                     Verify Now <ArrowRight className="w-4 h-4" />
                   </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Pending Status Card */}
+          {!isVerified && verifications.some(v => ["pending_review", "under_manual_review"].includes(v.status)) && (
+            <Card className="border-blue-500/30 bg-blue-500/5 shadow-lg shadow-blue-500/5">
+              <CardContent className="py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center shrink-0">
+                    <Clock className="w-7 h-7 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="font-display text-lg font-bold text-foreground">Verification Under Review</h2>
+                    <p className="text-sm font-body text-muted-foreground">
+                      We're currently reviewing your {accountTypeLabel} verification. This typically takes less than 24 hours.
+                    </p>
+                  </div>
+                  <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    Pending
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {isVerified && (
+            <Card className="border-green-500/30 bg-green-500/5 shadow-lg shadow-green-500/5">
+              <CardContent className="py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-950/30 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-7 h-7 text-green-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="font-display text-lg font-bold text-foreground">{accountTypeLabel} Verified</h2>
+                    <p className="text-sm font-body text-muted-foreground">
+                      Your identity has been successfully verified. You have full access to all PropatiHub features.
+                    </p>
+                  </div>
+                  <div className="bg-green-100 dark:bg-green-900/30 text-green-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    Active
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Verification Records */}
           {verifications.length > 0 ? (

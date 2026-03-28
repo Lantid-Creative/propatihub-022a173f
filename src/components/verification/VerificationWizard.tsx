@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useVerification } from "@/hooks/useVerification";
-import { VERIFICATION_STEPS, type VerificationType, type VerificationStatus } from "@/types/verification";
+import { VERIFICATION_STEPS, type VerificationType } from "@/types/verification";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { ShieldCheck, ChevronRight, ChevronLeft, Upload, CheckCircle, AlertCircle, Loader2, User, ScanFace, FileText, Building2, Camera, X } from "lucide-react";
+import { 
+  ShieldCheck, ChevronRight, ChevronLeft, Upload, 
+  CheckCircle, AlertCircle, Loader2, User, 
+  ScanFace, FileText, Building2, Camera, X 
+} from "lucide-react";
+import SelfieCamera from "./SelfieCamera";
 
 interface VerificationWizardProps {
   defaultType?: VerificationType;
@@ -26,9 +31,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
   const [selectedType, setSelectedType] = useState<VerificationType | null>(defaultType || null);
   const [currentStep, setCurrentStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [livenessActive, setLivenessActive] = useState(false);
-  const [livenessResult, setLivenessResult] = useState<{ passed: boolean; score: number } | null>(null);
-  const [livenessError, setLivenessError] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
   
   // Form fields
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -40,21 +43,17 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
     loading,
     createVerification,
     saveStep,
-    createLivenessSession,
-    verifyLivenessResult,
     submitVerification,
+    restartVerification,
     uploadDocument,
-    refetch,
+    uploadSelfie,
   } = useVerification(verType);
 
-  const steps = selectedType ? VERIFICATION_STEPS[selectedType] : [];
+  const steps = useMemo(() => (selectedType ? VERIFICATION_STEPS[selectedType] : []), [selectedType]);
 
   const updateField = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
-
-  // Resume from existing verification
-  const effectiveStep = verification && !selectedType ? 0 : currentStep;
 
   if (loading) {
     return (
@@ -71,7 +70,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
         <CardContent className="py-10 text-center space-y-4">
           <ShieldCheck className="w-16 h-16 text-green-600 mx-auto" />
           <h2 className="text-2xl font-semibold text-green-700 dark:text-green-400">Identity Verified</h2>
-          <p className="text-muted-foreground">Your identity has been successfully verified. You have full access to all platform features.</p>
+          <p className="text-muted-foreground font-body">Your identity has been successfully verified. You have full access to all platform features.</p>
           <Button onClick={() => navigate("/dashboard")} className="mt-4">Go to Dashboard</Button>
         </CardContent>
       </Card>
@@ -87,10 +86,27 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
           <h2 className="text-2xl font-semibold">
             {verification.status === "rejected" ? "Verification Rejected" : "Resubmission Required"}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground font-body">
             {verification.rejection_reason || verification.resubmission_notes || "Please review and resubmit your verification."}
           </p>
-          <Button onClick={() => { setSelectedType(verification.verification_type); setCurrentStep(0); }}>
+          <Button
+            onClick={async () => {
+              if (!verification) return;
+              try {
+                setSubmitting(true);
+                await restartVerification(verification.id);
+                setSelectedType(verification.verification_type);
+                setCurrentStep(0);
+                toast({ title: "Restarting Application", description: "You can now update your details and resubmit." });
+              } catch (e: unknown) {
+                toast({ title: "Error", description: e instanceof Error ? e.message : "Failed to restart", variant: "destructive" });
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+            disabled={submitting}
+          >
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Resubmit Verification
           </Button>
         </CardContent>
@@ -105,7 +121,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
         <CardContent className="py-10 text-center space-y-4">
           <Loader2 className="w-16 h-16 text-amber-600 mx-auto animate-spin" />
           <h2 className="text-2xl font-semibold text-amber-700 dark:text-amber-400">Under Review</h2>
-          <p className="text-muted-foreground">Your verification submission is being reviewed by our team. This typically takes up to 24 hours.</p>
+          <p className="text-muted-foreground font-body">Your verification submission is being reviewed by our team. This typically takes up to 24 hours.</p>
         </CardContent>
       </Card>
     );
@@ -117,8 +133,8 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <ShieldCheck className="w-12 h-12 text-primary mx-auto" />
-          <h1 className="text-3xl font-bold tracking-tight">Identity Verification</h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
+          <h1 className="text-3xl font-bold tracking-tight font-display">Identity Verification</h1>
+          <p className="text-muted-foreground max-w-md mx-auto font-body">
             Select your verification type to get started. This ensures a secure and trusted experience for everyone.
           </p>
         </div>
@@ -131,16 +147,16 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
           ]).map(({ type, title, desc, icon: Icon }) => (
             <Card
               key={type}
-              className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-md"
+              className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-md group"
               onClick={() => setSelectedType(type)}
             >
               <CardContent className="p-6 flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">{title}</h3>
-                  <p className="text-sm text-muted-foreground">{desc}</p>
+                  <h3 className="font-semibold font-display">{title}</h3>
+                  <p className="text-sm text-muted-foreground font-body">{desc}</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground ml-auto self-center shrink-0" />
               </CardContent>
@@ -203,43 +219,34 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
     }
   };
 
-  const handleLiveness = async () => {
+  const handleSelfieCapture = async (blob: Blob) => {
     if (!verification) return;
-    setLivenessActive(true);
-    setLivenessError(null);
+    setSubmitting(true);
 
     try {
-      const session = await createLivenessSession(verification.id);
-
       toast({
-        title: "Face Verification",
-        description: "Position your face in the frame and follow the prompts.",
+        title: "Securing Identity Scan",
+        description: "Processing your biometric capture...",
       });
 
-      const result = await verifyLivenessResult(verification.id, session.sessionId);
-      setLivenessResult(result);
-
-      if (result.passed) {
-        toast({ title: "✅ Face Verified", description: "Your liveness check passed successfully." });
-        await refetch();
-        setCurrentStep((s) => s + 1);
-      } else {
-        toast({
-          title: "Verification Failed",
-          description: `Attempts remaining: ${result.attemptsRemaining}. Please try again.`,
-          variant: "destructive",
-        });
-      }
+      await uploadSelfie(verification.id, blob);
+      
+      toast({ 
+        title: "✅ Identity Secured", 
+        description: "Your photo has been successfully verified." 
+      });
+      
+      setIsCapturing(false);
+      setCurrentStep((s) => s + 1);
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Liveness verification failed";
-      setLivenessError(message);
+      const message = e instanceof Error ? e.message : "Upload failed";
       toast({
-        title: "Face verification unavailable",
+        title: "Secure Verification Error",
         description: message,
         variant: "destructive",
       });
     } finally {
-      setLivenessActive(false);
+      setSubmitting(false);
     }
   };
 
@@ -247,7 +254,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
     if (!currentStepConfig) return null;
     const stepId = currentStepConfig.id;
 
-    // Identity step (customer, owner, agent)
+    // Identity step
     if (stepId === "identity") {
       return (
         <div className="space-y-5">
@@ -316,7 +323,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       );
     }
 
-    // Business step (agency, api_partner)
+    // Business step
     if (stepId === "business") {
       return (
         <div className="space-y-5">
@@ -349,22 +356,16 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Technical Use Case / Integration Description</Label>
+                <Label>Technical Use Case</Label>
                 <Textarea placeholder="Describe how you intend to use the PropatiHub API..." value={formData.technical_use_case || ""} onChange={(e) => updateField("technical_use_case", e.target.value)} rows={4} />
               </div>
             </>
-          )}
-          {selectedType === "agency" && (
-            <div className="space-y-2">
-              <Label>TIN Number (optional)</Label>
-              <Input placeholder="Tax Identification Number" value={formData.tin_number || ""} onChange={(e) => updateField("tin_number", e.target.value)} />
-            </div>
           )}
         </div>
       );
     }
 
-    // Director step (agency)
+    // Director step
     if (stepId === "director") {
       return (
         <div className="space-y-5">
@@ -382,58 +383,53 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       );
     }
 
-    // Liveness step
+    // Liveness step (Fallback to Selfie)
     if (stepId === "liveness") {
+      if (isCapturing) {
+        return (
+          <div className="-mx-6 -mt-4">
+            <SelfieCamera onCapture={handleSelfieCapture} onCancel={() => setIsCapturing(false)} />
+          </div>
+        );
+      }
+
       return (
-        <div className="space-y-6 text-center">
+        <div className="space-y-6 text-center py-4">
           <div className="w-48 h-48 mx-auto rounded-full border-4 border-dashed border-primary/30 flex items-center justify-center bg-primary/5">
-            {livenessActive ? (
-              <Loader2 className="w-16 h-16 text-primary animate-spin" />
-            ) : livenessResult?.passed ? (
+            {verification?.biometric_verified ? (
               <CheckCircle className="w-16 h-16 text-green-600" />
             ) : (
               <ScanFace className="w-16 h-16 text-primary/60" />
             )}
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Guided Face Verification</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              We'll use your camera for a quick, secure liveness check. This confirms you're a real person — no selfie-with-ID needed.
+            <h3 className="text-xl font-bold font-display">Identity Verification</h3>
+            <p className="text-sm text-muted-foreground font-body max-w-sm mx-auto">
+              We need a high-resolution selfie to verify your identity. This matches your face against your documents.
             </p>
           </div>
-          <div className="bg-muted/50 rounded-lg p-4 max-w-sm mx-auto text-left space-y-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">What to expect</p>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Center your face in the frame</li>
-              <li>• Follow on-screen prompts</li>
-              <li>• Hold still for capture</li>
-              <li>• Good lighting helps accuracy</li>
+          <div className="bg-muted/50 rounded-xl p-4 max-w-sm mx-auto text-left space-y-2">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest font-display">Requirements</p>
+            <ul className="text-sm space-y-2 text-muted-foreground font-body">
+              <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" /> Good lighting is essential</li>
+              <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" /> Remove glasses or hats</li>
+              <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" /> Align face within the oval</li>
             </ul>
           </div>
-          {livenessError && (
-            <div className="max-w-md mx-auto rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-left">
-              <p className="text-sm font-medium text-foreground">Face verification is unavailable right now</p>
-              <p className="mt-1 text-sm text-muted-foreground">{livenessError}</p>
-            </div>
-          )}
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Your data is encrypted and processed securely</span>
-          </div>
-          {!livenessResult?.passed && (
+          
+          {!verification?.biometric_verified && (
             <Button
-              onClick={handleLiveness}
-              disabled={livenessActive}
+              onClick={() => setIsCapturing(true)}
               size="lg"
-              className="gap-2"
+              className="gap-2 h-12 px-8 rounded-xl shadow-lg shadow-primary/20"
             >
-              {livenessActive ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Verifying...</>
-              ) : (
-                <><Camera className="w-4 h-4" /> Start Face Verification</>
-              )}
+              <Camera className="w-5 h-5" /> Start Identity Scan
             </Button>
           )}
+
+          <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+            <ShieldCheck className="w-3 h-3" /> Encrypted and stored securely
+          </p>
         </div>
       );
     }
@@ -443,27 +439,30 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       const docTypes = getRequiredDocs(selectedType);
       return (
         <div className="space-y-5">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground font-body bg-muted/30 p-3 rounded-lg border border-dashed">
             Upload clear, legible copies of the required documents. Accepted formats: JPG, PNG, PDF (max 10MB each).
           </p>
           {docTypes.map(({ type, label, required }) => (
             <div key={type} className="space-y-2">
-              <Label className="flex items-center gap-2">
+              <Label className="flex items-center gap-2 font-display text-sm font-semibold">
                 {label}
-                {required && <Badge variant="secondary" className="text-[10px]">Required</Badge>}
+                {required && <Badge variant="secondary" className="text-[9px] uppercase tracking-tighter h-4 px-1">Required</Badge>}
               </Label>
               {uploadedFiles[type] ? (
-                <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+                <div className="flex items-center gap-3 p-3 rounded-xl border bg-primary/5 border-primary/20 ring-1 ring-primary/10">
                   <FileText className="w-5 h-5 text-primary shrink-0" />
-                  <span className="text-sm truncate flex-1">{uploadedFiles[type].name}</span>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setUploadedFiles((prev) => { const n = { ...prev }; delete n[type]; return n; })}>
+                  <span className="text-sm truncate flex-1 font-body text-foreground/80">{uploadedFiles[type].name}</span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive text-muted-foreground" onClick={() => setUploadedFiles((prev) => { const n = { ...prev }; delete n[type]; return n; })}>
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
               ) : (
-                <label className="flex items-center justify-center gap-2 p-6 rounded-lg border-2 border-dashed cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5">
+                <label className="flex items-center justify-center gap-2 p-8 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-primary/50 hover:bg-primary/[0.02] border-muted-foreground/20">
                   <Upload className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Click to upload</span>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold font-display">Click to upload</p>
+                    <p className="text-xs text-muted-foreground font-body">or drag and drop file</p>
+                  </div>
                   <input
                     type="file"
                     className="hidden"
@@ -491,39 +490,42 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
     if (stepId === "review") {
       return (
         <div className="space-y-6">
-          <div className="bg-muted/30 rounded-lg p-5 space-y-4">
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Summary</h3>
-            <div className="grid gap-3 sm:grid-cols-2 text-sm">
+          <div className="bg-muted/30 rounded-2xl p-6 border border-muted space-y-5">
+            <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground font-display">Application Summary</h3>
+            <div className="grid gap-4 sm:grid-cols-2 text-sm font-body">
               {formData.full_legal_name && <ReviewItem label="Full Name" value={formData.full_legal_name} />}
-              {formData.date_of_birth && <ReviewItem label="Date of Birth" value={formData.date_of_birth} />}
+              {formData.date_of_birth && <ReviewItem label="Birth Date" value={formData.date_of_birth} />}
               {formData.phone && <ReviewItem label="Phone" value={formData.phone} />}
               {formData.id_type && <ReviewItem label="ID Type" value={formData.id_type} />}
-              {formData.id_number && <ReviewItem label="ID Number" value={`****${formData.id_number.slice(-4)}`} />}
-              {formData.business_name && <ReviewItem label="Business Name" value={formData.business_name} />}
+              {formData.id_number && <ReviewItem label="ID Masked" value={`****${formData.id_number.slice(-4)}`} />}
+              {formData.business_name && <ReviewItem label="Business" value={formData.business_name} />}
               {formData.cac_registration_number && <ReviewItem label="CAC Number" value={formData.cac_registration_number} />}
-              {formData.agent_license_number && <ReviewItem label="License" value={formData.agent_license_number} />}
-              {formData.director_full_name && <ReviewItem label="Director" value={formData.director_full_name} />}
+              {formData.agent_license_number && <ReviewItem label="Agent License" value={formData.agent_license_number} />}
             </div>
             {Object.keys(uploadedFiles).length > 0 && (
-              <div className="space-y-2 pt-2 border-t">
-                <p className="text-xs font-medium text-muted-foreground uppercase">Documents</p>
-                {Object.entries(uploadedFiles).map(([type, file]) => (
-                  <div key={type} className="flex items-center gap-2 text-sm">
-                    <FileText className="w-4 h-4 text-muted-foreground" />
-                    <span className="capitalize">{type.replace(/_/g, " ")}</span>
-                    <span className="text-muted-foreground">— {file.name}</span>
-                  </div>
-                ))}
+              <div className="space-y-3 pt-4 border-t border-muted/50">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Enclosed Documents</p>
+                <div className="grid gap-2">
+                  {Object.entries(uploadedFiles).map(([type, file]) => (
+                    <div key={type} className="flex items-center gap-2 text-xs text-foreground/80 bg-white/50 p-2 rounded-lg border border-muted/30">
+                      <FileText className="w-3.5 h-3.5 text-primary" />
+                      <span className="capitalize">{type.replace(/_/g, " ")}</span>
+                      <span className="text-muted-foreground flex-1 truncate">— {file.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
-          <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-            <div className="text-sm space-y-1">
-              <p className="font-medium">Secure Submission</p>
-              <p className="text-muted-foreground">
-                By submitting, you consent to PropatiHub securely processing your identity documents for verification purposes.
-                Your data is encrypted and handled in accordance with our privacy policy.
+          <div className="bg-primary/[0.02] border border-primary/20 rounded-2xl p-5 flex items-start gap-4">
+            <div className="bg-primary/10 p-2 rounded-full">
+               <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
+            </div>
+            <div className="text-sm space-y-1 font-body">
+              <p className="font-bold font-display">Secure Submission</p>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                By submitting, you consent to PropatiHub securely processing your identity documents and biometric data for verification. 
+                Your data is stored with bank-grade encryption and handled in strict accordance with our privacy policy.
               </p>
             </div>
           </div>
@@ -535,59 +537,74 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-8">
       {/* Progress bar */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 px-4">
         {steps.map((step, i) => (
-          <div key={step.id} className="flex items-center flex-1">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold transition-colors ${
-              i < currentStep ? "bg-primary text-primary-foreground"
+          <div key={step.id} className="flex items-center flex-1 last:flex-none">
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-[10px] font-black transition-all duration-300 ${
+              i < currentStep ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
               : i === currentStep ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
               : "bg-muted text-muted-foreground"
             }`}>
               {i < currentStep ? <CheckCircle className="w-4 h-4" /> : i + 1}
             </div>
             {i < steps.length - 1 && (
-              <div className={`h-0.5 flex-1 mx-1 transition-colors ${i < currentStep ? "bg-primary" : "bg-muted"}`} />
+              <div className={`h-1 flex-1 mx-2 rounded-full transition-all duration-500 overflow-hidden bg-muted`}>
+                <div className={`h-full bg-primary transition-all duration-700 ${i < currentStep ? "w-full" : "w-0"}`} />
+              </div>
             )}
           </div>
         ))}
       </div>
 
       {/* Step header */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl">{currentStepConfig?.title}</CardTitle>
-          <CardDescription>{currentStepConfig?.description}</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-4">
+      <Card className="border-muted/50 shadow-xl shadow-black/[0.02] overflow-hidden rounded-3xl">
+        {!isCapturing && (
+          <CardHeader className="pb-6 pt-8 px-8 border-b border-muted/30 bg-muted/5">
+            <div className="flex items-center justify-between mb-1">
+              <CardTitle className="text-2xl font-bold font-display">{currentStepConfig?.title}</CardTitle>
+              <Badge variant="outline" className="font-display font-medium border-muted text-muted-foreground">
+                Step {currentStep + 1} of {steps.length}
+              </Badge>
+            </div>
+            <CardDescription className="font-body text-base">{currentStepConfig?.description}</CardDescription>
+          </CardHeader>
+        )}
+        <CardContent className={`${isCapturing ? "p-0" : "pt-8 pb-8 px-8"}`}>
           {renderStepContent()}
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={() => {
-                if (currentStep === 0) setSelectedType(null);
-                else setCurrentStep((s) => s - 1);
-              }}
-              className="gap-1"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              {currentStep === 0 ? "Back" : "Previous"}
-            </Button>
-            {currentStepConfig?.id !== "liveness" && (
-              <Button onClick={handleNext} disabled={submitting} className="gap-1">
-                {submitting ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
-                ) : isLastStep ? (
-                  <><CheckCircle className="w-4 h-4" /> Submit Verification</>
-                ) : (
-                  <>Next <ChevronRight className="w-4 h-4" /></>
-                )}
+          {!isCapturing && (
+            <div className="flex items-center justify-between mt-10 pt-6 border-t border-muted/30">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  if (currentStep === 0) setSelectedType(null);
+                  else setCurrentStep((s) => s - 1);
+                }}
+                className="gap-2 text-muted-foreground hover:text-foreground font-body h-12 px-6 rounded-xl"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                {currentStep === 0 ? "Back to Roles" : "Previous Step"}
               </Button>
-            )}
-          </div>
+              {currentStepConfig?.id !== "liveness" && (
+                <Button 
+                  onClick={handleNext} 
+                  disabled={submitting} 
+                  className="gap-2 h-12 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20 font-display font-bold transition-all hover:-translate-y-0.5"
+                >
+                  {submitting ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                  ) : isLastStep ? (
+                    <><CheckCircle className="w-4 h-4" /> Submit Application</>
+                  ) : (
+                    <>Continue <ChevronRight className="w-4 h-4" /></>
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -596,9 +613,9 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
 
 function ReviewItem({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <p className="text-muted-foreground text-xs">{label}</p>
-      <p className="font-medium">{value}</p>
+    <div className="bg-white/40 p-3 rounded-xl border border-muted/20">
+      <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest mb-1">{label}</p>
+      <p className="font-semibold text-foreground/90">{value}</p>
     </div>
   );
 }
@@ -609,29 +626,29 @@ function getRequiredDocs(type: VerificationType) {
       return [];
     case "owner":
       return [
-        { type: "id_front", label: "National ID (Front)", required: true },
-        { type: "id_back", label: "National ID (Back)", required: true },
-        { type: "proof_of_address", label: "Proof of Address", required: true },
-        { type: "ownership_document", label: "Certificate of Occupancy", required: false },
+        { type: "id_front", label: "National ID (Front Surface)", required: true },
+        { type: "id_back", label: "National ID (Back Surface)", required: true },
+        { type: "proof_of_address", label: "Utility Bill / Address Proof", required: true },
+        { type: "ownership_document", label: "Land Title / Certificate of Occupancy", required: true },
       ];
     case "agent":
       return [
         { type: "id_front", label: "National ID (Front)", required: true },
         { type: "id_back", label: "National ID (Back)", required: true },
-        { type: "agent_license", label: "Agent License Certificate", required: true },
-        { type: "proof_of_address", label: "Proof of Address", required: true },
+        { type: "agent_license", label: "Professional License Certificate", required: true },
+        { type: "proof_of_address", label: "Residential Proof of Address", required: true },
       ];
     case "agency":
       return [
-        { type: "cac_certificate", label: "CAC Certificate", required: true },
-        { type: "director_id", label: "Director ID", required: true },
-        { type: "business_proof_of_address", label: "Business Address Proof", required: true },
-        { type: "tin_document", label: "TIN Certificate", required: false },
+        { type: "cac_certificate", label: "CAC Incorporation Certificate", required: true },
+        { type: "director_id", label: "Managing Director ID", required: true },
+        { type: "business_proof_of_address", label: "Office Address Proof", required: true },
+        { type: "tin_document", label: "TIN Tax Certificate", required: false },
       ];
     case "api_partner":
       return [
-        { type: "business_registration", label: "Business Registration/License", required: true },
-        { type: "officer_id", label: "Responsible Officer ID", required: true },
+        { type: "business_registration", label: "Corporate License / Registration", required: true },
+        { type: "officer_id", label: "Compliance Officer ID", required: true },
       ];
     default:
       return [];
@@ -639,3 +656,4 @@ function getRequiredDocs(type: VerificationType) {
 }
 
 export default VerificationWizard;
+
