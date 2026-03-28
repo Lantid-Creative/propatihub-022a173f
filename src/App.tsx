@@ -41,6 +41,7 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminDisputes from "./pages/admin/AdminDisputes";
 import AdminKYC from "./pages/admin/AdminKYC";
+import AdminVerifications from "./pages/admin/AdminVerifications";
 
 // Agent
 import AgentDashboard from "./pages/agent/AgentDashboard";
@@ -74,6 +75,7 @@ import ApiAccess from "./pages/ApiAccess";
 import ApiLanding from "./pages/ApiLanding";
 import PaymentCallback from "./pages/PaymentCallback";
 import NYSCHousing from "./pages/NYSCHousing";
+import Verify from "./pages/Verify";
 import VulnerabilityDisclosure from "./pages/VulnerabilityDisclosure";
 import PublicLayout from "./components/PublicLayout";
 import ResetPassword from "./pages/ResetPassword";
@@ -127,6 +129,7 @@ const App = () => (
               <Route path="/vulnerability-disclosure" element={<VulnerabilityDisclosure />} />
               <Route path="/api-docs" element={<ApiDocs />} />
               <Route path="/api-access" element={<ApiLanding />} />
+              <Route path="/verify" element={<Verify />} />
             </Route>
 
             {/* Admin Portal */}
@@ -141,6 +144,7 @@ const App = () => (
             <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><MessagesPage /></ProtectedRoute>} />
             <Route path="/admin/disputes" element={<ProtectedRoute requiredRole="admin"><AdminDisputes /></ProtectedRoute>} />
             <Route path="/admin/kyc" element={<ProtectedRoute requiredRole="admin"><AdminKYC /></ProtectedRoute>} />
+            <Route path="/admin/verifications" element={<ProtectedRoute requiredRole="admin"><AdminVerifications /></ProtectedRoute>} />
 
             {/* Agent Portal */}
             <Route path="/agent" element={<ProtectedRoute requiredRole="agent"><AgentDashboard /></ProtectedRoute>} />
