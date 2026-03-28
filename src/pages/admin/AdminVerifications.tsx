@@ -141,10 +141,10 @@ const AdminVerifications = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Search by name, email, CAC, license..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" onKeyDown={(e) => e.key === "Enter" && fetchVerifications()} />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[180px]"><SelectValue placeholder="All statuses" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="pending_review">Pending Review</SelectItem>
                   <SelectItem value="under_manual_review">Under Review</SelectItem>
                   <SelectItem value="approved">Approved</SelectItem>
@@ -152,10 +152,10 @@ const AdminVerifications = () => {
                   <SelectItem value="needs_resubmission">Needs Resubmission</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <Select value={typeFilter || "all"} onValueChange={(v) => setTypeFilter(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[160px]"><SelectValue placeholder="All types" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="customer">Customer</SelectItem>
                   <SelectItem value="owner">Owner</SelectItem>
                   <SelectItem value="agent">Agent</SelectItem>
