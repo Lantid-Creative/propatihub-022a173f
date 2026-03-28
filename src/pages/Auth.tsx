@@ -116,8 +116,13 @@ const Auth = () => {
           const newFailedAttempts = failedAttempts + 1;
           setFailedAttempts(newFailedAttempts);
           
+          // Detect email not confirmed
+          if (error.message?.toLowerCase().includes("email not confirmed")) {
+            setEmailNotConfirmed(true);
+          }
+          
           if (newFailedAttempts >= 5) {
-            const cooldown = 30 * 1000; // 30 seconds
+            const cooldown = 30 * 1000;
             setLockoutUntil(Date.now() + cooldown);
             setFailedAttempts(0);
             toast({
@@ -131,6 +136,7 @@ const Auth = () => {
 
         setFailedAttempts(0);
         setLockoutUntil(null);
+        setEmailNotConfirmed(false);
         
         // Fetch role and redirect
         const { data: { user } } = await supabase.auth.getUser();
