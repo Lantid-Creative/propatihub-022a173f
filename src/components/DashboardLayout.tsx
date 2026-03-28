@@ -31,7 +31,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         { label: "Agencies", href: "/admin/agencies", icon: Building },
         { label: "Messages", href: "/admin/messages", icon: MessageSquare },
         { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
-        { label: "KYC Verification", href: "/admin/kyc", icon: Shield },
+        { label: "Verifications", href: "/admin/verifications", icon: ShieldCheck },
         { label: "Disputes", href: "/admin/disputes", icon: Scale },
         { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
         { label: "Settings", href: "/admin/settings", icon: Settings },

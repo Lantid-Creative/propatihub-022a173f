@@ -144,7 +144,7 @@ const App = () => (
             <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><MessagesPage /></ProtectedRoute>} />
             <Route path="/admin/disputes" element={<ProtectedRoute requiredRole="admin"><AdminDisputes /></ProtectedRoute>} />
-            <Route path="/admin/kyc" element={<ProtectedRoute requiredRole="admin"><AdminKYC /></ProtectedRoute>} />
+            <Route path="/admin/kyc" element={<ProtectedRoute requiredRole="admin"><AdminVerifications /></ProtectedRoute>} />
             <Route path="/admin/verifications" element={<ProtectedRoute requiredRole="admin"><AdminVerifications /></ProtectedRoute>} />
 
             {/* Agent Portal */}

@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShieldCheck, ShieldAlert, Search, Eye, CheckCircle, XCircle, RotateCcw, Loader2, User, Building2, FileText, Clock, Filter } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Search, Eye, CheckCircle, XCircle, RotateCcw, Loader2, User, Building2, FileText, Clock, Filter, Camera } from "lucide-react";
 import { STATUS_LABELS, STATUS_COLORS, type VerificationProfile, type VerificationAuditLog, type BiometricVerification } from "@/types/verification";
 import { format } from "date-fns";
 
@@ -292,37 +292,65 @@ const AdminVerifications = () => {
                     {(selectedVerification.verification_documents || []).length === 0 ? (
                       <p className="text-center text-muted-foreground py-8">No documents uploaded</p>
                     ) : (
-                      selectedVerification.verification_documents!.map((doc) => (
-                        <div key={doc.id} className="flex items-center gap-3 p-3 rounded-lg border">
-                          <FileText className="w-5 h-5 text-primary shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium capitalize">{doc.document_type.replace(/_/g, " ")}</p>
-                            <p className="text-xs text-muted-foreground">{doc.file_name}</p>
-                          </div>
-                          {doc.signed_url && (
-                            <Button variant="outline" size="sm" asChild>
-                              <a href={doc.signed_url} target="_blank" rel="noopener noreferrer">View</a>
-                            </Button>
-                          )}
-                        </div>
-                      ))
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {selectedVerification.verification_documents!.map((doc) => {
+                          const isImage = doc.mime_type?.startsWith("image/") || /\.(jpg|jpeg|png|webp)$/i.test(doc.file_name);
+                          return (
+                            <div key={doc.id} className="rounded-lg border overflow-hidden">
+                              {isImage && doc.signed_url ? (
+                                <a href={doc.signed_url} target="_blank" rel="noopener noreferrer">
+                                  <img src={doc.signed_url} alt={doc.document_type} className="w-full h-40 object-cover bg-muted" />
+                                </a>
+                              ) : doc.signed_url ? (
+                                <div className="w-full h-40 bg-muted flex items-center justify-center">
+                                  <FileText className="w-10 h-10 text-muted-foreground/40" />
+                                </div>
+                              ) : null}
+                              <div className="p-3 flex items-center justify-between">
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium capitalize truncate">{doc.document_type.replace(/_/g, " ")}</p>
+                                  <p className="text-xs text-muted-foreground truncate">{doc.file_name}</p>
+                                </div>
+                                {doc.signed_url && (
+                                  <Button variant="outline" size="sm" asChild className="shrink-0 ml-2">
+                                    <a href={doc.signed_url} target="_blank" rel="noopener noreferrer">Open</a>
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </TabsContent>
 
                   <TabsContent value="biometrics" className="mt-4 space-y-3">
                     {biometricResults.length === 0 ? (
-                      <p className="text-center text-muted-foreground py-8">No biometric attempts</p>
+                      <div className="text-center py-8">
+                        <Camera className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                        <p className="text-muted-foreground text-sm">
+                          {selectedVerification.verification_type === "customer"
+                            ? "Not required for buyer/bidder verification"
+                            : "No biometric attempts recorded"}
+                        </p>
+                      </div>
                     ) : (
                       biometricResults.map((b) => (
-                        <div key={b.id} className="p-3 rounded-lg border space-y-2">
+                        <div key={b.id} className="p-3 rounded-lg border space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium">Attempt #{b.attempt_number}</span>
                             <Badge variant={b.liveness_passed ? "default" : "destructive"} className="text-xs">
                               {b.liveness_passed ? "Passed" : "Failed"}
                             </Badge>
                           </div>
+                          {b.image_path && (
+                            <div className="w-24 h-24 rounded-lg overflow-hidden border bg-muted">
+                              <img src={b.image_path} alt="Liveness capture" className="w-full h-full object-cover" />
+                            </div>
+                          )}
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>Liveness Score: <strong>{b.liveness_score ? (b.liveness_score * 100).toFixed(1) + "%" : "—"}</strong></div>
+                            <div>Face Match: <strong>{b.face_match_score ? (b.face_match_score * 100).toFixed(1) + "%" : "—"}</strong></div>
                             <div>Date: {format(new Date(b.created_at), "MMM d, yyyy HH:mm")}</div>
                           </div>
                           {b.error_message && <p className="text-xs text-destructive">{b.error_message}</p>}
