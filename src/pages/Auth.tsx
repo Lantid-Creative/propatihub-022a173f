@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Building2, User, Home, Users, ArrowLeft, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Building2, User, Home, Users, ArrowLeft, ArrowRight, Mail } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import logoLight from "@/assets/logo-light.png";
 
@@ -60,6 +60,32 @@ const Auth = () => {
   const { toast } = useToast();
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast({ title: "Enter your email first", variant: "destructive" });
+      return;
+    }
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resend({ type: "signup", email });
+      if (error) throw error;
+      toast({
+        title: "Verification email sent!",
+        description: "Please check your inbox and click the link to verify your account.",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Failed to resend",
+        description: err.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setResending(false);
+    }
+  };
 
   const checkLockout = () => {
     if (lockoutUntil && Date.now() < lockoutUntil) {
@@ -90,8 +116,13 @@ const Auth = () => {
           const newFailedAttempts = failedAttempts + 1;
           setFailedAttempts(newFailedAttempts);
           
+          // Detect email not confirmed
+          if (error.message?.toLowerCase().includes("email not confirmed")) {
+            setEmailNotConfirmed(true);
+          }
+          
           if (newFailedAttempts >= 5) {
-            const cooldown = 30 * 1000; // 30 seconds
+            const cooldown = 30 * 1000;
             setLockoutUntil(Date.now() + cooldown);
             setFailedAttempts(0);
             toast({
@@ -105,6 +136,7 @@ const Auth = () => {
 
         setFailedAttempts(0);
         setLockoutUntil(null);
+        setEmailNotConfirmed(false);
         
         // Fetch role and redirect
         const { data: { user } } = await supabase.auth.getUser();
@@ -262,6 +294,29 @@ const Auth = () => {
                   {loading ? "Please wait..." : "Sign In"}
                 </Button>
               </form>
+
+              {emailNotConfirmed && (
+                <div className="mt-4 p-4 rounded-lg border border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/20 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Mail className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Email not verified</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Please check your inbox for the verification link. If you didn't receive it, click below to resend.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-950/40"
+                    onClick={handleResendVerification}
+                    disabled={resending}
+                  >
+                    {resending ? "Sending..." : "Resend Verification Email"}
+                  </Button>
+                </div>
+              )}
               <p className="text-center text-sm text-muted-foreground font-body mt-6">
                 Don't have an account?{" "}
                 <button onClick={() => { setIsLogin(false); setSignupStep(1); }} className="text-accent font-medium hover:underline">
