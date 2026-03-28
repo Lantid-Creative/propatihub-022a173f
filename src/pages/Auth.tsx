@@ -60,6 +60,32 @@ const Auth = () => {
   const { toast } = useToast();
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast({ title: "Enter your email first", variant: "destructive" });
+      return;
+    }
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resend({ type: "signup", email });
+      if (error) throw error;
+      toast({
+        title: "Verification email sent!",
+        description: "Please check your inbox and click the link to verify your account.",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Failed to resend",
+        description: err.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setResending(false);
+    }
+  };
 
   const checkLockout = () => {
     if (lockoutUntil && Date.now() < lockoutUntil) {
