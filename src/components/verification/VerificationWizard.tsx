@@ -189,7 +189,9 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       if (currentStepConfig.id === "documents") {
         const vid = currentVerification?.id;
         if (!vid) throw new Error("Verification not found");
-        for (const [docType, file] of Object.entries(uploadedFiles)) {
+        const entries = Object.entries(uploadedFiles);
+        for (let i = 0; i < entries.length; i++) {
+          const [docType, file] = entries[i];
           await uploadDocument(vid, docType, file);
         }
       }
