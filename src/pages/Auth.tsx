@@ -70,18 +70,37 @@ const Auth = () => {
     }
     setResending(true);
     try {
-      const { error } = await supabase.auth.resend({ type: "signup", email });
-      if (error) throw error;
+      // First try the Brevo edge function for branded email
+      const { error: fnError } = await supabase.functions.invoke("send-auth-email", {
+        body: { type: "signup", email, name: "", confirmation_url: `${window.location.origin}/auth` },
+      });
+      
+      // Fallback to Supabase resend if edge function fails
+      if (fnError) {
+        const { error } = await supabase.auth.resend({ type: "signup", email });
+        if (error) throw error;
+      }
+      
       toast({
         title: "Verification email sent!",
         description: "Please check your inbox and click the link to verify your account.",
       });
     } catch (err: any) {
-      toast({
-        title: "Failed to resend",
-        description: err.message || "Please try again later.",
-        variant: "destructive",
-      });
+      // Final fallback
+      try {
+        const { error } = await supabase.auth.resend({ type: "signup", email });
+        if (error) throw error;
+        toast({
+          title: "Verification email sent!",
+          description: "Please check your inbox and click the link to verify your account.",
+        });
+      } catch (fallbackErr: any) {
+        toast({
+          title: "Failed to resend",
+          description: fallbackErr.message || "Please try again later.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setResending(false);
     }
