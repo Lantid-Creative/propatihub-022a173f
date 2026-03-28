@@ -73,7 +73,7 @@ const UserDashboard = () => {
           <ShieldCheck className="w-4 h-4 text-green-600" />
           <span className="font-body text-xs text-green-700 dark:text-green-400">Identity Verified — Full access enabled</span>
         </div>
-      )
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {cards.map((s) => (
