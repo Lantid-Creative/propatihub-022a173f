@@ -78,6 +78,7 @@ import VulnerabilityDisclosure from "./pages/VulnerabilityDisclosure";
 import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 import GoToTopButton from "./components/GoToTopButton";
+import PageTracker from "./components/PageTracker";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +90,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <AuthProvider>
+          <PageTracker />
           <GoToTopButton />
           <Routes>
             <Route path="/" element={<Index />} />
