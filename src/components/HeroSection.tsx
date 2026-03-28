@@ -20,10 +20,10 @@ const HeroSection = () => {
       <Navbar />
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-16">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-primary-foreground text-center max-w-4xl leading-[1.1] mb-5">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white text-center max-w-4xl leading-[1.1] mb-5">
           Just ask <span className="text-accent">PropatiHub</span>
         </h1>
-        <p className="text-primary-foreground/80 font-body text-lg md:text-xl text-center max-w-xl mb-10">
+        <p className="text-white/80 font-body text-lg md:text-xl text-center max-w-xl mb-10">
           Find homes to buy or rent and check house prices
         </p>
 
