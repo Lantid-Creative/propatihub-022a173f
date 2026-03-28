@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Building2, User, Home, Users, ArrowLeft, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Building2, User, Home, Users, ArrowLeft, ArrowRight, Mail } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import logoLight from "@/assets/logo-light.png";
 
