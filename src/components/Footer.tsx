@@ -173,7 +173,7 @@ const Footer = () => {
       <div className="border-t border-background/10">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 rounded-xl bg-white dark:bg-white/95 px-4 py-3">
               <Link to="/" className="shrink-0">
                 <img src={logoDark} alt="PropatiHub" className="h-6 w-auto opacity-60" />
               </Link>
