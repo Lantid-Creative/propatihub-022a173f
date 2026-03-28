@@ -120,7 +120,6 @@ export interface VerificationStepConfig {
 export const VERIFICATION_STEPS: Record<VerificationType, VerificationStepConfig[]> = {
   customer: [
     { id: "identity", title: "Identity Details", description: "Your basic identity information", icon: "User" },
-    { id: "liveness", title: "Face Verification", description: "Quick live face scan", icon: "ScanFace" },
     { id: "review", title: "Review & Submit", description: "Confirm and submit", icon: "CheckCircle" },
   ],
   owner: [
