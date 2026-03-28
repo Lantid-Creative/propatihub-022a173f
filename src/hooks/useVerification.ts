@@ -184,7 +184,7 @@ export function useVerification(verificationType: VerificationType) {
     restartVerification,
     uploadDocument,
     uploadSelfie,
-    refetch: fetchVerification,
+    refetch: () => fetchVerification(true),
   };
 }
 
