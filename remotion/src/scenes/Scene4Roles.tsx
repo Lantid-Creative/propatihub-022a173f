@@ -38,18 +38,16 @@ export const Scene4Roles = () => {
   const { fps, width, height } = useVideoConfig();
   const isP = height > width;
 
-  // Each role gets 150 frames
   const sectionDur = 150;
   const currentSection = Math.min(Math.floor(frame / sectionDur), 3);
   const sectionFrame = frame - currentSection * sectionDur;
 
-  // Progress dots
   const dotOp = fade(frame, 10);
 
   return (
-    <AbsoluteFill style={{ background: `linear-gradient(180deg, ${C.cream}, #F0EDE6)`, padding: isP ? 40 : 70 }}>
+    <AbsoluteFill style={{ background: `linear-gradient(180deg, ${C.cream}, #F0EDE6)`, padding: isP ? 60 : 70 }}>
       {/* Section indicator dots */}
-      <div style={{ position: 'absolute', top: isP ? 30 : 25, right: isP ? 30 : 70, display: 'flex', gap: 8, opacity: dotOp }}>
+      <div style={{ position: 'absolute', top: isP ? 40 : 25, right: isP ? 40 : 70, display: 'flex', gap: 8, opacity: dotOp }}>
         {roles.map((_, i) => (
           <div key={i} style={{
             width: i === currentSection ? 24 : 8, height: 8, borderRadius: 4,
@@ -65,16 +63,16 @@ export const Scene4Roles = () => {
 
         return (
           <div key={ri} style={{ opacity: titleSp }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: isP ? 15 : 20 }}>
-              <div style={{ width: isP ? 44 : 52, height: isP ? 44 : 52, borderRadius: 12, background: role.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isP ? 22 : 26 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: isP ? 25 : 20 }}>
+              <div style={{ width: isP ? 64 : 52, height: isP ? 64 : 52, borderRadius: 12, background: role.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isP ? 32 : 26 }}>
                 {role.icon}
               </div>
-              <div style={{ fontFamily: heading, fontSize: isP ? 30 : 40, fontWeight: 800, color: C.greenDark, transform: `translateY(${interpolate(titleSp, [0, 1], [20, 0])}px)` }}>
+              <div style={{ fontFamily: heading, fontSize: isP ? 52 : 40, fontWeight: 800, color: C.greenDark, transform: `translateY(${interpolate(titleSp, [0, 1], [20, 0])}px)` }}>
                 {role.title}
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: isP ? 12 : 16, marginLeft: isP ? 0 : 64 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isP ? 18 : 16, marginLeft: isP ? 0 : 64 }}>
               {role.features.map((feat, fi) => {
                 const fOp = fade(sectionFrame, 20 + fi * 18);
                 const fY = slideUp(sectionFrame, 20 + fi * 18, 18, 25);
@@ -82,13 +80,13 @@ export const Scene4Roles = () => {
                   <div key={fi} style={{
                     opacity: fOp, transform: `translateY(${fY}px)`,
                     display: 'flex', alignItems: 'center', gap: 14,
-                    background: C.white, borderRadius: 10, padding: isP ? '14px 18px' : '18px 24px',
+                    background: C.white, borderRadius: 10, padding: isP ? '20px 24px' : '18px 24px',
                     boxShadow: '0 2px 12px rgba(0,0,0,0.06)', borderLeft: `3px solid ${role.color}`,
                   }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: role.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ color: C.white, fontFamily: heading, fontSize: 13, fontWeight: 700 }}>{fi + 1}</span>
+                    <div style={{ width: isP ? 36 : 28, height: isP ? 36 : 28, borderRadius: '50%', background: role.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ color: C.white, fontFamily: heading, fontSize: isP ? 18 : 13, fontWeight: 700 }}>{fi + 1}</span>
                     </div>
-                    <span style={{ fontFamily: body, fontSize: isP ? 13 : 15, color: '#444' }}>{feat}</span>
+                    <span style={{ fontFamily: body, fontSize: isP ? 24 : 15, color: '#444' }}>{feat}</span>
                   </div>
                 );
               })}

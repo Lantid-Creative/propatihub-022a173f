@@ -33,7 +33,6 @@ export const Scene8API = () => {
   const isP = height > width;
   const titleSp = spring({ frame: frame - 5, fps, config: { damping: 15 } });
 
-  // Typing effect — reveal lines over time
   const visibleLines = Math.min(Math.floor(interpolate(frame, [40, 220], [0, codeLines.length], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })), codeLines.length);
 
   const useCases = [
@@ -43,35 +42,34 @@ export const Scene8API = () => {
   ];
 
   return (
-    <AbsoluteFill style={{ padding: isP ? 40 : 70 }}>
+    <AbsoluteFill style={{ padding: isP ? 60 : 70 }}>
       <div style={{ opacity: titleSp, transform: `translateY(${interpolate(titleSp, [0, 1], [30, 0])}px)` }}>
-        <div style={{ fontFamily: heading, fontSize: isP ? 32 : 42, fontWeight: 800, color: C.gold }}>
+        <div style={{ fontFamily: heading, fontSize: isP ? 52 : 42, fontWeight: 800, color: C.gold }}>
           Property Data API
         </div>
-        <div style={{ fontFamily: body, fontSize: isP ? 13 : 15, color: C.gray, marginTop: 6 }}>
+        <div style={{ fontFamily: body, fontSize: isP ? 24 : 15, color: C.gray, marginTop: 8 }}>
           Programmatic access to verified property data — for agencies, agents & developers
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: isP ? 'column' : 'row', gap: isP ? 20 : 30, marginTop: isP ? 20 : 35 }}>
+      <div style={{ display: 'flex', flexDirection: isP ? 'column' : 'row', gap: isP ? 24 : 30, marginTop: isP ? 25 : 35 }}>
         {/* Code block */}
         <div style={{
           flex: isP ? 'none' : 1,
-          background: '#0D1117', borderRadius: 12, padding: isP ? 16 : 20,
+          background: '#0D1117', borderRadius: 12, padding: isP ? 22 : 20,
           border: '1px solid #30363D', opacity: fade(frame, 25),
         }}>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+          <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+            <div style={{ width: isP ? 14 : 10, height: isP ? 14 : 10, borderRadius: '50%', background: '#ff5f57' }} />
+            <div style={{ width: isP ? 14 : 10, height: isP ? 14 : 10, borderRadius: '50%', background: '#febc2e' }} />
+            <div style={{ width: isP ? 14 : 10, height: isP ? 14 : 10, borderRadius: '50%', background: '#28c840' }} />
           </div>
           {codeLines.slice(0, visibleLines).map((line, i) => (
-            <div key={i} style={{ fontFamily: mono, fontSize: isP ? 10 : 12, color: line.color || C.white, lineHeight: 1.7 }}>
+            <div key={i} style={{ fontFamily: mono, fontSize: isP ? 18 : 12, color: line.color || C.white, lineHeight: 1.7 }}>
               {line.text || '\u00A0'}
             </div>
           ))}
-          {/* Cursor blink */}
-          <span style={{ fontFamily: mono, fontSize: isP ? 10 : 12, color: C.gold, opacity: Math.sin(frame * 0.15) > 0 ? 1 : 0 }}>▌</span>
+          <span style={{ fontFamily: mono, fontSize: isP ? 18 : 12, color: C.gold, opacity: Math.sin(frame * 0.15) > 0 ? 1 : 0 }}>▌</span>
         </div>
 
         {/* Use cases + pricing */}
@@ -82,11 +80,11 @@ export const Scene8API = () => {
             return (
               <div key={i} style={{
                 opacity: op, transform: `translateY(${y}px)`,
-                background: C.darkCard, borderRadius: 10, padding: '14px 18px',
-                marginBottom: 10, borderLeft: `3px solid ${C.gold}`,
+                background: C.darkCard, borderRadius: 10, padding: isP ? '18px 22px' : '14px 18px',
+                marginBottom: isP ? 14 : 10, borderLeft: `3px solid ${C.gold}`,
               }}>
-                <div style={{ fontFamily: heading, fontSize: 14, fontWeight: 700, color: C.white }}>{uc.title}</div>
-                <div style={{ fontFamily: body, fontSize: 11, color: C.gray, marginTop: 3 }}>{uc.desc}</div>
+                <div style={{ fontFamily: heading, fontSize: isP ? 22 : 14, fontWeight: 700, color: C.white }}>{uc.title}</div>
+                <div style={{ fontFamily: body, fontSize: isP ? 18 : 11, color: C.gray, marginTop: 4 }}>{uc.desc}</div>
               </div>
             );
           })}
@@ -94,10 +92,10 @@ export const Scene8API = () => {
           <div style={{
             opacity: fade(frame, 220),
             background: C.gold + '20', border: `1px solid ${C.gold}`, borderRadius: 10,
-            padding: '14px 18px', marginTop: 16,
+            padding: isP ? '18px 22px' : '14px 18px', marginTop: 18,
           }}>
-            <div style={{ fontFamily: heading, fontSize: 14, fontWeight: 700, color: C.gold }}>API Pricing</div>
-            <div style={{ fontFamily: body, fontSize: 12, color: C.grayLight, marginTop: 4 }}>₦10,000/month per LGA — access verified property data programmatically</div>
+            <div style={{ fontFamily: heading, fontSize: isP ? 22 : 14, fontWeight: 700, color: C.gold }}>API Pricing</div>
+            <div style={{ fontFamily: body, fontSize: isP ? 18 : 12, color: C.grayLight, marginTop: 4 }}>₦10,000/month per LGA — access verified property data programmatically</div>
           </div>
         </div>
       </div>
