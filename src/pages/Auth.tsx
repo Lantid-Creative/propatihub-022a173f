@@ -294,6 +294,29 @@ const Auth = () => {
                   {loading ? "Please wait..." : "Sign In"}
                 </Button>
               </form>
+
+              {emailNotConfirmed && (
+                <div className="mt-4 p-4 rounded-lg border border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/20 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Mail className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Email not verified</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Please check your inbox for the verification link. If you didn't receive it, click below to resend.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-950/40"
+                    onClick={handleResendVerification}
+                    disabled={resending}
+                  >
+                    {resending ? "Sending..." : "Resend Verification Email"}
+                  </Button>
+                </div>
+              )}
               <p className="text-center text-sm text-muted-foreground font-body mt-6">
                 Don't have an account?{" "}
                 <button onClick={() => { setIsLogin(false); setSignupStep(1); }} className="text-accent font-medium hover:underline">
