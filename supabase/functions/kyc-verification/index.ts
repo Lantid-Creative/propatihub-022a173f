@@ -213,7 +213,8 @@ Deno.serve(async (req) => {
       const { verification_id, session_id } = body as any;
 
       const azureKey = Deno.env.get("AZURE_FACE_API_KEY");
-      const azureEndpoint = Deno.env.get("AZURE_FACE_API_ENDPOINT");
+      const azureEndpointRaw2 = Deno.env.get("AZURE_FACE_API_ENDPOINT");
+      const azureEndpoint = azureEndpointRaw2?.endsWith("/") ? azureEndpointRaw2 : `${azureEndpointRaw2}/`;
       const livenessThreshold = parseFloat(Deno.env.get("KYC_LIVENESS_THRESHOLD") || "0.95");
 
       if (!azureKey || !azureEndpoint) {
