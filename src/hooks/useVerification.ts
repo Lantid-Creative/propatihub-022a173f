@@ -128,7 +128,7 @@ export function useVerification(verificationType: VerificationType) {
     });
     if (dbError) throw dbError;
 
-    await fetchVerification();
+    await fetchVerification(true);
   };
 
   const uploadSelfie = async (
@@ -170,7 +170,7 @@ export function useVerification(verificationType: VerificationType) {
       .eq("id", verificationId);
     if (profileError) throw profileError;
 
-    await fetchVerification();
+    await fetchVerification(true);
   };
 
   return {
