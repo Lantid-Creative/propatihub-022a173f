@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShieldCheck, ShieldAlert, Search, Eye, CheckCircle, XCircle, RotateCcw, Loader2, User, Building2, FileText, Clock, Filter } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Search, Eye, CheckCircle, XCircle, RotateCcw, Loader2, User, Building2, FileText, Clock, Filter, Camera } from "lucide-react";
 import { STATUS_LABELS, STATUS_COLORS, type VerificationProfile, type VerificationAuditLog, type BiometricVerification } from "@/types/verification";
 import { format } from "date-fns";
 
