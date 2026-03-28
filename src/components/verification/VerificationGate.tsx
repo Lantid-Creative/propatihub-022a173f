@@ -14,11 +14,12 @@ interface VerificationGateProps {
 }
 
 const VerificationGate = ({ children, verificationType, actionLabel = "this feature" }: VerificationGateProps) => {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const navigate = useNavigate();
   const { isVerified, status, loading } = useVerificationStatus(verificationType);
 
   if (!user) return <>{children}</>;
+  if (hasRole("admin")) return <>{children}</>;
   if (loading) return <div className="flex items-center justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
   if (isVerified) return <>{children}</>;
 
