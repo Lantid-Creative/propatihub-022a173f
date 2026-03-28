@@ -632,7 +632,7 @@ function maskValue(value: string): string {
 
 async function sendBrevoEmail(to: string, template: string, vars: Record<string, string>) {
   const brevoKey = Deno.env.get("BREVO_API_KEY");
-  const fromName = Deno.env.get("BREVO_FROM_NAME") || "Propatihub";
+  const fromName = Deno.env.get("BREVO_FROM_NAME") || "PropatiHub";
   const fromEmail = Deno.env.get("BREVO_FROM") || "info@propatihub.com";
 
   if (!brevoKey) {
@@ -640,54 +640,110 @@ async function sendBrevoEmail(to: string, template: string, vars: Record<string,
     return;
   }
 
+  const SITE_URL = "https://propatihub.lovable.app";
+  const B = {
+    primary: "#1f5f3f",
+    primaryLight: "#e8f5ee",
+    accent: "#d4922e",
+    fg: "#162a1f",
+    muted: "#6b7d72",
+    bg: "#faf8f4",
+    white: "#ffffff",
+    border: "#e5e0d6",
+    radius: "12px",
+  };
+
+  const wrap = (body: string) => `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:${B.bg};font-family:'DM Sans',Inter,-apple-system,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${B.bg};padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${B.white};border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+<tr><td style="background:linear-gradient(135deg,${B.primary} 0%,#2a7a54 100%);padding:28px 40px;text-align:center;">
+<h1 style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:700;color:${B.white};">pro<span style="color:${B.accent};">pati</span><span style="font-size:13px;vertical-align:super;color:${B.accent};">HUB</span></h1>
+</td></tr>
+<tr><td style="padding:36px 40px;">${body}</td></tr>
+<tr><td style="padding:20px 40px;background:${B.primaryLight};border-top:1px solid ${B.border};text-align:center;">
+<p style="margin:0;font-size:12px;color:${B.muted};">
+<a href="${SITE_URL}/terms" style="color:${B.primary};text-decoration:none;">Terms</a> · <a href="${SITE_URL}/privacy" style="color:${B.primary};text-decoration:none;">Privacy</a> · <a href="${SITE_URL}/contact" style="color:${B.primary};text-decoration:none;">Support</a>
+</p>
+<p style="margin:8px 0 0;font-size:11px;color:#b0b5b2;">© ${new Date().getFullYear()} PropatiHub. All rights reserved.</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+  const btn = (text: string, url: string, color = B.primary) =>
+    `<table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0;"><tr><td align="center"><a href="${url}" style="display:inline-block;background:${color};color:${B.white};padding:14px 36px;border-radius:${B.radius};text-decoration:none;font-weight:600;font-size:15px;box-shadow:0 4px 12px rgba(31,95,63,0.2);">${text}</a></td></tr></table>`;
+
+  const g = (name: string) => `<p style="font-size:16px;color:${B.fg};line-height:1.6;margin:0 0 14px;">Hi ${name},</p>`;
+  const p = (text: string) => `<p style="font-size:15px;color:${B.fg};line-height:1.7;margin:0 0 14px;">${text}</p>`;
+
   const subjects: Record<string, string> = {
-    verification_started: "Your Identity Verification Has Started",
-    submission_received: "Verification Submitted — Under Review",
-    verification_approved: "✅ Your Identity Has Been Verified",
-    verification_rejected: "Verification Update — Action Required",
-    resubmission_requested: "Verification Update — Resubmission Needed",
+    verification_started: "🔐 Your Identity Verification Has Started — PropatiHub",
+    submission_received: "📋 Verification Submitted — Under Review",
+    verification_approved: "✅ Identity Verified — Full Access Unlocked",
+    verification_rejected: "⚠️ Verification Update — Action Required",
+    resubmission_requested: "📝 Verification Update — Resubmission Needed",
   };
 
   const bodies: Record<string, string> = {
-    verification_started: `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#fff;">
-      <div style="text-align:center;margin-bottom:32px;"><img src="https://propatihub.com/logo.png" alt="PropatiHub" style="height:40px;" /></div>
-      <h1 style="font-size:24px;color:#1a1a1a;margin-bottom:16px;">Verification Started</h1>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Hi ${vars.name},</p>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Your ${vars.verificationType} identity verification is underway. Complete all required steps to unlock full platform access.</p>
-      <div style="margin:32px 0;text-align:center;"><a href="https://propatihub.com/dashboard" style="background:#2563eb;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Continue Verification</a></div>
-      <p style="font-size:13px;color:#999;margin-top:32px;">— The PropatiHub Team</p></div>`,
-    submission_received: `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#fff;">
-      <div style="text-align:center;margin-bottom:32px;"><img src="https://propatihub.com/logo.png" alt="PropatiHub" style="height:40px;" /></div>
-      <h1 style="font-size:24px;color:#1a1a1a;margin-bottom:16px;">Submission Received</h1>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Hi ${vars.name},</p>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">We've received your ${vars.verificationType} verification submission. Our team will review it within 24 hours.</p>
-      <p style="font-size:13px;color:#999;margin-top:32px;">— The PropatiHub Team</p></div>`,
-    verification_approved: `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#fff;">
-      <div style="text-align:center;margin-bottom:32px;"><img src="https://propatihub.com/logo.png" alt="PropatiHub" style="height:40px;" /></div>
-      <h1 style="font-size:24px;color:#1a1a1a;margin-bottom:16px;">✅ Verified Successfully</h1>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Hi ${vars.name},</p>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Your identity has been verified. You now have full access to all platform features.</p>
-      <div style="margin:32px 0;text-align:center;"><a href="https://propatihub.com/dashboard" style="background:#16a34a;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Go to Dashboard</a></div>
-      <p style="font-size:13px;color:#999;margin-top:32px;">— The PropatiHub Team</p></div>`,
-    verification_rejected: `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#fff;">
-      <div style="text-align:center;margin-bottom:32px;"><img src="https://propatihub.com/logo.png" alt="PropatiHub" style="height:40px;" /></div>
-      <h1 style="font-size:24px;color:#1a1a1a;margin-bottom:16px;">Verification Update</h1>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Hi ${vars.name},</p>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Unfortunately, your verification could not be approved. Reason: <strong>${vars.reason}</strong></p>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">You may resubmit your verification with corrected information.</p>
-      <div style="margin:32px 0;text-align:center;"><a href="https://propatihub.com/dashboard" style="background:#2563eb;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Resubmit Verification</a></div>
-      <p style="font-size:13px;color:#999;margin-top:32px;">— The PropatiHub Team</p></div>`,
-    resubmission_requested: `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#fff;">
-      <div style="text-align:center;margin-bottom:32px;"><img src="https://propatihub.com/logo.png" alt="PropatiHub" style="height:40px;" /></div>
-      <h1 style="font-size:24px;color:#1a1a1a;margin-bottom:16px;">Resubmission Required</h1>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">Hi ${vars.name},</p>
-      <p style="font-size:16px;color:#4a4a4a;line-height:1.6;">We need some updates to your verification: <strong>${vars.reason}</strong></p>
-      <div style="margin:32px 0;text-align:center;"><a href="https://propatihub.com/dashboard" style="background:#2563eb;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;">Update Verification</a></div>
-      <p style="font-size:13px;color:#999;margin-top:32px;">— The PropatiHub Team</p></div>`,
+    verification_started: wrap(`
+      ${g(vars.name)}
+      ${p(`Your <strong>${vars.verificationType}</strong> identity verification has been initiated. Complete all required steps to unlock full platform access.`)}
+      ${p("This usually takes just a few minutes. Have your ID document ready.")}
+      ${btn("Continue Verification", `${SITE_URL}/verify`)}
+      <p style="font-size:13px;color:${B.muted};margin-top:20px;padding-top:14px;border-top:1px solid ${B.border};">Need help? <a href="${SITE_URL}/contact" style="color:${B.primary};">Contact our support team</a></p>
+    `),
+    submission_received: wrap(`
+      ${g(vars.name)}
+      ${p(`We've received your <strong>${vars.verificationType}</strong> verification submission. Our team will review it within <strong>24 hours</strong>.`)}
+      ${p("You'll receive an email notification once the review is complete.")}
+      <div style="background:${B.primaryLight};border-left:4px solid ${B.primary};padding:16px;border-radius:0 8px 8px 0;margin:20px 0;">
+        <p style="margin:0;font-size:14px;color:${B.fg};">💡 <strong>Tip:</strong> Make sure your notification settings are enabled so you don't miss our update.</p>
+      </div>
+      <p style="font-size:13px;color:${B.muted};margin-top:20px;padding-top:14px;border-top:1px solid ${B.border};">— The PropatiHub Verification Team</p>
+    `),
+    verification_approved: wrap(`
+      ${g(vars.name)}
+      <div style="text-align:center;margin:24px 0;">
+        <div style="display:inline-block;background:#dcfce7;border-radius:50%;padding:16px;">
+          <span style="font-size:40px;">✅</span>
+        </div>
+      </div>
+      ${p("Congratulations! Your identity has been <strong>successfully verified</strong>. You now have full access to all PropatiHub features.")}
+      ${p("You can now:")}
+      <ul style="font-size:15px;color:${B.fg};line-height:2.2;padding-left:20px;margin:0 0 16px;">
+        <li>Place bids on auction properties</li>
+        <li>Message verified agents directly</li>
+        <li>List properties for sale or rent</li>
+        <li>Access escrow and digital contracts</li>
+      </ul>
+      ${btn("Go to Dashboard", `${SITE_URL}/dashboard`, "#16a34a")}
+      <p style="font-size:13px;color:${B.muted};margin-top:20px;padding-top:14px;border-top:1px solid ${B.border};">— The PropatiHub Team</p>
+    `),
+    verification_rejected: wrap(`
+      ${g(vars.name)}
+      ${p("We were unable to approve your verification submission. Here's why:")}
+      <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:16px;border-radius:0 8px 8px 0;margin:20px 0;">
+        <p style="margin:0;font-size:14px;color:#991b1b;"><strong>Reason:</strong> ${vars.reason}</p>
+      </div>
+      ${p("You can resubmit your verification with corrected information. Please review the reason above and make the necessary changes.")}
+      ${btn("Resubmit Verification", `${SITE_URL}/verify`)}
+      <p style="font-size:13px;color:${B.muted};margin-top:20px;padding-top:14px;border-top:1px solid ${B.border};">Need help? <a href="${SITE_URL}/contact" style="color:${B.primary};">Contact support</a></p>
+    `),
+    resubmission_requested: wrap(`
+      ${g(vars.name)}
+      ${p("We need some updates to your verification submission before we can proceed:")}
+      <div style="background:${B.primaryLight};border-left:4px solid ${B.accent};padding:16px;border-radius:0 8px 8px 0;margin:20px 0;">
+        <p style="margin:0;font-size:14px;color:${B.fg};"><strong>What's needed:</strong> ${vars.reason}</p>
+      </div>
+      ${p("Please update your submission at your earliest convenience.")}
+      ${btn("Update Verification", `${SITE_URL}/verify`)}
+      <p style="font-size:13px;color:${B.muted};margin-top:20px;padding-top:14px;border-top:1px solid ${B.border};">— The PropatiHub Verification Team</p>
+    `),
   };
 
   try {
-    await fetch("https://api.brevo.com/v3/smtp/email", {
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
         "api-key": brevoKey,
@@ -696,10 +752,13 @@ async function sendBrevoEmail(to: string, template: string, vars: Record<string,
       body: JSON.stringify({
         sender: { name: fromName, email: fromEmail },
         to: [{ email: to }],
-        subject: subjects[template] || "PropatiHub Verification Update",
+        subject: subjects[template] || "PropatiHub — Verification Update",
         htmlContent: bodies[template] || bodies.submission_received,
       }),
     });
+    if (!res.ok) {
+      console.error("Brevo error:", res.status, await res.text());
+    }
   } catch (e) {
     console.error("Brevo email error:", e);
   }
