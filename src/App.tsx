@@ -76,6 +76,7 @@ import ApiLanding from "./pages/ApiLanding";
 import PaymentCallback from "./pages/PaymentCallback";
 import NYSCHousing from "./pages/NYSCHousing";
 import Verify from "./pages/Verify";
+import UserVerification from "./pages/user/UserVerification";
 import VulnerabilityDisclosure from "./pages/VulnerabilityDisclosure";
 import PublicLayout from "./components/PublicLayout";
 import ResetPassword from "./pages/ResetPassword";
@@ -179,6 +180,7 @@ const App = () => (
             <Route path="/dashboard/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
             <Route path="/dashboard/tenancy" element={<ProtectedRoute><TenantPortal /></ProtectedRoute>} />
             <Route path="/dashboard/property-management" element={<ProtectedRoute><PropertyManagement /></ProtectedRoute>} />
+            <Route path="/dashboard/verification" element={<ProtectedRoute><UserVerification /></ProtectedRoute>} />
             <Route path="/tenant-portal" element={<ProtectedRoute><TenantPortal /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
