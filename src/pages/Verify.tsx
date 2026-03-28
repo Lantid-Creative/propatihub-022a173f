@@ -22,13 +22,24 @@ const Verify = () => {
   }, [user, loading, navigate]);
 
   const autoType = useMemo<VerificationType | undefined>(() => {
-    if (rolesLoading || roles.length === 0) return undefined;
-    // Pick the most specific role (agency > agent > user)
-    for (const role of ["agency", "agent", "user", "admin"] as const) {
-      if (roles.includes(role)) return roleToVerificationType[role];
+    if (rolesLoading) return undefined;
+
+    // 1. Check metadata account_type first (more specific for buyer vs owner)
+    const metadataType = user?.user_metadata?.account_type;
+    if (metadataType === "owner") return "owner";
+    if (metadataType === "buyer") return "customer";
+    if (metadataType === "agent") return "agent";
+    if (metadataType === "agency") return "agency";
+
+    // 2. Fallback to roles
+    if (roles.length > 0) {
+      for (const role of ["agency", "agent", "user", "admin"] as const) {
+        if (roles.includes(role)) return roleToVerificationType[role];
+      }
     }
+    
     return "customer";
-  }, [roles, rolesLoading]);
+  }, [user, roles, rolesLoading]);
 
   if (!user || rolesLoading) {
     return (

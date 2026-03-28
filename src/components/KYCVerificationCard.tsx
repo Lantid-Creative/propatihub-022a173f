@@ -13,7 +13,7 @@ interface KYCVerificationCardProps {
 const KYCVerificationCard = ({ compact }: KYCVerificationCardProps) => {
   const { accountType } = useAuth();
   const navigate = useNavigate();
-  const verType = (accountType === "buyer" ? "customer" : accountType) as any || "customer";
+  const verType = (accountType === "buyer" ? "customer" : accountType) || "customer";
   const { status, isVerified, loading } = useVerificationStatus(verType);
 
   if (loading) return null;

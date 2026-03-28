@@ -11,6 +11,7 @@ interface AuthContextType {
   rolesLoading: boolean;
   roles: AppRole[];
   profile: any;
+  accountType: "buyer" | "agent" | "agency" | "owner" | null;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
 }
@@ -24,15 +25,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [rolesLoading, setRolesLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [accountType, setAccountType] = useState<"buyer" | "agent" | "agency" | "owner" | null>(null);
 
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = async (userId: string, currentUser?: User) => {
     setRolesLoading(true);
+    
+    // Prioritize metadata if available
+    const metaType = currentUser?.user_metadata?.account_type;
+    if (metaType) {
+      setAccountType(metaType as any);
+    }
+
     const [rolesRes, profileRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("*").eq("user_id", userId).single(),
     ]);
+    
     if (rolesRes.data) setRoles(rolesRes.data.map((r) => r.role as AppRole));
-    if (profileRes.data) setProfile(profileRes.data);
+    
+    if (profileRes.data) {
+      setProfile(profileRes.data);
+    }
+    
     setRolesLoading(false);
   };
 
@@ -40,9 +54,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // First restore session from storage
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserData(session.user.id);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        fetchUserData(currentUser.id, currentUser);
       } else {
         setRolesLoading(false);
       }
@@ -53,13 +68,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        if (currentUser) {
           // Use setTimeout to avoid deadlock inside onAuthStateChange callback
-          setTimeout(() => fetchUserData(session.user.id), 0);
+          setTimeout(() => fetchUserData(currentUser.id, currentUser), 0);
         } else {
           setRoles([]);
           setProfile(null);
+          setAccountType(null);
           setRolesLoading(false);
         }
         setLoading(false);
@@ -76,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const hasRole = (role: AppRole) => roles.includes(role);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, profile, signOut, hasRole }}>
+    <AuthContext.Provider value={{ user, session, loading, rolesLoading, roles, profile, accountType, signOut, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

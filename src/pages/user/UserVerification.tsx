@@ -48,7 +48,7 @@ const typeLabels: Record<string, string> = {
 };
 
 const UserVerification = () => {
-  const { user } = useAuth();
+  const { user, accountType } = useAuth();
   const navigate = useNavigate();
   const [verifications, setVerifications] = useState<VerificationRecord[]>([]);
   const [loading, setLoading] = useState(true);
