@@ -47,6 +47,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
     restartVerification,
     uploadDocument,
     uploadSelfie,
+    refetch,
   } = useVerification(verType);
 
   const steps = useMemo(() => (selectedType ? VERIFICATION_STEPS[selectedType] : []), [selectedType]);
