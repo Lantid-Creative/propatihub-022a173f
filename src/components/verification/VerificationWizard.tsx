@@ -160,16 +160,18 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
     setSubmitting(true);
 
     try {
+      let currentVerification = verification;
+
       if (currentStepConfig.id === "identity" || currentStepConfig.id === "business" || currentStepConfig.id === "director") {
-        if (!verification) {
-          await createVerification(formData);
+        if (!currentVerification) {
+          currentVerification = await createVerification(formData);
         } else {
-          await saveStep(verification.id, currentStepConfig.id, formData);
+          currentVerification = await saveStep(currentVerification.id, currentStepConfig.id, formData);
         }
       }
 
       if (currentStepConfig.id === "documents") {
-        const vid = verification?.id;
+        const vid = currentVerification?.id;
         if (!vid) throw new Error("Verification not found");
         for (const [docType, file] of Object.entries(uploadedFiles)) {
           await uploadDocument(vid, docType, file);
@@ -177,8 +179,8 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       }
 
       if (isLastStep) {
-        if (!verification) throw new Error("Verification not found");
-        const result = await submitVerification(verification.id);
+        if (!currentVerification) throw new Error("Verification not found");
+        const result = await submitVerification(currentVerification.id);
         toast({
           title: result.autoApproved ? "✅ Verified!" : "Submitted for Review",
           description: result.autoApproved
