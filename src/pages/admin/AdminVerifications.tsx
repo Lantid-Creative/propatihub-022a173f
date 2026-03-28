@@ -277,7 +277,7 @@ const AdminVerifications = () => {
                       <DetailRow label="Phone" value={selectedVerification.phone || "—"} />
                       <DetailRow label="DOB" value={selectedVerification.date_of_birth || "—"} />
                       <DetailRow label="ID Type" value={selectedVerification.id_type || "—"} />
-                      <DetailRow label="ID Number" value={selectedVerification.id_number_masked || "—"} />
+                      <DetailRow label="ID Number (Full)" value={(selectedVerification as any).id_number_raw || selectedVerification.id_number_masked || "—"} />
                       {selectedVerification.residential_address && <DetailRow label="Address" value={selectedVerification.residential_address} />}
                       {selectedVerification.agent_license_number && <DetailRow label="License #" value={selectedVerification.agent_license_number} />}
                       {selectedVerification.business_name && <DetailRow label="Business" value={selectedVerification.business_name} />}

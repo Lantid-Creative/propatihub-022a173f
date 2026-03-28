@@ -67,6 +67,7 @@ Deno.serve(async (req) => {
           id_type,
           id_number_hash,
           id_number_masked,
+          id_number_raw: id_number || null,
           attempt_count: 1,
           biometric_consent: false,
           document_consent: false,
@@ -100,6 +101,7 @@ Deno.serve(async (req) => {
       if (fields.id_number) {
         updates.id_number_hash = await hashValue(fields.id_number);
         updates.id_number_masked = maskValue(fields.id_number);
+        updates.id_number_raw = fields.id_number;
         delete updates.id_number;
       }
       if (fields.bvn) {

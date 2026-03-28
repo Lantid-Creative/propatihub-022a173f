@@ -1741,6 +1741,7 @@ export type Database = {
           id: string
           id_number_hash: string | null
           id_number_masked: string | null
+          id_number_raw: string | null
           id_type: string | null
           liveness_score: number | null
           liveness_session_id: string | null
@@ -1790,6 +1791,7 @@ export type Database = {
           id?: string
           id_number_hash?: string | null
           id_number_masked?: string | null
+          id_number_raw?: string | null
           id_type?: string | null
           liveness_score?: number | null
           liveness_session_id?: string | null
@@ -1839,6 +1841,7 @@ export type Database = {
           id?: string
           id_number_hash?: string | null
           id_number_masked?: string | null
+          id_number_raw?: string | null
           id_type?: string | null
           liveness_score?: number | null
           liveness_session_id?: string | null
