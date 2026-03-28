@@ -1,106 +1,43 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { loadFont } from "@remotion/google-fonts/PlayfairDisplay";
-import { loadFont as loadBody } from "@remotion/google-fonts/DMSans";
+import { loadFont } from "@remotion/google-fonts/Montserrat";
+import { loadFont as loadBody } from "@remotion/google-fonts/Inter";
+import { C, fade, slideUp } from "../lib";
 
-const { fontFamily: displayFont } = loadFont("normal", { weights: ["700"], subsets: ["latin"] });
-const { fontFamily: bodyFont } = loadBody("normal", { weights: ["400", "500"], subsets: ["latin"] });
+const { fontFamily: heading } = loadFont();
+const { fontFamily: body } = loadBody();
 
 export const Scene1Hook = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
+  const isP = height > width;
 
-  // Logo mark animation
-  const logoScale = spring({ frame, fps, config: { damping: 15, stiffness: 80 } });
-  const logoRotate = interpolate(logoScale, [0, 1], [90, 0]);
-
-  // Title reveal
-  const titleSpring = spring({ frame: frame - 20, fps, config: { damping: 20, stiffness: 100 } });
+  const iconScale = spring({ frame: frame - 15, fps, config: { damping: 12 } });
+  const titleSpring = spring({ frame: frame - 30, fps, config: { damping: 15 } });
   const titleY = interpolate(titleSpring, [0, 1], [60, 0]);
-  const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1]);
-
-  // Tagline
-  const tagSpring = spring({ frame: frame - 45, fps, config: { damping: 25 } });
-  const tagOpacity = interpolate(tagSpring, [0, 1], [0, 1]);
-  const tagY = interpolate(tagSpring, [0, 1], [30, 0]);
-
-  // Gold line
-  const lineWidth = interpolate(frame, [30, 70], [0, 300], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-
-  // Floating house icon shapes
-  const shape1Y = Math.sin(frame * 0.04) * 12;
-  const shape2Y = Math.cos(frame * 0.03) * 15;
+  const tagOp = fade(frame, 60);
+  const tagY = slideUp(frame, 60);
+  const urlOp = fade(frame, 90);
+  const lineW = interpolate(frame, [0, 50], [0, isP ? 200 : 350], { extrapolateRight: 'clamp' });
+  const float = Math.sin(frame * 0.03) * 5;
+  const gridOp = fade(frame, 20, 40);
 
   return (
-    <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-      {/* Decorative shapes */}
-      <div style={{
-        position: "absolute", top: 180, left: 200,
-        width: 80, height: 80,
-        border: "2px solid hsla(38, 80%, 55%, 0.25)",
-        transform: `translateY(${shape1Y}px) rotate(45deg)`,
-      }} />
-      <div style={{
-        position: "absolute", bottom: 200, right: 250,
-        width: 60, height: 60,
-        background: "hsla(152, 45%, 30%, 0.15)",
-        borderRadius: 12,
-        transform: `translateY(${shape2Y}px) rotate(12deg)`,
-      }} />
-      <div style={{
-        position: "absolute", top: 300, right: 350,
-        width: 40, height: 40,
-        borderRadius: "50%",
-        border: "2px solid hsla(38, 80%, 55%, 0.2)",
-        transform: `translateY(${shape2Y * -1}px)`,
-      }} />
-
-      {/* Logo mark - house icon */}
-      <div style={{
-        transform: `scale(${logoScale}) rotate(${logoRotate}deg)`,
-        marginBottom: 30,
-      }}>
-        <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-          <path d="M50 10 L90 45 L90 90 L10 90 L10 45 Z" stroke="hsl(38, 80%, 55%)" strokeWidth="3" fill="hsla(38, 80%, 55%, 0.1)" />
-          <rect x="38" y="55" width="24" height="35" rx="3" stroke="hsl(38, 80%, 55%)" strokeWidth="2.5" fill="none" />
-          <circle cx="50" cy="30" r="8" stroke="hsl(152, 45%, 40%)" strokeWidth="2" fill="hsla(152, 45%, 40%, 0.2)" />
+    <AbsoluteFill style={{ justifyContent: 'center', alignItems: isP ? 'center' : 'flex-start', padding: isP ? 40 : 80 }}>
+      <div style={{ position: 'absolute', inset: 0, opacity: gridOp * 0.06, backgroundImage: 'repeating-linear-gradient(0deg, #D4942A 0 1px, transparent 1px 60px), repeating-linear-gradient(90deg, #D4942A 0 1px, transparent 1px 60px)' }} />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: isP ? 'center' : 'flex-start', textAlign: isP ? 'center' : 'left', marginLeft: isP ? 0 : 80 }}>
+        <div style={{ width: lineW, height: 3, background: C.gold, marginBottom: 30 }} />
+        <svg width={isP ? 70 : 56} height={isP ? 70 : 56} viewBox="0 0 24 24" fill={C.gold} style={{ transform: `scale(${iconScale}) translateY(${float}px)`, marginBottom: 15 }}>
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
-      </div>
-
-      {/* Title */}
-      <div style={{
-        fontFamily: displayFont,
-        fontSize: 90,
-        fontWeight: 700,
-        color: "hsl(40, 33%, 97%)",
-        transform: `translateY(${titleY}px)`,
-        opacity: titleOpacity,
-        letterSpacing: -2,
-      }}>
-        Propati<span style={{ color: "hsl(38, 80%, 55%)" }}>Hub</span>
-      </div>
-
-      {/* Gold line */}
-      <div style={{
-        width: lineWidth,
-        height: 3,
-        background: "linear-gradient(90deg, transparent, hsl(38, 80%, 55%), transparent)",
-        marginTop: 15,
-        marginBottom: 20,
-        borderRadius: 2,
-      }} />
-
-      {/* Tagline */}
-      <div style={{
-        fontFamily: bodyFont,
-        fontSize: 28,
-        color: "hsla(40, 33%, 97%, 0.7)",
-        transform: `translateY(${tagY}px)`,
-        opacity: tagOpacity,
-        fontWeight: 400,
-        letterSpacing: 4,
-        textTransform: "uppercase",
-      }}>
-        Nigeria's Trusted Property Platform
+        <div style={{ fontFamily: heading, fontSize: isP ? 64 : 82, fontWeight: 800, color: C.white, letterSpacing: -3, opacity: titleSpring, transform: `translateY(${titleY}px)` }}>
+          PropatiHub
+        </div>
+        <div style={{ fontFamily: body, fontSize: isP ? 20 : 24, color: C.goldLight, opacity: tagOp, transform: `translateY(${tagY}px)`, marginTop: 8 }}>
+          Nigeria's Trusted Property Platform
+        </div>
+        <div style={{ fontFamily: body, fontSize: 15, color: C.gold, opacity: urlOp, marginTop: 30, letterSpacing: 3, textTransform: 'uppercase' }}>
+          propatihub.com
+        </div>
       </div>
     </AbsoluteFill>
   );

@@ -1,129 +1,58 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
-import { loadFont } from "@remotion/google-fonts/PlayfairDisplay";
-import { loadFont as loadBody } from "@remotion/google-fonts/DMSans";
+import { loadFont } from "@remotion/google-fonts/Montserrat";
+import { loadFont as loadBody } from "@remotion/google-fonts/Inter";
+import { C, fade, slideUp } from "../lib";
 
-const { fontFamily: displayFont } = loadFont("normal", { weights: ["700"], subsets: ["latin"] });
-const { fontFamily: bodyFont } = loadBody("normal", { weights: ["400", "600"], subsets: ["latin"] });
+const { fontFamily: heading } = loadFont();
+const { fontFamily: body } = loadBody();
 
-const painPoints = [
-  "Endless searching with no results",
-  "Unverified listings & scam risks",
-  "No protection for your deposits",
+const problems = [
+  { title: "Unverified Listings", desc: "Over 60% of online listings are inaccurate or outright scams" },
+  { title: "No Deposit Protection", desc: "Tenants lose billions in caution fees with zero recourse" },
+  { title: "No Legal Framework", desc: "Most tenancies operate without proper contracts" },
+  { title: "Fragmented Market", desc: "Property data scattered across WhatsApp and classifieds" },
+  { title: "Zero Transparency", desc: "No structured dispute resolution when things go wrong" },
 ];
 
 export const Scene2Problem = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const headingSpring = spring({ frame, fps, config: { damping: 20 } });
-  const headingX = interpolate(headingSpring, [0, 1], [-80, 0]);
-  const headingOpacity = interpolate(headingSpring, [0, 1], [0, 1]);
+  const { fps, width, height } = useVideoConfig();
+  const isP = height > width;
+  const titleSpring = spring({ frame: frame - 5, fps, config: { damping: 15 } });
 
   return (
-    <AbsoluteFill style={{ justifyContent: "center", padding: "0 140px" }}>
-      {/* Left side - big text */}
-      <div style={{ display: "flex", gap: 100, alignItems: "center" }}>
-        <div style={{ flex: 1 }}>
-          <div style={{
-            fontFamily: displayFont,
-            fontSize: 64,
-            fontWeight: 700,
-            color: "hsl(40, 33%, 97%)",
-            lineHeight: 1.15,
-            transform: `translateX(${headingX}px)`,
-            opacity: headingOpacity,
-          }}>
-            Finding property
-            <br />
-            in Nigeria is
-            <br />
-            <span style={{ color: "hsl(38, 80%, 55%)" }}>broken.</span>
-          </div>
-        </div>
-
-        {/* Right side - pain points */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 30 }}>
-          {painPoints.map((point, i) => {
-            const delay = 25 + i * 20;
-            const s = spring({ frame: frame - delay, fps, config: { damping: 18 } });
-            const x = interpolate(s, [0, 1], [60, 0]);
-            const opacity = interpolate(s, [0, 1], [0, 1]);
-
-            return (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 20,
-                  transform: `translateX(${x}px)`,
-                  opacity,
-                }}
-              >
-                <div style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "hsl(0, 70%, 55%)",
-                  flexShrink: 0,
-                }} />
-                <div style={{
-                  fontFamily: bodyFont,
-                  fontSize: 26,
-                  color: "hsla(40, 33%, 97%, 0.8)",
-                  fontWeight: 400,
-                }}>
-                  {point}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Strike-through animation */}
-          {(() => {
-            const strikeWidth = interpolate(frame, [90, 120], [0, 100], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            });
-            return (
-              <div style={{
-                position: "absolute",
-                top: "50%",
-                right: 0,
-                width: `${strikeWidth}%`,
-                height: 3,
-                background: "linear-gradient(90deg, transparent, hsl(0, 70%, 55%), hsl(0, 70%, 55%))",
-                transform: "translateY(-50%)",
-                opacity: 0.5,
-              }} />
-            );
-          })()}
+    <AbsoluteFill style={{ padding: isP ? 50 : 80 }}>
+      <div style={{ opacity: titleSpring, transform: `translateY(${interpolate(titleSpring, [0, 1], [30, 0])}px)` }}>
+        <div style={{ fontFamily: heading, fontSize: isP ? 38 : 46, fontWeight: 800, color: C.gold }}>The Challenge</div>
+        <div style={{ fontFamily: body, fontSize: isP ? 15 : 17, color: C.gray, marginTop: 8, maxWidth: 600 }}>
+          Nigeria's real estate market is plagued by fraud, opacity, and broken trust.
         </div>
       </div>
-
-      {/* Bottom text */}
-      {(() => {
-        const s = spring({ frame: frame - 100, fps, config: { damping: 20 } });
-        const opacity = interpolate(s, [0, 1], [0, 1]);
-        const y = interpolate(s, [0, 1], [30, 0]);
-        return (
-          <div style={{
-            position: "absolute",
-            bottom: 100,
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            fontFamily: displayFont,
-            fontSize: 42,
-            fontWeight: 700,
-            color: "hsl(152, 45%, 45%)",
-            opacity,
-            transform: `translateY(${y}px)`,
-          }}>
-            Until now.
+      <div style={{ display: 'flex', flexDirection: isP ? 'column' : 'row', flexWrap: 'wrap', gap: isP ? 14 : 20, marginTop: isP ? 30 : 50 }}>
+        {problems.map((p, i) => {
+          const delay = 40 + i * 30;
+          const op = fade(frame, delay, 25);
+          const x = slideUp(frame, delay, 25, 30);
+          return (
+            <div key={i} style={{
+              opacity: op, transform: `translateY(${x}px)`,
+              background: C.darkCard, borderLeft: `3px solid ${C.red}`, borderRadius: 8,
+              padding: isP ? '14px 18px' : '18px 24px', width: isP ? '100%' : 'calc(50% - 10px)',
+            }}>
+              <div style={{ fontFamily: heading, fontSize: isP ? 15 : 17, fontWeight: 700, color: C.white, marginBottom: 4 }}>{p.title}</div>
+              <div style={{ fontFamily: body, fontSize: isP ? 12 : 13, color: C.gray }}>{p.desc}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', gap: isP ? 30 : 60, marginTop: isP ? 20 : 40, justifyContent: isP ? 'center' : 'flex-start' }}>
+        {[{ v: "₦2.5T", l: "Market Value" }, { v: "17M", l: "Housing Deficit" }, { v: "60%", l: "Fake Listings" }].map((s, i) => (
+          <div key={i} style={{ opacity: fade(frame, 200 + i * 20), textAlign: 'center' }}>
+            <div style={{ fontFamily: heading, fontSize: isP ? 24 : 30, fontWeight: 800, color: C.gold }}>{s.v}</div>
+            <div style={{ fontFamily: body, fontSize: 11, color: C.gray }}>{s.l}</div>
           </div>
-        );
-      })()}
+        ))}
+      </div>
     </AbsoluteFill>
   );
 };
