@@ -28,6 +28,7 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
   const [submitting, setSubmitting] = useState(false);
   const [livenessActive, setLivenessActive] = useState(false);
   const [livenessResult, setLivenessResult] = useState<{ passed: boolean; score: number } | null>(null);
+  const [livenessError, setLivenessError] = useState<string | null>(null);
   
   // Form fields
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -168,7 +169,6 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
       }
 
       if (currentStepConfig.id === "documents") {
-        // Upload files
         const vid = verification?.id;
         if (!vid) throw new Error("Verification not found");
         for (const [docType, file] of Object.entries(uploadedFiles)) {
@@ -204,18 +204,16 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
   const handleLiveness = async () => {
     if (!verification) return;
     setLivenessActive(true);
+    setLivenessError(null);
 
     try {
       const session = await createLivenessSession(verification.id);
-      
-      // Simulate liveness check (in production, this would use Azure SDK)
-      // For now, we'll do a camera capture approach
+
       toast({
         title: "Face Verification",
         description: "Position your face in the frame and follow the prompts.",
       });
 
-      // After Azure liveness session completes, verify result
       const result = await verifyLivenessResult(verification.id, session.sessionId);
       setLivenessResult(result);
 
@@ -231,9 +229,11 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
         });
       }
     } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Liveness verification failed";
+      setLivenessError(message);
       toast({
-        title: "Error",
-        description: e instanceof Error ? e.message : "Liveness verification failed",
+        title: "Face verification unavailable",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -408,6 +408,12 @@ const VerificationWizard = ({ defaultType, onComplete }: VerificationWizardProps
               <li>• Good lighting helps accuracy</li>
             </ul>
           </div>
+          {livenessError && (
+            <div className="max-w-md mx-auto rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-left">
+              <p className="text-sm font-medium text-foreground">Face verification is unavailable right now</p>
+              <p className="mt-1 text-sm text-muted-foreground">{livenessError}</p>
+            </div>
+          )}
           <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Your data is encrypted and processed securely</span>

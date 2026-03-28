@@ -142,11 +142,10 @@ Deno.serve(async (req) => {
       const { verification_id } = body as any;
 
       const azureKey = Deno.env.get("AZURE_FACE_API_KEY");
-      const azureEndpointRaw = Deno.env.get("AZURE_FACE_API_ENDPOINT");
-      const azureEndpoint = azureEndpointRaw?.endsWith("/") ? azureEndpointRaw : `${azureEndpointRaw}/`;
+      const azureEndpoint = normalizeAzureEndpoint(Deno.env.get("AZURE_FACE_API_ENDPOINT"));
 
       if (!azureKey || !azureEndpoint) {
-        return jsonResponse({ error: "Azure Face API not configured" }, 500);
+        return jsonResponse({ error: "Azure Face API is not configured correctly." }, 500);
       }
 
       // Record consent
@@ -179,8 +178,12 @@ Deno.serve(async (req) => {
 
       if (!sessionResponse.ok) {
         const errText = await sessionResponse.text();
+        const azureError = mapAzureFaceError(errText, "Failed to create liveness session.");
         console.error("Azure session creation failed:", errText);
-        return jsonResponse({ error: "Failed to create liveness session" }, 500);
+        return jsonResponse({
+          error: azureError.message,
+          code: azureError.code,
+        }, azureError.status);
       }
 
       const sessionData = await sessionResponse.json();
@@ -213,12 +216,11 @@ Deno.serve(async (req) => {
       const { verification_id, session_id } = body as any;
 
       const azureKey = Deno.env.get("AZURE_FACE_API_KEY");
-      const azureEndpointRaw2 = Deno.env.get("AZURE_FACE_API_ENDPOINT");
-      const azureEndpoint = azureEndpointRaw2?.endsWith("/") ? azureEndpointRaw2 : `${azureEndpointRaw2}/`;
+      const azureEndpoint = normalizeAzureEndpoint(Deno.env.get("AZURE_FACE_API_ENDPOINT"));
       const livenessThreshold = parseFloat(Deno.env.get("KYC_LIVENESS_THRESHOLD") || "0.95");
 
       if (!azureKey || !azureEndpoint) {
-        return jsonResponse({ error: "Azure Face API not configured" }, 500);
+        return jsonResponse({ error: "Azure Face API is not configured correctly." }, 500);
       }
 
       // Get session result from Azure
@@ -231,8 +233,12 @@ Deno.serve(async (req) => {
 
       if (!resultResponse.ok) {
         const errText = await resultResponse.text();
+        const azureError = mapAzureFaceError(errText, "Failed to fetch liveness result.");
         console.error("Azure result fetch failed:", errText);
-        return jsonResponse({ error: "Failed to fetch liveness result" }, 500);
+        return jsonResponse({
+          error: azureError.message,
+          code: azureError.code,
+        }, azureError.status);
       }
 
       const result = await resultResponse.json();
@@ -561,6 +567,49 @@ function jsonResponse(data: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+function normalizeAzureEndpoint(value?: string | null) {
+  if (!value) return null;
+  return value.endsWith("/") ? value : `${value}/`;
+}
+
+function mapAzureFaceError(raw: string, fallbackMessage: string) {
+  const parsed = safeJsonParse(raw);
+  const error = parsed?.error;
+  const innerMessage = error?.innererror?.message as string | undefined;
+  const message = error?.message as string | undefined;
+  const combined = `${message || ""} ${innerMessage || ""}`.toLowerCase();
+
+  if (combined.includes("face.f0") || combined.includes("do not have access to this operation")) {
+    return {
+      status: 422,
+      code: "AZURE_FACE_TIER_UNSUPPORTED",
+      message: "Your Azure Face API resource is on a tier that does not support liveness detection. Upgrade it to Face S0 and try again.",
+    };
+  }
+
+  if (combined.includes("unsupportedfeature") || combined.includes("livenessdetection") || combined.includes("apply for access")) {
+    return {
+      status: 422,
+      code: "AZURE_LIVENESS_NOT_ENABLED",
+      message: "Azure liveness detection is not enabled for this Face resource yet. Apply for LivenessDetection access in Azure, then retry.",
+    };
+  }
+
+  return {
+    status: 502,
+    code: error?.code || "AZURE_FACE_ERROR",
+    message: message || fallbackMessage,
+  };
+}
+
+function safeJsonParse(value: string) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
 }
 
 async function hashValue(value: string): Promise<string> {
