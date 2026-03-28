@@ -566,6 +566,22 @@ Deno.serve(async (req) => {
           .order("created_at", { ascending: false }),
       ]);
 
+      // Generate signed URLs for documents
+      const docsWithSignedUrls = await Promise.all(
+        (verificationRes.data?.verification_documents || []).map(async (doc: any) => {
+          if (!doc.file_path) return doc;
+          const bucket = doc.document_type.includes("business") || doc.document_type.includes("cac")
+            ? "verification-business-documents"
+            : doc.document_type.includes("selfie") || doc.document_type.includes("liveness")
+            ? "verification-selfies"
+            : "verification-id-documents";
+          const { data: signedUrl } = await adminClient.storage
+            .from(bucket)
+            .createSignedUrl(doc.file_path, 300);
+          return { ...doc, signed_url: signedUrl?.signedUrl || null };
+        })
+      );
+
       // Generate signed URLs for biometric images
       const biometricsWithUrls = await Promise.all(
         (biometricRes.data || []).map(async (b: any) => {
@@ -577,10 +593,15 @@ Deno.serve(async (req) => {
         })
       );
 
+      // Fetch user email/phone
+      const { data: userDataRes } = await adminClient.auth.admin.getUserById(
+        verificationRes.data.user_id
+      );
+
       return jsonResponse({
-        verification: { ...verificationRes.data, verification_documents: docsWithUrls },
-        user_email: userData?.user?.email,
-        user_phone: userData?.user?.phone,
+        verification: { ...verificationRes.data, verification_documents: docsWithSignedUrls },
+        user_email: userDataRes?.user?.email,
+        user_phone: userDataRes?.user?.phone,
         audit_logs: auditRes.data,
         biometric_results: biometricsWithUrls,
       });
