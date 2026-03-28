@@ -61,7 +61,11 @@ const DisputeManager = ({ tenancies, role, onDisputeFiled }: DisputeManagerProps
 
   const handleFile = async () => {
     if (!form.subject || !form.description || !form.tenancy_id) {
-      toast({ title: "Fill in all required fields", variant: "destructive" });
+      toast({ 
+        title: "Required Information Missing", 
+        description: "Please ensure all required fields are filled out before submitting your dispute.", 
+        variant: "destructive" 
+      });
       return;
     }
     setFiling(true);
@@ -80,9 +84,17 @@ const DisputeManager = ({ tenancies, role, onDisputeFiled }: DisputeManagerProps
     } as any);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Dispute Submission Error", 
+        description: error.message || "We encountered an issue while logging your dispute. Please try again or contact support.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Dispute filed", description: "Our team will review your complaint and respond shortly." });
+      toast({ 
+        title: "Dispute Successfully Filed", 
+        description: "Your complaint has been logged. Our mediation team will review the details and contact all parties involved.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setShowForm(false);
       setForm({ tenancy_id: "", category: "general", subject: "", description: "", priority: "medium" });
       fetchDisputes();

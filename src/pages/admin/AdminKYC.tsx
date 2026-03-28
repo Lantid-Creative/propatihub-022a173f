@@ -58,7 +58,11 @@ const AdminKYC = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "System Error", 
+        description: error.message || "We could not retrieve the KYC records at this time. Please refresh the page.", 
+        variant: "destructive" 
+      });
       setLoading(false);
       return;
     }
@@ -99,9 +103,17 @@ const AdminKYC = () => {
       .eq("id", record.id);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Approval Error", 
+        description: error.message || "We encountered an issue while approving this identity. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Approved", description: `KYC for ${record.profile_name || "user"} has been verified.` });
+      toast({ 
+        title: "Identity Verified Successfully", 
+        description: `Identity verification for ${record.profile_name || "the user"} has been approved and finalized.`,
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setSelected(null);
       fetchRecords();
     }
@@ -110,7 +122,11 @@ const AdminKYC = () => {
 
   const handleReject = async (record: KYCRecord) => {
     if (!rejectReason.trim()) {
-      toast({ title: "Required", description: "Please provide a reason for rejection.", variant: "destructive" });
+      toast({ 
+        title: "Rejection Reason Required", 
+        description: "Please provide a clear reason for rejecting this identity verification to inform the user.", 
+        variant: "destructive" 
+      });
       return;
     }
     setProcessing(true);
@@ -125,9 +141,16 @@ const AdminKYC = () => {
       .eq("id", record.id);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Rejection Error", 
+        description: error.message || "We encountered an issue while rejecting this identity. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Rejected", description: `KYC for ${record.profile_name || "user"} has been rejected.` });
+      toast({ 
+        title: "Identity Verification Rejected", 
+        description: `Identification for ${record.profile_name || "the user"} has been rejected. The user will be notified of the reason.`,
+      });
       setSelected(null);
       setRejectReason("");
       fetchRecords();

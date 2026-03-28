@@ -58,14 +58,54 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+
+  const checkLockout = () => {
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const remainingSeconds = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      toast({
+        title: "Account Temporarily Locked",
+        description: `Too many failed attempts. Please try again in ${remainingSeconds} seconds.`,
+        variant: "destructive",
+      });
+      return true;
+    }
+    return false;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (isLogin) {
+        if (checkLockout()) {
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        
+        if (error) {
+          const newFailedAttempts = failedAttempts + 1;
+          setFailedAttempts(newFailedAttempts);
+          
+          if (newFailedAttempts >= 5) {
+            const cooldown = 30 * 1000; // 30 seconds
+            setLockoutUntil(Date.now() + cooldown);
+            setFailedAttempts(0);
+            toast({
+              title: "Security Alert",
+              description: "Multiple failed login attempts detected. Cooldown period activated for your protection.",
+              variant: "destructive",
+            });
+          }
+          throw error;
+        }
+
+        setFailedAttempts(0);
+        setLockoutUntil(null);
+        
         // Fetch role and redirect
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -94,10 +134,19 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast({ title: "Account created!", description: "Check your email to verify your account." });
+        toast({ 
+          title: "Welcome to PropatiHub!", 
+          description: "Your account has been created successfully. Please check your email to verify your account, then sign in below.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
+        resetSignup(); // This will set isLogin(true) and reset other signup states
       }
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ 
+        title: "Authentication Error", 
+        description: err.message || "Something went wrong while processing your request. Please try again.", 
+        variant: "destructive" 
+      });
     } finally {
       setLoading(false);
     }
@@ -195,8 +244,12 @@ const Auth = () => {
                         if (error) throw error;
                         toast({ title: "Check your email", description: "We've sent you a password reset link." });
                       } catch (err: any) {
-                        toast({ title: "Error", description: err.message, variant: "destructive" });
-                      } finally {
+                        toast({ 
+                            title: "Action Failed", 
+                            description: err.message || "We encountered an issue while processing your request. Please try again.", 
+                            variant: "destructive" 
+                        });
+                    } finally {
                         setLoading(false);
                       }
                     }}

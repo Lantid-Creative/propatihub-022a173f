@@ -46,7 +46,11 @@ const AdminProperties = () => {
 
   const updateStatus = async (id: string, status: "active" | "draft" | "inactive" | "pending" | "rented" | "sold") => {
     await supabase.from("properties").update({ status }).eq("id", id);
-    toast({ title: `Property marked as ${status}` });
+    toast({ 
+      title: "Status Updated", 
+      description: `The property status has been successfully changed to ${status}.`,
+      className: "bg-primary text-primary-foreground border-none",
+    });
     fetchProperties();
     if (selected?.id === id) setSelected({ ...selected, status });
   };
@@ -104,9 +108,17 @@ const AdminProperties = () => {
     setSaving(false);
 
     if (error) {
-      toast({ title: "Failed to save", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Update Failed", 
+        description: error.message || "We encountered an issue while saving the property details. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Property updated successfully" });
+      toast({ 
+        title: "Property Details Updated", 
+        description: "Standard property information and metadata have been successfully saved.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setEditing(false);
       setSelected({ ...selected, ...updates });
       fetchProperties();
@@ -180,7 +192,11 @@ const AdminProperties = () => {
               for (const id of ids) {
                 await supabase.from("properties").update({ status: "active" }).eq("id", id);
               }
-              toast({ title: `${ids.length} properties approved` });
+              toast({ 
+                title: "Bulk Approval Successful", 
+                description: `${ids.length} properties have been approved and published to the marketplace.`,
+                className: "bg-primary text-primary-foreground border-none",
+              });
               fetchProperties();
             }}
           >

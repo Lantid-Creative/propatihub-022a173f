@@ -61,9 +61,17 @@ const AdminDisputes = () => {
 
     const { error } = await supabase.from("disputes").update(updates).eq("id", id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Resolution Update Failed", 
+        description: error.message || "We encountered an issue while updating the dispute status. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Dispute updated" });
+      toast({ 
+        title: "Dispute Status Updated", 
+        description: `The dispute has been successfully marked as ${statusUpdate}.`,
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setResolvingId(null);
       setResolutionText("");
       setAdminNotes("");

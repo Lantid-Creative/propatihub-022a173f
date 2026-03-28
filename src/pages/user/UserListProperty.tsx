@@ -39,7 +39,11 @@ const UserListProperty = () => {
   const handleSubmit = async () => {
     if (!user) return;
     if (!form.title || !form.price || !form.city) {
-      toast({ title: "Missing fields", description: "Please fill in the title, price, and city.", variant: "destructive" });
+      toast({ 
+        title: "Required Information Missing", 
+        description: "Please provide a property title, price, and city to submit your listing.", 
+        variant: "destructive" 
+      });
       return;
     }
 
@@ -73,9 +77,17 @@ const UserListProperty = () => {
 
       if (error) throw error;
       setSubmitted(true);
-      toast({ title: "Property submitted!", description: "Your listing is pending review by our team." });
+      toast({ 
+        title: "Listing Successfully Submitted", 
+        description: "Thank you for listing with PropatiHub! Your property is now being reviewed by our team and will be live once verified.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ 
+        title: "Submission Error", 
+        description: err.message || "We encountered an issue while submitting your property. Please try again.", 
+        variant: "destructive" 
+      });
     } finally {
       setSubmitting(false);
     }

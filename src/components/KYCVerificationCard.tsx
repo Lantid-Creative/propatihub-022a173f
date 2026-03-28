@@ -41,7 +41,11 @@ const KYCVerificationCard = ({ onVerified, compact }: KYCVerificationCardProps) 
   const handleSubmit = async () => {
     if (!user) return;
     if (!bvn && !nin) {
-      toast({ title: "Required", description: "Enter your BVN or NIN to proceed.", variant: "destructive" });
+      toast({ 
+        title: "Identification Required", 
+        description: "Please provide either your BVN or NIN to proceed with identity verification.", 
+        variant: "destructive" 
+      });
       return;
     }
 
@@ -56,9 +60,17 @@ const KYCVerificationCard = ({ onVerified, compact }: KYCVerificationCardProps) 
     const { error } = await supabase.from("kyc_verifications").upsert(payload, { onConflict: "user_id" });
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Submission Error", 
+        description: error.message || "We encountered an issue while submitting your verification request. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "KYC Submitted", description: "Your identity verification is being processed." });
+      toast({ 
+        title: "Verification Request Submitted", 
+        description: "Thank you for verifying your identity. Our team will review your information within 24 hours.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setStatus("pending");
       onVerified?.();
     }

@@ -110,28 +110,48 @@ const BidSection = ({
 
   const handlePlaceBid = async () => {
     if (!user) {
-      toast({ title: "Sign in required", description: "Please sign in to place a bid.", variant: "destructive" });
+      toast({ 
+        title: "Authentication Required", 
+        description: "Please sign in to participate in this auction and place your bid.", 
+        variant: "destructive" 
+      });
       return;
     }
 
     if (kycStatus !== "verified") {
-      toast({ title: "KYC Required", description: "Complete your identity verification before bidding.", variant: "destructive" });
+      toast({ 
+        title: "Identity Verification Required", 
+        description: "To ensure a secure bidding environment, please complete your identity verification (KYC) before placing a bid.", 
+        variant: "destructive" 
+      });
       return;
     }
 
     const amount = parseInt(bidAmount.replace(/,/g, ""));
     if (isNaN(amount) || amount <= 0) {
-      toast({ title: "Invalid amount", description: "Please enter a valid bid amount.", variant: "destructive" });
+      toast({ 
+        title: "Invalid Bid Amount", 
+        description: "Please enter a valid numeric amount to place your bid.", 
+        variant: "destructive" 
+      });
       return;
     }
 
     if (reservePrice && amount < reservePrice) {
-      toast({ title: "Below reserve", description: `Bid must be at least ₦${reservePrice.toLocaleString()} (reserve price).`, variant: "destructive" });
+      toast({ 
+        title: "Bid Below Reserve Price", 
+        description: `Your bid must be at least ₦${reservePrice.toLocaleString()} to meet the seller's reserve price.`, 
+        variant: "destructive" 
+      });
       return;
     }
 
     if (highestBid > 0 && amount <= highestBid) {
-      toast({ title: "Bid too low", description: `Your bid must be higher than ₦${highestBid.toLocaleString()}.`, variant: "destructive" });
+      toast({ 
+        title: "Bid Increment Required", 
+        description: `To become the leading bidder, your offer must be higher than the current highest bid of ₦${highestBid.toLocaleString()}.`, 
+        variant: "destructive" 
+      });
       return;
     }
 
@@ -143,9 +163,17 @@ const BidSection = ({
     } as any);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Bidding Error", 
+        description: error.message || "We encountered an issue while placing your bid. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Bid placed!", description: `Your bid of ₦${amount.toLocaleString()} has been placed.` });
+      toast({ 
+        title: "Bid Placed Successfully", 
+        description: `Success! Your bid of ₦${amount.toLocaleString()} has been recorded. You are now the leading bidder.`,
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setBidAmount("");
       fetchBids();
     }

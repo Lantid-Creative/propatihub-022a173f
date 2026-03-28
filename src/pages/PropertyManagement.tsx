@@ -141,7 +141,11 @@ const PropertyManagement = () => {
 
   const handleInvite = async () => {
     if (!inviteForm.property_id || !inviteForm.tenant_email || !inviteForm.monthly_rent || !inviteForm.caution_fee || !inviteForm.lease_start) {
-      toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" });
+      toast({ 
+        title: "Incomplete Invitation", 
+        description: "Please ensure all required fields are filled out to send the invitation.", 
+        variant: "destructive" 
+      });
       return;
     }
     setInviting(true);
@@ -159,9 +163,17 @@ const PropertyManagement = () => {
     } as any);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Invitation Failed", 
+        description: error.message || "We encountered an error while sending the invitation. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Invitation sent!", description: `Tenant will receive an invitation to ${inviteForm.tenant_email}` });
+      toast({ 
+        title: "Invitation Sent Successfully", 
+        description: `Your invitation has been sent to ${inviteForm.tenant_email}. They will receive instructions to join PropatiHub shortly.`,
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setInviteOpen(false);
       setInviteForm({ property_id: "", tenant_email: "", tenant_name: "", monthly_rent: "", caution_fee: "", lease_start: "", lease_end: "", message: "" });
       fetchAll();
@@ -180,11 +192,16 @@ const PropertyManagement = () => {
 
       if (data?.success) {
         toast({
-          title: "Caution fee disbursed!",
-          description: `₦${data.amount?.toLocaleString()} transferred to ${data.recipient}. Ref: ${data.transfer_reference}`,
+          title: "Caution Fee Disbursed",
+          description: `A payout of ₦${data.amount?.toLocaleString()} has been successfully transferred to ${data.recipient}. Transaction Ref: ${data.transfer_reference}`,
+          className: "bg-primary text-primary-foreground border-none",
         });
       } else if (data?.error) {
-        toast({ title: "Disbursement failed", description: data.error, variant: "destructive" });
+        toast({ 
+          title: "Disbursement Encountered an Issue", 
+          description: data.error, 
+          variant: "destructive" 
+        });
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Failed to disburse funds", variant: "destructive" });
@@ -204,11 +221,16 @@ const PropertyManagement = () => {
 
       if (data?.success) {
         toast({
-          title: "Payout sent!",
-          description: `₦${data.amount?.toLocaleString()} has been transferred to ${data.recipient}. Ref: ${data.transfer_reference}`,
+          title: "Payout Sent Successfully",
+          description: `The caution fee of ₦${data.amount?.toLocaleString()} has been transferred to ${data.recipient}. Transaction Ref: ${data.transfer_reference}`,
+          className: "bg-primary text-primary-foreground border-none",
         });
       } else if (data?.error) {
-        toast({ title: "Disbursement failed", description: data.error, variant: "destructive" });
+        toast({ 
+          title: "Payout Failed", 
+          description: data.error, 
+          variant: "destructive" 
+        });
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Failed to disburse funds", variant: "destructive" });
@@ -256,7 +278,11 @@ const PropertyManagement = () => {
       } as any);
     }
 
-    toast({ title: "Payout rejected", description: "A dispute has been automatically logged for our litigator team to resolve." });
+    toast({ 
+      title: "Payout Request Declined", 
+      description: "A dispute has been automatically logged. Our resolution experts will review this case and mediate between both parties.",
+      variant: "destructive"
+    });
     setRejectingEscrowId(null);
     setRejectReason("");
     fetchAll();
@@ -268,7 +294,11 @@ const PropertyManagement = () => {
 
     const { error } = await supabase.from("maintenance_requests").update(updates).eq("id", id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Dispute Submission Error", 
+        description: error.message || "We could not log your dispute at this time. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
       toast({ title: "Updated" });
       fetchAll();
@@ -277,7 +307,11 @@ const PropertyManagement = () => {
 
   const handleGenerateContract = async () => {
     if (!contractForm.tenancy_id) {
-      toast({ title: "Select a tenancy", variant: "destructive" });
+      toast({ 
+        title: "No Tenancy Selected", 
+        description: "Please select an active tenancy to generate a legal contract.",
+        variant: "destructive" 
+      });
       return;
     }
     setGeneratingContract(true);
@@ -287,11 +321,19 @@ const PropertyManagement = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast({ title: "Contract generated!", description: "Your AI-drafted legal contract is ready." });
+      toast({ 
+        title: "Legal Contract Generated", 
+        description: "Your AI-powered legal document is ready for review. You can find it in the Contracts tab.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setViewingContract(data.contract);
       fetchAll();
     } catch (e: any) {
-      toast({ title: "Error", description: e.message || "Failed to generate contract", variant: "destructive" });
+      toast({ 
+        title: "Contract Generation Error", 
+        description: e.message || "We encountered an issue while generating the contract document. Please try again.", 
+        variant: "destructive" 
+      });
     }
     setGeneratingContract(false);
   };

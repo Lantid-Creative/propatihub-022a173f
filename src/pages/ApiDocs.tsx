@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Code, Key, Shield, Zap, Database, CreditCard } from "lucide-react";
 
-const BASE_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/property-api`;
+const BASE_URL = import.meta.env.VITE_PROPERTY_API_URL;
 
 const CodeBlock = ({ children, title }: { children: string; title?: string }) => (
   <div className="rounded-lg overflow-hidden border border-border">

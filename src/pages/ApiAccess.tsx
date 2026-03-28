@@ -53,9 +53,17 @@ const ApiAccess = () => {
     if (!user) return;
     const { error } = await supabase.from("api_keys").insert({ user_id: user.id, name: `Key ${apiKeys.length + 1}` } as any);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Key Generation Failed", 
+        description: error.message || "We encountered an issue while generating your API key. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "API key generated!" });
+      toast({ 
+        title: "API Key Generated Successfully", 
+        description: "Your new API key is ready for use. Please keep it secure.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       fetchData();
     }
   };
@@ -63,16 +71,28 @@ const ApiAccess = () => {
   const deleteApiKey = async (id: string) => {
     const { error } = await supabase.from("api_keys").delete().eq("id", id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Deletion Error", 
+        description: error.message || "We could not delete the API key at this time. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "API key deleted" });
+      toast({ 
+        title: "API Key Revoked", 
+        description: "The selected API key has been successfully deleted and can no longer be used.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       fetchData();
     }
   };
 
   const copyKey = (key: string) => {
     navigator.clipboard.writeText(key);
-    toast({ title: "Copied to clipboard!" });
+    toast({ 
+      title: "Key Copied", 
+      description: "API key has been copied to your clipboard.",
+      className: "bg-primary text-primary-foreground border-none",
+    });
   };
 
   const subscribeLga = async () => {
@@ -84,7 +104,11 @@ const ApiAccess = () => {
       (s) => s.lga === selectedLga && s.state === selectedState && s.status === "active" && new Date(s.expires_at) > new Date()
     );
     if (existing) {
-      toast({ title: "Already subscribed", description: `You have an active subscription for ${selectedLga}, ${selectedState}`, variant: "destructive" });
+      toast({ 
+        title: "Subscription Already Active", 
+        description: `You already have an active subscription for ${selectedLga}, ${selectedState}.`, 
+        variant: "destructive" 
+      });
       setSubscribing(false);
       return;
     }
@@ -105,13 +129,21 @@ const ApiAccess = () => {
       });
 
       if (error || !data?.authorization_url) {
-        toast({ title: "Payment Error", description: "Could not initialize payment. Please try again.", variant: "destructive" });
+        toast({ 
+          title: "Payment Initialization Failed", 
+          description: "We encountered an issue while setting up your payment. Please try again or contact support.", 
+          variant: "destructive" 
+        });
         return;
       }
 
       window.location.href = data.authorization_url;
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Something went wrong.", variant: "destructive" });
+      toast({ 
+        title: "Subscription Error", 
+        description: err.message || "We encountered an unexpected error while processing your subscription. Please try again.", 
+        variant: "destructive" 
+      });
     } finally {
       setSubscribing(false);
     }

@@ -83,12 +83,20 @@ const TenantBankDetailsForm = () => {
 
   const handleSave = async () => {
     if (!form.account_number || !form.bank_code) {
-      toast({ title: "Please fill all required fields", variant: "destructive" });
+      toast({ 
+        title: "Missing Information", 
+        description: "Please provide both a bank name and a valid account number.", 
+        variant: "destructive" 
+      });
       return;
     }
 
     if (form.account_number.length !== 10) {
-      toast({ title: "Account number must be 10 digits", variant: "destructive" });
+      toast({ 
+        title: "Invalid Account Number", 
+        description: "Nigerian NUBAN account numbers must be exactly 10 digits in length.", 
+        variant: "destructive" 
+      });
       return;
     }
 
@@ -109,9 +117,17 @@ const TenantBankDetailsForm = () => {
         .eq("id", existing.id);
 
       if (error) {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+        toast({ 
+          title: "Update Failed", 
+          description: error.message || "We could not update your banking details at this time. Please try again.", 
+          variant: "destructive" 
+        });
       } else {
-        toast({ title: "Bank details updated" });
+        toast({ 
+          title: "Banking Details Updated", 
+          description: "Your payout information has been successfully updated and saved securely.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
         fetchBankDetails();
       }
     } else {
@@ -125,9 +141,17 @@ const TenantBankDetailsForm = () => {
         } as any);
 
       if (error) {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+        toast({ 
+          title: "Saving Failed", 
+          description: error.message || "We encountered an issue while saving your banking details. Please try again.", 
+          variant: "destructive" 
+        });
       } else {
-        toast({ title: "Bank details saved" });
+        toast({ 
+          title: "Banking Details Saved", 
+          description: "Your payout information has been securely stored for future caution fee refunds.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
         fetchBankDetails();
       }
     }

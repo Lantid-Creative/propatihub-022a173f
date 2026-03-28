@@ -80,9 +80,17 @@ const AgentSettings = () => {
       state,
     }).eq("user_id", user.id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Profile Save Error", 
+        description: error.message || "We encountered an issue while saving your profile. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Profile updated!" });
+      toast({ 
+        title: "Profile Updated", 
+        description: "Your public-facing profile information has been successfully saved.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
     }
     setSavingProfile(false);
   };
@@ -97,31 +105,69 @@ const AgentSettings = () => {
     };
     if (agentProfile) {
       const { error } = await supabase.from("agent_profiles").update(payload).eq("user_id", user.id);
-      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-      else toast({ title: "Agent profile updated!" });
+      if (error) {
+        toast({ 
+          title: "Update Failed", 
+          description: error.message || "We encountered an issue while updating your professional profile.", 
+          variant: "destructive" 
+        });
+      } else {
+        toast({ 
+          title: "Agent Profile Updated", 
+          description: "Your professional agent details have been successfully updated.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
+      }
     } else {
       const { error } = await supabase.from("agent_profiles").insert({ ...payload, user_id: user.id });
-      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-      else toast({ title: "Agent profile created!" });
+      if (error) {
+        toast({ 
+          title: "Creation Failed", 
+          description: error.message || "We encountered an issue while setting up your professional profile.", 
+          variant: "destructive" 
+        });
+      } else {
+        toast({ 
+          title: "Agent Profile Created", 
+          description: "Your professional profile has been initialized and is ready for verification.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
+      }
     }
     setSavingAgent(false);
   };
 
   const handleChangePassword = async () => {
     if (newPassword.length < 6) {
-      toast({ title: "Password too short", description: "Minimum 6 characters.", variant: "destructive" });
+      toast({ 
+        title: "Password Security Requirement", 
+        description: "For your safety, please ensure your password is at least 6 characters long.", 
+        variant: "destructive" 
+      });
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast({ title: "Passwords don't match", variant: "destructive" });
+      toast({ 
+        title: "Password Mismatch", 
+        description: "The two passwords you entered do not match. Please re-enter them.", 
+        variant: "destructive" 
+      });
       return;
     }
     setSavingPassword(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Password Update Error", 
+        description: error.message || "We could not update your password at this time. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Password changed!" });
+      toast({ 
+        title: "Password Changed Successfully", 
+        description: "Your security credentials have been updated.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setNewPassword("");
       setConfirmPassword("");
     }
@@ -263,7 +309,10 @@ const AgentSettings = () => {
             <p className="text-sm font-body text-muted-foreground mb-3">
               Deleting your account will remove all your listings, inquiries, and data permanently.
             </p>
-            <Button variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => toast({ title: "Contact support", description: "Please email support@propatihub.ng to delete your account." })}>
+            <Button variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => toast({ 
+              title: "Account Deletion Request", 
+              description: "To ensure the security of your data, account deletions are handled manually. Please email support@propatihub.ng with your request." 
+            })}>
               Delete Account
             </Button>
           </CardContent>

@@ -97,7 +97,11 @@ const AgentProperties = () => {
 
   const handleSave = async (isEdit: boolean) => {
     if (!user || !form.title || !form.city || !form.price) {
-      toast({ title: "Missing required fields", description: "Title, city, and price are required.", variant: "destructive" });
+      toast({ 
+        title: "Required Fields Missing", 
+        description: "Please provide a title, city, and price to proceed with your listing.", 
+        variant: "destructive" 
+      });
       return;
     }
     setSubmitting(true);
@@ -155,9 +159,17 @@ const AgentProperties = () => {
     }
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Submission Error", 
+        description: error.message || "We encountered an issue while saving your property. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: isEdit ? "Property updated!" : "Property created!", description: isEdit ? "Changes saved." : "Submitted for review." });
+      toast({ 
+        title: isEdit ? "Property Updated Successfuly" : "Listing Submitted Successfully", 
+        description: isEdit ? "Your changes have been saved." : "Your property has been submitted for review. Our team will verify it shortly.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       if (isEdit) { setEditOpen(false); setEditId(null); } else { setCreateOpen(false); }
       setForm({ ...emptyForm });
       setFormStep(0);
@@ -208,13 +220,21 @@ const AgentProperties = () => {
   const deleteProperty = async (id: string) => {
     if (!confirm("Delete this property? This cannot be undone.")) return;
     await supabase.from("properties").delete().eq("id", id);
-    toast({ title: "Property deleted" });
+    toast({ 
+      title: "Property Deleted", 
+      description: "The listing has been permanently removed from your profile.",
+      variant: "destructive"
+    });
     fetchProperties();
   };
 
   const requestVerification = async (id: string) => {
     await supabase.from("properties").update({ status: "pending" }).eq("id", id);
-    toast({ title: "Verification requested", description: "Admin will review your listing." });
+    toast({ 
+      title: "Verification Requested", 
+      description: "You listing is now in the queue for admin review. You'll be notified once it's approved.",
+      className: "bg-primary text-primary-foreground border-none",
+    });
     fetchProperties();
   };
 
@@ -230,10 +250,23 @@ const AgentProperties = () => {
     }
     const { error } = await supabase.from("properties").update(updates).eq("id", id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Auction Status Update Failed", 
+        description: error.message || "We could not update the auction status at this time.", 
+        variant: "destructive" 
+      });
     } else {
-      const labels: Record<string, string> = { active: "started", paused: "paused", ended: "ended", upcoming: "reset to upcoming" };
-      toast({ title: "Auction Updated", description: `Auction has been ${labels[newStatus] || newStatus}.` });
+      const labels: Record<string, string> = { 
+        active: "is now live and accepting bids", 
+        paused: "has been temporarily paused", 
+        ended: "has been finalized", 
+        upcoming: "has been reset to upcoming" 
+      };
+      toast({ 
+        title: "Auction Status Updated", 
+        description: `The auction ${labels[newStatus] || newStatus}.`,
+        className: "bg-primary text-primary-foreground border-none",
+      });
       fetchProperties();
     }
   };
@@ -272,7 +305,11 @@ const AgentProperties = () => {
     if (!e.target.files?.[0] || !user) return;
     const file = e.target.files[0];
     if (file.size > 100 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Maximum video size is 100MB", variant: "destructive" });
+      toast({ 
+        title: "Video File Too Large", 
+        description: "The maximum allowed size for virtual tour videos is 100MB.", 
+        variant: "destructive" 
+      });
       return;
     }
     const ext = file.name.split(".").pop();
@@ -284,7 +321,11 @@ const AgentProperties = () => {
     }
     const { data: urlData } = supabase.storage.from("virtual-tours").getPublicUrl(path);
     setForm({ ...form, virtual_tour_video_url: urlData.publicUrl });
-    toast({ title: "Video uploaded!" });
+    toast({ 
+      title: "Video Uploaded Successfully", 
+      description: "Your virtual tour video has been processed and added to the listing.",
+      className: "bg-primary text-primary-foreground border-none",
+    });
   };
 
   // Multi-step form

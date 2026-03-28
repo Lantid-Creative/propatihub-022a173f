@@ -18,7 +18,11 @@ const AlertSection = () => {
       return;
     }
     if (!email.trim()) {
-      toast({ title: "Enter a location or keyword", variant: "destructive" });
+      toast({ 
+        title: "Information Required", 
+        description: "Please enter a location or keyword to create a personalized property alert.", 
+        variant: "destructive" 
+      });
       return;
     }
     setSaving(true);
@@ -29,9 +33,17 @@ const AlertSection = () => {
       alert_enabled: true,
     });
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Alert Creation Failed", 
+        description: error.message || "We encountered an issue while saving your alert. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Alert created!", description: "You'll be notified when matching properties are listed." });
+      toast({ 
+        title: "Smart Alert Created", 
+        description: "We'll notify you as soon as new properties matching your criteria are listed.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setEmail("");
     }
     setSaving(false);

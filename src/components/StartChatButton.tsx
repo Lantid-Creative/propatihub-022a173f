@@ -23,7 +23,11 @@ const StartChatButton = ({ recipientId, propertyId, className, variant = "outlin
 
   const startChat = async () => {
     if (!user) {
-      toast({ title: "Please sign in", description: "You need to be logged in to send messages.", variant: "destructive" });
+      toast({ 
+        title: "Authentication Required", 
+        description: "Please sign in to start a conversation with the property manager or agent.", 
+        variant: "destructive" 
+      });
       navigate("/auth");
       return;
     }
@@ -85,7 +89,11 @@ const StartChatButton = ({ recipientId, propertyId, className, variant = "outlin
       .single();
 
     if (convError || !conv) {
-      toast({ title: "Error", description: "Could not start conversation", variant: "destructive" });
+      toast({ 
+        title: "Conversation Error", 
+        description: "We could not initialize the secure chat session. Please refresh and try again.", 
+        variant: "destructive" 
+      });
       setLoading(false);
       return;
     }

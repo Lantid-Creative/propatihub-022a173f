@@ -89,12 +89,20 @@ const BidSubscriptionTiers = () => {
 
   const handleSubscribe = async (tierId: string) => {
     if (!user) {
-      toast({ title: "Sign in required", description: "Please sign in to subscribe.", variant: "destructive" });
+      toast({ 
+        title: "Authentication Required", 
+        description: "Please sign in to your account to manage your bidding subscriptions.", 
+        variant: "destructive" 
+      });
       return;
     }
     const tier = TIERS.find((t) => t.id === tierId)!;
     if (tier.price === 0) {
-      toast({ title: "Free Tier", description: "You're already on the free plan." });
+      toast({ 
+        title: "Standard Plan Active", 
+        description: "You are already benefiting from our free-tier bidding services.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       return;
     }
 
@@ -117,14 +125,22 @@ const BidSubscriptionTiers = () => {
       });
 
       if (error || !data?.authorization_url) {
-        toast({ title: "Payment Error", description: "Could not initialize payment. Please try again.", variant: "destructive" });
+        toast({ 
+          title: "Payment Initialization Failed", 
+          description: "We encountered an issue while setting up your subscription payment. Please try again or contact support.", 
+          variant: "destructive" 
+        });
         return;
       }
 
       // Redirect to Paystack checkout
       window.location.href = data.authorization_url;
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Something went wrong.", variant: "destructive" });
+      toast({ 
+        title: "Subscription Error", 
+        description: err.message || "We encountered an unexpected issue while processing your subscription. Please try again.", 
+        variant: "destructive" 
+      });
     } finally {
       setSubscribing(null);
     }

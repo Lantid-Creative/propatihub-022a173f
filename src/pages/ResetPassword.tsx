@@ -35,21 +35,37 @@ const ResetPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast({ title: "Passwords don't match", variant: "destructive" });
+      toast({ 
+        title: "Passwords do not match", 
+        description: "Please ensure that both password fields are identical.",
+        variant: "destructive" 
+      });
       return;
     }
     if (password.length < 6) {
-      toast({ title: "Password must be at least 6 characters", variant: "destructive" });
+      toast({ 
+        title: "Password too short", 
+        description: "For your security, please use a password with at least 6 characters.",
+        variant: "destructive" 
+      });
       return;
     }
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      toast({ title: "Password updated!", description: "You can now sign in with your new password." });
+      toast({ 
+        title: "Password Reset Successful", 
+        description: "Your password has been updated. You can now sign in with your new credentials.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       navigate("/auth");
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ 
+        title: "Password Update Failed", 
+        description: err.message || "We encountered an issue while updating your password. Please try again or contact support.", 
+        variant: "destructive" 
+      });
     } finally {
       setLoading(false);
     }

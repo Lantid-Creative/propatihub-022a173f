@@ -83,8 +83,11 @@ import PageTracker from "./components/PageTracker";
 
 const queryClient = new QueryClient();
 
+import ErrorBoundary from "@/components/ErrorBoundary";
+
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -181,6 +184,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

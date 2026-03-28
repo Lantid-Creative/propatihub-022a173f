@@ -70,27 +70,46 @@ const PropertyDetail = () => {
 
   const toggleFavorite = async () => {
     if (!user) {
-      toast({ title: "Sign in required", description: "Please sign in to save favourites.", variant: "destructive" });
+      toast({ 
+        title: "Authentication Required", 
+        description: "Please sign in to save properties to your favorites and access them later.", 
+        variant: "destructive" 
+      });
       return;
     }
     if (isFavorite) {
       await supabase.from("favorites").delete().eq("user_id", user.id).eq("property_id", id!);
       setIsFavorite(false);
-      toast({ title: "Removed from favourites" });
+      toast({ 
+        title: "Removed from Favorites", 
+        description: "This property has been removed from your saved listings.",
+      });
     } else {
       await supabase.from("favorites").insert({ user_id: user.id, property_id: id! });
       setIsFavorite(true);
-      toast({ title: "Added to favourites" });
+      toast({ 
+        title: "Added to Favorites", 
+        description: "Property saved! You can view all your favorite listings in your dashboard.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
     }
   };
 
   const sendInquiry = async () => {
     if (!user) {
-      toast({ title: "Sign in required", description: "Please sign in to send inquiries.", variant: "destructive" });
+      toast({ 
+        title: "Authentication Required", 
+        description: "Please sign in to send an inquiry to the agent.", 
+        variant: "destructive" 
+      });
       return;
     }
     if (!message.trim()) {
-      toast({ title: "Message required", description: "Please write a message.", variant: "destructive" });
+      toast({ 
+        title: "Message Content Required", 
+        description: "Please enter a message before sending your inquiry.", 
+        variant: "destructive" 
+      });
       return;
     }
     setSending(true);
@@ -101,9 +120,17 @@ const PropertyDetail = () => {
       message: message.trim(),
     });
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Inquiry Error", 
+        description: error.message || "We encountered an issue while sending your inquiry. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Inquiry sent!", description: "The agent will get back to you soon." });
+      toast({ 
+        title: "Inquiry Sent Successfully", 
+        description: "Your message has been delivered. The agent will respond to you shortly.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setMessage("");
     }
     setSending(false);
@@ -200,7 +227,14 @@ const PropertyDetail = () => {
             <Button variant="ghost" size="icon" onClick={toggleFavorite}>
               <Heart className={`w-5 h-5 ${isFavorite ? "fill-destructive text-destructive" : ""}`} />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => { navigator.clipboard.writeText(window.location.href); toast({ title: "Link copied!" }); }}>
+            <Button variant="ghost" size="icon" onClick={() => { 
+                navigator.clipboard.writeText(window.location.href); 
+                toast({ 
+                  title: "Link Copied", 
+                  description: "Property link copied to clipboard. You can now share it with others.",
+                  className: "bg-primary text-primary-foreground border-none",
+                }); 
+              }}>
               <Share2 className="w-5 h-5" />
             </Button>
           </div>

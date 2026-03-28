@@ -20,7 +20,11 @@ const UserSettings = () => {
     if (!user) return;
     setSaving(true);
     await supabase.from("profiles").update({ full_name: fullName, phone, city, state }).eq("user_id", user.id);
-    toast({ title: "Profile updated" });
+    toast({ 
+      title: "Profile Updated", 
+      description: "Your personal information has been saved successfully.",
+      className: "bg-primary text-primary-foreground border-none",
+    });
     setSaving(false);
   };
 

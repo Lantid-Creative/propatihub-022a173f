@@ -124,7 +124,11 @@ const TenantPortal = () => {
     } as any).select("id").single();
 
     if (tenError) {
-      toast({ title: "Error", description: tenError.message, variant: "destructive" });
+      toast({ 
+        title: "Acceptance Error", 
+        description: tenError.message || "We encountered an issue while accepting your invitation. Please try again.", 
+        variant: "destructive" 
+      });
       setAccepting(null);
       return;
     }
@@ -144,7 +148,11 @@ const TenantPortal = () => {
       amount: invitation.caution_fee,
     } as any);
 
-    toast({ title: "Invitation accepted!", description: "You can now pay the caution fee." });
+    toast({ 
+      title: "Invitation Accepted Successfully", 
+      description: "You have successfully accepted the tenancy invitation. You can now proceed to pay the caution fee.",
+      className: "bg-primary text-primary-foreground border-none",
+    });
     setAccepting(null);
     fetchAll();
   };
@@ -172,10 +180,18 @@ const TenantPortal = () => {
         localStorage.setItem("paystack_ref", data.reference);
         localStorage.setItem("paystack_escrow_id", escrow.id);
         window.open(data.authorization_url, "_blank");
-        toast({ title: "Payment initiated", description: "Complete the payment in the new tab. Then click 'Verify Payment' below." });
+        toast({ 
+          title: "Payment Gateway Initialized", 
+          description: "A new tab has been opened for your payment. After completion, please return here to verify the transaction.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
       }
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to initialize payment", variant: "destructive" });
+      toast({ 
+        title: "Initiation Error", 
+        description: err.message || "We encountered an issue while initializing your payment. Please try again.", 
+        variant: "destructive" 
+      });
     }
     setPaying(null);
   };
@@ -183,7 +199,11 @@ const TenantPortal = () => {
   const handleVerifyPayment = async (escrowId: string) => {
     const reference = localStorage.getItem("paystack_ref");
     if (!reference) {
-      toast({ title: "No payment reference found", variant: "destructive" });
+      toast({ 
+        title: "Missing Transaction Reference", 
+        description: "We could not find a recent payment session to verify. Please try the payment process again.", 
+        variant: "destructive" 
+      });
       return;
     }
 
@@ -195,20 +215,32 @@ const TenantPortal = () => {
 
       if (error) throw error;
       if (data?.success) {
-        toast({ title: "Payment verified!", description: "Caution fee is now held in escrow." });
+        toast({ 
+          title: "Payment Verified Successfully", 
+          description: "Your caution fee has been successfully processed and is now held in secure escrow.",
+          className: "bg-primary text-primary-foreground border-none",
+        });
         localStorage.removeItem("paystack_ref");
         localStorage.removeItem("paystack_escrow_id");
         fetchAll();
       }
     } catch (err: any) {
-      toast({ title: "Verification failed", description: err.message, variant: "destructive" });
+      toast({ 
+        title: "Verification Failure", 
+        description: err.message || "We could not verify your payment at this time. Please ensure the transaction was completed.", 
+        variant: "destructive" 
+      });
     }
     setPaying(null);
   };
 
   const handleSubmitMaintenance = async () => {
     if (!maintForm.tenancy_id || !maintForm.title) {
-      toast({ title: "Fill in required fields", variant: "destructive" });
+      toast({ 
+        title: "Required Fields Missing", 
+        description: "Please specify the property and provide a title for your maintenance request.", 
+        variant: "destructive" 
+      });
       return;
     }
 
@@ -223,9 +255,17 @@ const TenantPortal = () => {
     } as any);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Submission Error", 
+        description: error.message || "We encountered an issue while submitting your maintenance request. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Request submitted" });
+      toast({ 
+        title: "Maintenance Request Submitted", 
+        description: "Your report has been logged and the landlord has been notified.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       setMaintOpen(false);
       setMaintForm({ tenancy_id: "", title: "", description: "", priority: "medium" });
       fetchAll();
@@ -247,9 +287,17 @@ const TenantPortal = () => {
       .eq("id", escrowId);
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ 
+        title: "Payout Request Failed", 
+        description: error.message || "We encountered an issue while processing your payout request. Please try again.", 
+        variant: "destructive" 
+      });
     } else {
-      toast({ title: "Payout requested", description: "The landlord has 72 hours to approve or reject. Auto-payout applies after that." });
+      toast({ 
+        title: "Payout Requested Successfully", 
+        description: "Your request has been logged. The landlord has 72 hours to review it before automatic release applies.",
+        className: "bg-primary text-primary-foreground border-none",
+      });
       fetchAll();
     }
   };
