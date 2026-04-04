@@ -2,27 +2,39 @@ import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "next-themes";
 import "./index.css";
 
+// --- ENVIRONMENT VARIABLE FALLBACKS ---
+// This handles cases where Lovable's publish pipeline fails to inject these anon/publishable keys.
+const FALLBACKS: Record<string, string> = {
+  VITE_SUPABASE_PROJECT_ID: "jszqiycbvusagcmvuvoc",
+  VITE_SUPABASE_URL: "https://jszqiycbvusagcmvuvoc.supabase.co",
+  VITE_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzenFpeWNidnVzYWdjbXZ1dm9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzY3NjgsImV4cCI6MjA5MDA1Mjc2OH0.DudC8lqHMgzTnUDt5VXXpVrM8PKpMoaZOgsNXm_1VxU",
+  VITE_PROPERTY_API_URL: "https://jszqiycbvusagcmvuvoc.supabase.co/functions/v1/property-api",
+  VITE_APP_URL: typeof window !== "undefined" ? window.location.origin : "https://propatihub.com",
+};
+
+// Patch import.meta.env at runtime if variables are missing
+Object.entries(FALLBACKS).forEach(([key, value]) => {
+  if (!import.meta.env[key]) {
+    // Note: This is an assignment to a property that Vite normally marks as read-only, 
+    // but at runtime in the browser it's just an object we can attempt to patch.
+    try {
+      (import.meta.env as any)[key] = value;
+    } catch (e) {
+      console.warn(`Failed to patch environment variable ${key}:`, e);
+    }
+  }
+});
+
 const root = createRoot(document.getElementById("root")!);
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://jszqiycbvusagcmvuvoc.supabase.co";
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzenFpeWNidnVzYWdjbXZ1dm9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzY3NjgsImV4cCI6MjA5MDA1Mjc2OH0.DudC8lqHMgzTnUDt5VXXpVrM8PKpMoaZOgsNXm_1VxU";
-
-// Ensure env vars are available for modules loaded later (e.g. supabase client)
-if (!import.meta.env.VITE_SUPABASE_URL) {
-  (import.meta.env as any).VITE_SUPABASE_URL = supabaseUrl;
-}
-if (!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
-  (import.meta.env as any).VITE_SUPABASE_PUBLISHABLE_KEY = supabaseKey;
-}
+// Final check before proceeding with initialization
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  // Diagnostic log for production troubleshooting
-  console.warn("PropatiHub initialization error: Supabase environment variables are missing.", {
-    urlFound: !!supabaseUrl,
-    keyFound: !!supabaseKey
-  });
-  
-  // Backend env vars missing — show friendly message instead of blank screen
+  console.error("Critical Failure: Supabase environment variables are still missing after fallback attempt.");
+
+  // Last resort: Show minimal useful error UI
   document.getElementById("root")!.innerHTML = `
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;background:#fafaf9;padding:2rem;">
       <div style="max-width:480px;text-align:center;padding:2rem;border:1px solid #e5e5e5;border-radius:1rem;background:#fff;">
@@ -33,11 +45,15 @@ if (!supabaseUrl || !supabaseKey) {
     </div>
   `;
 } else {
+  // Use dynamic import to ensure App (and its Supabase client dependency) 
+  // only loads AFTER we have ensured env vars exist.
   import("./App").then(({ default: App }) => {
     root.render(
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <App />
       </ThemeProvider>
     );
+  }).catch((err) => {
+    console.error("Failed to load application module:", err);
   });
 }
