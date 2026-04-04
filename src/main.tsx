@@ -8,6 +8,12 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
+  // Diagnostic log for production troubleshooting
+  console.warn("PropatiHub initialization error: Supabase environment variables are missing.", {
+    urlFound: !!supabaseUrl,
+    keyFound: !!supabaseKey
+  });
+  
   // Backend env vars missing — show friendly message instead of blank screen
   document.getElementById("root")!.innerHTML = `
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;background:#fafaf9;padding:2rem;">
