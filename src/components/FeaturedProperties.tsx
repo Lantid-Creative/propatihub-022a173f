@@ -115,16 +115,18 @@ const FeaturedProperties = () => {
   const formatPrice = (price: number) => `₦${price.toLocaleString()}`;
 
   return (
-    <section className="py-20 px-4 sm:px-6 bg-secondary">
+    <section className="py-24 px-4 sm:px-6 bg-secondary/50">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center mb-3">
-          Featured Properties
-        </h2>
-        <p className="text-muted-foreground font-body text-center mb-12 max-w-lg mx-auto">
-          Hand-picked premium listings verified by our team across Nigeria
-        </p>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-foreground mb-4">
+            Featured Properties
+          </h2>
+          <p className="text-muted-foreground font-body text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+            Hand-picked premium listings verified by our team across Nigeria's most desirable locations
+          </p>
+        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {properties.map((prop) => {
             const tag = listingTypeLabels[prop.listing_type] || "For Sale";
             const isDemo = String(prop.id).startsWith("demo-");
@@ -135,13 +137,13 @@ const FeaturedProperties = () => {
               <Wrapper
                 key={prop.id}
                 {...(wrapperProps as any)}
-                className="bg-card rounded-xl overflow-hidden card-hover shadow-sm block"
+                className="bg-card rounded-2xl overflow-hidden card-hover shadow-md hover:shadow-2xl border border-border/50 block group transition-all duration-500"
               >
                 <div className="relative aspect-[4/3]">
                   <img
                     src={prop.images?.[0] || ""}
                     alt={prop.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                   />
                   <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-body font-semibold ${tagColors[tag] || "bg-primary text-primary-foreground"}`}>

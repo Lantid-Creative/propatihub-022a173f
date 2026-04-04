@@ -129,20 +129,20 @@ const HeroSearch = () => {
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="bg-card rounded-t-xl border-b border-border overflow-hidden">
-        <div className="flex overflow-x-auto scrollbar-hide">
+        <div className="flex overflow-x-auto scrollbar-hide bg-muted/30 backdrop-blur-sm px-2">
           {tabs.map((tab) => (
             <button
               key={tab.label}
               onClick={() => setActiveTab(tab.label)}
-              className={`px-4 sm:px-6 py-4 font-body text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
+              className={`px-5 sm:px-8 py-4 font-body text-sm font-bold transition-all relative whitespace-nowrap flex-shrink-0 uppercase tracking-wider ${
                 activeTab === tab.label
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-primary opacity-100 scale-105"
+                  : "text-muted-foreground opacity-60 hover:opacity-100"
               }`}
             >
               {tab.label}
               {activeTab === tab.label && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />
+                <span className="absolute bottom-0 left-4 right-4 h-1 bg-accent rounded-t-full shadow-[0_-4px_10px_rgba(var(--accent),0.5)]" />
               )}
             </button>
           ))}

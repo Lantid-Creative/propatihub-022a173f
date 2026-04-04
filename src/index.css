@@ -112,12 +112,18 @@
     @apply shadow-xl -translate-y-1;
   }
 
-  .location-card {
-    @apply relative overflow-hidden rounded-xl cursor-pointer;
-  }
   .location-card::after {
     content: '';
     @apply absolute inset-0;
     background: linear-gradient(to top, hsl(var(--hero-overlay) / 0.7), transparent 60%);
+  }
+
+  @keyframes subtle-zoom {
+    from { transform: scale(1.05); }
+    to { transform: scale(1.15); }
+  }
+
+  .animate-subtle-zoom {
+    animation: subtle-zoom 20s ease-in-out infinite alternate;
   }
 }

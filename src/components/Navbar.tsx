@@ -37,90 +37,94 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
         scrolled
-          ? "border-border bg-background/95 backdrop-blur-sm shadow-sm"
-          : "border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          ? "border-border bg-background/95 backdrop-blur-xl shadow-md h-20"
+          : "border-transparent bg-background/0 backdrop-blur-none h-20"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex h-16 items-center justify-between">
-        <Link to="/">
-          <img src={logoDark} alt="PropatiHub" className="h-8 w-auto max-w-[120px] sm:max-w-none" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logoDark} alt="PropatiHub" className="h-9 w-auto max-w-[140px] sm:max-w-none" />
         </Link>
 
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-10">
           {navLinks.map((item) => (
             <Link
               key={item.label}
               to={item.href}
-              className="text-foreground/70 hover:text-foreground font-body text-sm font-medium transition-colors"
+              className="text-foreground/70 hover:text-foreground font-body text-sm font-semibold transition-colors relative group"
             >
               {item.label}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
+          <div className="h-6 w-px bg-border mx-2" />
           <DarkModeToggle />
           {user ? (
             <Link
               to={getDashboardLink()}
-              className="border border-border text-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-muted transition-colors"
+              className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-body text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
             >
               Dashboard
             </Link>
           ) : (
             <Link
               to="/auth"
-              className="border border-border text-foreground px-5 py-2 rounded-lg font-body text-sm font-medium hover:bg-muted transition-colors"
+              className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-body text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
             >
               Sign in
             </Link>
           )}
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-4 lg:hidden">
           <DarkModeToggle />
           <button
             onClick={() => setOpen(!open)}
-            className="text-foreground"
+            className="text-foreground p-1 transition-transform active:scale-90"
+            aria-label="Toggle menu"
           >
-            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {open ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Menu */}
       <div
-        className={`lg:hidden absolute top-full left-0 right-0 w-full grid transition-[grid-template-rows] duration-300 ease-out z-50 ${
+        className={`lg:hidden absolute top-20 left-0 right-0 w-full grid transition-all duration-500 ease-in-out z-50 ${
           open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"
         }`}
       >
-        <div className="overflow-hidden min-h-0">
-          <div className="border-t border-border bg-background/95 backdrop-blur-md text-foreground shadow-xl">
-            <div className="flex flex-col gap-1 px-4 sm:px-6 py-4">
-              {navLinks.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
-              {user ? (
-                <Link
-                  to={getDashboardLink()}
-                  onClick={() => setOpen(false)}
-                  className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <Link
-                  to="/auth"
-                  onClick={() => setOpen(false)}
-                  className="block py-3 px-4 text-foreground font-body text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Sign in
-                </Link>
-              )}
-            </div>
+        <div className="overflow-hidden min-h-0 bg-background/98 backdrop-blur-xl border-b border-border shadow-2xl">
+          <div className="flex flex-col gap-2 p-6">
+            {navLinks.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-between py-4 px-6 text-foreground font-body text-lg font-bold hover:bg-muted rounded-2xl transition-all active:scale-[0.98]"
+              >
+                {item.label}
+                <span className="text-accent">→</span>
+              </Link>
+            ))}
+            <div className="h-px bg-border my-4" />
+            {user ? (
+              <Link
+                to={getDashboardLink()}
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center py-4 px-6 bg-primary text-primary-foreground font-body text-lg font-bold rounded-2xl shadow-xl shadow-primary/20"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center py-4 px-6 bg-primary text-primary-foreground font-body text-lg font-bold rounded-2xl shadow-xl shadow-primary/20"
+              >
+                Sign in to your account
+              </Link>
+            )}
           </div>
         </div>
       </div>
