@@ -4,8 +4,16 @@ import "./index.css";
 
 const root = createRoot(document.getElementById("root")!);
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://jszqiycbvusagcmvuvoc.supabase.co";
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzenFpeWNidnVzYWdjbXZ1dm9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzY3NjgsImV4cCI6MjA5MDA1Mjc2OH0.DudC8lqHMgzTnUDt5VXXpVrM8PKpMoaZOgsNXm_1VxU";
+
+// Ensure env vars are available for modules loaded later (e.g. supabase client)
+if (!import.meta.env.VITE_SUPABASE_URL) {
+  (import.meta.env as any).VITE_SUPABASE_URL = supabaseUrl;
+}
+if (!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+  (import.meta.env as any).VITE_SUPABASE_PUBLISHABLE_KEY = supabaseKey;
+}
 
 if (!supabaseUrl || !supabaseKey) {
   // Diagnostic log for production troubleshooting
