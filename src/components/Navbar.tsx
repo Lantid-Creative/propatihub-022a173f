@@ -22,7 +22,9 @@ const Navbar = () => {
     } else {
       document.body.style.overflow = "unset";
     }
-    return () => { document.body.style.overflow = "unset"; };
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [open]);
 
   // Handle scroll listener
@@ -55,10 +57,11 @@ const Navbar = () => {
   // Determine current logo based on theme and solid state
   // When menu is open, we always use solid background matching theme
   const currentLogo = !isSolid || theme === "dark" ? logoDark : logoLight;
-  
+
   // Use specialized colors for the Hero overlay vs the solid scrolled/open header
   const textColor = !isSolid ? "text-white" : "text-foreground";
-  const mutedTextColor = !isSolid ? "text-white/80" : "text-foreground/70";
+  // The user wants navigation links to be the primary dark green for a professional look
+  const mutedTextColor = "text-primary";
 
   return (
     <nav
@@ -70,7 +73,11 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <img src={currentLogo} alt="PropatiHub" className="h-9 w-auto max-w-[140px] sm:max-w-none transition-all duration-300" />
+          <img
+            src={currentLogo}
+            alt="PropatiHub"
+            className="h-9 w-auto max-w-[140px] sm:max-w-none transition-all duration-300"
+          />
         </Link>
 
         <div className="hidden lg:flex items-center gap-10">
@@ -78,13 +85,13 @@ const Navbar = () => {
             <Link
               key={item.label}
               to={item.href}
-              className={`${mutedTextColor} hover:text-accent font-body text-sm font-semibold transition-colors relative group`}
+              className={`${mutedTextColor} hover:text-accent font-body text-sm font-bold transition-colors relative group`}
             >
               {item.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
-          <div className={`h-6 w-px mx-2 ${scrolled ? 'bg-border' : 'bg-border/20'}`} />
+          <div className={`h-6 w-px mx-2 ${scrolled ? "bg-border" : "bg-border/20"}`} />
           <DarkModeToggle className={textColor} />
           {user ? (
             <Link
@@ -128,7 +135,7 @@ const Navbar = () => {
                 key={item.label}
                 to={item.href}
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-between py-4 px-6 text-foreground font-body text-lg font-bold hover:bg-muted rounded-2xl transition-all active:scale-[0.98]"
+                className="flex items-center justify-between py-4 px-6 text-primary font-body text-lg font-bold hover:bg-muted rounded-2xl transition-all active:scale-[0.98]"
               >
                 {item.label}
                 <span className="text-accent opacity-50">→</span>
